@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart'; // Import for TapGestureRecognizer
+import 'package:helloworld/presentation/business_home/business_home.dart';
 import 'package:helloworld/presentation/home_screen.dart';
 import 'package:helloworld/presentation/reset_password_screen.dart';
 import 'package:helloworld/services/auth_service.dart';
@@ -176,16 +177,18 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
 
                         return;
                       }
-                      log('passed the validations');
                       final val = await AuthService.loginWithEmailPassword(
                         emailController.text,
                         passwordController.text,
                       );
+
+                      log('passed the validations');
                       if (val is User) {
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const HomeScreen()),
+                                builder: (context) =>
+                                    const BusinessHomeScreen()),
                             (route) => false);
                       } else {
                         showDialog(

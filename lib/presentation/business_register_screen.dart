@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:helloworld/presentation/business_home/business_home.dart';
+import 'package:helloworld/presentation/business_login_screen.dart';
 import 'package:helloworld/presentation/home_screen.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/services/file_picker_service.dart';
@@ -258,12 +260,13 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                           image: image,
                           role: 'business',
                         );
-
-                        if (val.runtimeType == User) {
+                        log(val.toString());
+                        if (val is User) {
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const HomeScreen()),
+                                  builder: (context) =>
+                                      const BusinessHomeScreen()),
                               (route) => false);
                         } else {
                           showDialog(

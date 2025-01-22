@@ -39,7 +39,8 @@ class AuthService {
         if (location != null) 'location': location,
         // if (image != null) 'image': imageUrl,
         if (phoneNumber != null) 'phoneNumber': phoneNumber,
-        'role': role, // 'business' , 'customer'
+        'role': role, // 'business' , 'customer',
+        'isDeleted': false,
       });
 
       return userCredential.user;
