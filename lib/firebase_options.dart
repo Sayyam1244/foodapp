@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -65,4 +62,15 @@ class DefaultFirebaseOptions {
     storageBucket: 'foodsaverapp-8fb2d.firebasestorage.app',
     iosBundleId: 'com.example.helloWorld',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCPy7G658gEm5RVHroj8_0H_KAwozhI8sg',
+    appId: '1:563145311512:web:f107098490a2ab42250a6d',
+    messagingSenderId: '563145311512',
+    projectId: 'foodsaverapp-8fb2d',
+    authDomain: 'foodsaverapp-8fb2d.firebaseapp.com',
+    storageBucket: 'foodsaverapp-8fb2d.firebasestorage.app',
+    measurementId: 'G-SSLFMLECE1',
+  );
+
 }
