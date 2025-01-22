@@ -53,7 +53,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
-                  validator: AppValidator.emptyCheck,
+                  validator: AppValidator.emailCheck,
                   controller: emailController,
                   decoration: InputDecoration(
                     filled: true,
@@ -77,7 +77,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
-                  validator: AppValidator.emptyCheck,
+                  validator: AppValidator.passwordCheck,
                   controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(

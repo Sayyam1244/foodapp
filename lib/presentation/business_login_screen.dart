@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart'; // Import for TapGestureRecognizer
 import 'package:helloworld/presentation/home_screen.dart';
 import 'package:helloworld/presentation/reset_password_screen.dart';
 import 'package:helloworld/services/auth_service.dart';
+import 'package:helloworld/utils/app_validator.dart';
 import 'business_register_screen.dart'; // Import for the sign-up screen
 
 class BusinessLoginScreen extends StatefulWidget {
@@ -55,12 +56,7 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                 const SizedBox(height: 10),
 
                 TextFormField(
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
+                  validator: AppValidator.emailCheck,
                   controller: emailController,
                   decoration: InputDecoration(
                     filled: true,
@@ -83,9 +79,10 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                TextField(
+                TextFormField(
                   controller: passwordController,
                   obscureText: true,
+                  validator: AppValidator.passwordCheck,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor:

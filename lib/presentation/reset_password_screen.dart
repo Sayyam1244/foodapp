@@ -48,7 +48,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: emailController,
-                  validator: AppValidator.emptyCheck,
+                  validator: AppValidator.emailCheck,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0xFFFFF4E2), // Beige background

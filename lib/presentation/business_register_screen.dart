@@ -184,7 +184,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: emailController,
-                    validator: AppValidator.emptyCheck,
+                    validator: AppValidator.emailCheck,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: const Color(0xFFFFF4E2),
@@ -208,7 +208,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: passwordController,
-                    validator: AppValidator.emptyCheck,
+                    validator: AppValidator.passwordCheck,
                     obscureText: true,
                     decoration: InputDecoration(
                       filled: true,

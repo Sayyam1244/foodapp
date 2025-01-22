@@ -77,7 +77,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: emailController,
-                  validator: AppValidator.emptyCheck,
+                  validator: AppValidator.emailCheck,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0xFFFFF4E2), // Beige background
@@ -101,7 +101,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                 TextFormField(
                   controller: passwordController,
                   obscureText: true,
-                  validator: AppValidator.emptyCheck,
+                  validator: AppValidator.passwordCheck,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0xFFFFF4E2), // Beige background
