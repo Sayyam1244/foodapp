@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDTmA5i6zPbyuUunAb5wa_vxoMi2iIgWa8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>563145311512</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.helloWorld</string>
+	<key>PROJECT_ID</key>
+	<string>foodsaverapp-8fb2d</string>
+	<key>STORAGE_BUCKET</key>
+	<string>foodsaverapp-8fb2d.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:563145311512:ios:4d24fad710a3cbb4250a6d</string>
+</dict>
+</plist>

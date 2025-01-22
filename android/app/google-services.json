@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "563145311512",
+    "project_id": "foodsaverapp-8fb2d",
+    "storage_bucket": "foodsaverapp-8fb2d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563145311512:android:a971686651c47679250a6d",
+        "android_client_info": {
+          "package_name": "com.example.foodsaverapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKfkSrASykqJOMjof4NS3TWTzQ6dGY-WY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563145311512:android:2fda433636d0caa5250a6d",
+        "android_client_info": {
+          "package_name": "com.example.helloworld"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKfkSrASykqJOMjof4NS3TWTzQ6dGY-WY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
