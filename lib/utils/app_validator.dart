@@ -41,4 +41,15 @@ class AppValidator {
     }
     return null;
   }
+
+  static String? numberCheck(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter a number';
+    }
+    final numberRegex = RegExp(r'^\d+(\.\d+)?$');
+    if (!numberRegex.hasMatch(value)) {
+      return 'Please enter a valid number';
+    }
+    return null;
+  }
 }

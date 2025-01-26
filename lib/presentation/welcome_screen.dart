@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'business_login_screen.dart'; // Import the BusinessLoginScreen class
-import 'customer_login_screen.dart'; // Import the CustomerLoginScreen class
+import 'auth/business_auth/business_login_screen.dart'; // Import the BusinessLoginScreen class
+import 'auth/customer_auth/customer_login_screen.dart'; // Import the CustomerLoginScreen class
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({Key? key}) : super(key: key);

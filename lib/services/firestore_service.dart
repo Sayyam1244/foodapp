@@ -67,4 +67,38 @@ class FirestoreService {
       throw Exception('Error deleting user: $e');
     }
   }
+
+  Future<String> addProduct(
+      {required String productName,
+      required String productDescription,
+      required double priceBeforeDiscount,
+      required double priceAfterDiscount,
+      required double weight,
+      required int stock,
+      File? image}) async {
+    try {
+      // final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      // final storageRef = FirebaseStorage.instance.ref('products/$fileName.png');
+      // await storageRef.putFile(image!);
+      // final imageUrl = storageRef.getDownloadURL();
+      final docRef = FirebaseFirestore.instance.collection('products').doc();
+
+      docRef.set({
+        'docId': docRef.id,
+        'productName': productName,
+        'productDescription': productDescription,
+        'priceBeforeDiscount': priceBeforeDiscount,
+        'priceAfterDiscount': priceAfterDiscount,
+        'weight': weight,
+        'stock': stock,
+        // 'image': imageUrl,
+        'businessId': currentUser!.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+        "isDeleted": false,
+      });
+      return 'Product added successfully';
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }

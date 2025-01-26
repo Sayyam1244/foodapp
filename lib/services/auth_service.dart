@@ -49,11 +49,23 @@ class AuthService {
     }
   }
 
-  static Future loginWithEmailPassword(String email, String password) async {
+  static Future loginWithEmailPassword(
+    String email,
+    String password,
+    String role,
+  ) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      // call firestore to get the user model which will contain detail user object that
+
+      final user = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+      if (user['role'] != role) {
+        await FirebaseAuth.instance.signOut();
+        return 'Invalid credentials';
+      }
       return userCredential.user;
     } catch (e) {
       return e.toString();
