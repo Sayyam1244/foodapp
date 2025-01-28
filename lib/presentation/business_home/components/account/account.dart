@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:helloworld/presentation/business_home/components/account/change_pass.dart';
 import 'package:helloworld/presentation/business_home/components/account/edit_profile.dart';
 import 'package:helloworld/presentation/welcome_screen.dart';
 import 'package:helloworld/services/auth_service.dart';
@@ -56,6 +57,18 @@ class _MyAcccountState extends State<MyAcccount> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => const EditProfileScreen()));
+                  setState(() {});
+                },
+              ),
+              const SizedBox(height: 20),
+              AcccountSettingTile(
+                title: 'Change Password',
+                icon: Icons.password,
+                onTap: () async {
+                  await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChangePassScreen()));
                   setState(() {});
                 },
               ),

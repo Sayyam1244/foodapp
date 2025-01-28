@@ -101,4 +101,52 @@ class FirestoreService {
       return e.toString();
     }
   }
+
+  Future<String> updateProduct(
+      {String? id,
+      String? productName,
+      String? productDescription,
+      double? priceBeforeDiscount,
+      double? priceAfterDiscount,
+      double? weight,
+      int? stock,
+      File? image}) async {
+    try {
+      // final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      // final storageRef = FirebaseStorage.instance.ref('products/$fileName.png');
+      // await storageRef.putFile(image!);
+      // final imageUrl = storageRef.getDownloadURL();
+      final docRef = FirebaseFirestore.instance.collection('products').doc(id);
+
+      docRef.update({
+        if (productName != null) 'productName': productName,
+        if (productDescription != null)
+          'productDescription': productDescription,
+        if (priceBeforeDiscount != null)
+          'priceBeforeDiscount': priceBeforeDiscount,
+        if (priceAfterDiscount != null)
+          'priceAfterDiscount': priceAfterDiscount,
+        if (weight != null) 'weight': weight,
+        if (stock != null) 'stock': stock,
+        // if (imageUrl != null) 'image': imageUrl,
+      });
+      return 'Product updated successfully';
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future deleteProduct(docId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('products')
+          .doc(docId)
+          .update({
+        'isDeleted': true,
+      });
+      return true;
+    } catch (e) {
+      return 'Error deleting product';
+    }
+  }
 }

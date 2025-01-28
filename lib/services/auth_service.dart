@@ -79,4 +79,13 @@ class AuthService {
   static Future resetPass(email) async {
     return FirebaseAuth.instance.sendPasswordResetEmail(email: email);
   }
+
+  static Future changePassword(String newPassword) async {
+    try {
+      await FirebaseAuth.instance.currentUser!.updatePassword(newPassword);
+      return true;
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }

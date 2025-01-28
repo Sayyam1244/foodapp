@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/presentation/business_home/components/menu/add_item.dart';
+import 'package:helloworld/presentation/business_home/components/menu/edit_item.dart';
+import 'package:helloworld/services/firestore_service.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -22,8 +25,14 @@ class _MenuScreenState extends State<MenuScreen> {
           children: [
             const SizedBox(height: 50),
             StreamBuilder(
-              stream:
-                  FirebaseFirestore.instance.collection('products').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('products')
+                  .where('isDeleted', isNotEqualTo: true)
+                  .where(
+                    'businessId',
+                    isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+                  )
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
@@ -95,21 +104,33 @@ class _MenuScreenState extends State<MenuScreen> {
                                           "Stock: ${product.stock}",
                                           style: const TextStyle(fontSize: 12),
                                         ),
-                                        // small button to edit product
-                                        //   ElevatedButton(
-                                        //     onPressed: () {
-                                        //       // navigate to EditItem
-                                        //     },
-                                        //     child: const Text(
-                                        //       "Edit",
-                                        //       style: TextStyle(fontSize: 12),
-                                        //     ),
-                                        //   ),
-                                        InkWell(
-                                            onTap: () {},
-                                            child: const Icon(Icons.edit)),
                                       ],
                                     ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditItem(
+                                                    product: product,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: const Icon(Icons.edit)),
+                                        const SizedBox(width: 10),
+                                        InkWell(
+                                            onTap: () {
+                                              FirestoreService.instance
+                                                  .deleteProduct(product.id);
+                                            },
+                                            child: const Icon(Icons.delete)),
+                                      ],
+                                    )
                                   ],
                                 ),
                               ),
