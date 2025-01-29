@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:helloworld/main.dart';
+import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/model/user_model.dart';
 import 'package:helloworld/presentation/welcome_screen.dart';
 
@@ -15,7 +16,7 @@ class FirestoreService {
 
   UserModel? currentUser;
 
-  Future<void> setUser(UserModel user, {File? image}) async {
+  Future setUser(UserModel user, {File? image}) async {
     try {
       //TODO: Enable firebase storage
       String? imageUrl = user.image;
@@ -30,9 +31,9 @@ class FirestoreService {
           .collection('users')
           .doc(user.uid)
           .set(usr.toMap());
-      await getUser(user.uid);
+      return await getUser(user.uid);
     } catch (e) {
-      throw Exception('Error setting user: $e');
+      return 'Error happened, Please try again later.';
     }
   }
 
@@ -77,10 +78,10 @@ class FirestoreService {
       required int stock,
       File? image}) async {
     try {
-      // final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      // final storageRef = FirebaseStorage.instance.ref('products/$fileName.png');
-      // await storageRef.putFile(image!);
-      // final imageUrl = storageRef.getDownloadURL();
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final storageRef = FirebaseStorage.instance.ref('products/$fileName.png');
+      await storageRef.putFile(image!);
+      final imageUrl = await storageRef.getDownloadURL();
       final docRef = FirebaseFirestore.instance.collection('products').doc();
 
       docRef.set({
@@ -91,7 +92,7 @@ class FirestoreService {
         'priceAfterDiscount': priceAfterDiscount,
         'weight': weight,
         'stock': stock,
-        // 'image': imageUrl,
+        'image': imageUrl,
         'businessId': currentUser!.uid,
         'createdAt': FieldValue.serverTimestamp(),
         "isDeleted": false,
@@ -147,6 +148,42 @@ class FirestoreService {
       return true;
     } catch (e) {
       return 'Error deleting product';
+    }
+  }
+
+  // Stream<List<ProductModel>> getProductsStream() async* {
+  //   Stream<List<UserModel>> usersStream = getUsersStream();
+
+  //   await for (var snapshot in FirebaseFirestore.instance
+  //       .collection('products')
+  //       .where('isDeleted', isEqualTo: false)
+  //       .snapshots()) {
+  //     List<UserModel> users = await usersStream.first;
+
+  //     List<ProductModel> products = snapshot.docs.map((doc) {
+  //       ProductModel productModel = ProductModel.fromMap(doc.data());
+
+  //       productModel.user = users
+  //           .where((user) => user.uid == productModel.businessId)
+  //           .firstOrNull;
+
+  //       return productModel;
+  //     }).toList();
+
+  //     yield products;
+  //   }
+  // }
+
+  Stream<List<UserModel>> getUsersStream(String type) async* {
+    await for (var snapshot in FirebaseFirestore.instance
+        .collection('users')
+        .where('isDeleted', isEqualTo: false)
+        .where('role', isEqualTo: type)
+        .snapshots()) {
+      List<UserModel> users = snapshot.docs.map((doc) {
+        return UserModel.fromMap(doc.data());
+      }).toList();
+      yield users;
     }
   }
 }

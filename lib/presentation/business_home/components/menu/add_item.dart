@@ -216,6 +216,9 @@ class _AddItemState extends State<AddItem> {
                   TextFormField(
                     controller: weightController,
                     validator: AppValidator.numberCheck,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       filled: true,

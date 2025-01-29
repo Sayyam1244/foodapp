@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:helloworld/presentation/business_home/business_home.dart';
 import 'package:helloworld/presentation/auth/business_auth/business_login_screen.dart';
-import 'package:helloworld/presentation/home_screen.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/services/file_picker_service.dart';
 import 'package:helloworld/utils/app_validator.dart';
@@ -25,6 +24,11 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  final passRulesList = [
+    "• Password must contain at least one letter",
+    "• Password must contain at least one number",
+    "• Password must be longer than 8 characters",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -116,8 +120,10 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
+
                   DropdownButtonFormField<String>(
                     validator: AppValidator.emptyCheck,
+
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: const Color(0xFFFFF4E2), // Beige background
@@ -213,6 +219,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                     validator: AppValidator.passwordCheck,
                     obscureText: true,
                     decoration: InputDecoration(
+                      errorMaxLines: 3,
                       filled: true,
                       fillColor: const Color(0xFFFFF4E2), // Beige background
                       border: OutlineInputBorder(
@@ -223,33 +230,40 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                       hintText: "********",
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  ...passRulesList.map(
+                    (e) => Text(
+                      e,
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ),
                   const SizedBox(height: 30),
                   Center(
                     child: ElevatedButton(
                       onPressed: () async {
-                        // if (image == null) {
-                        //   showDialog(
-                        //       context: context,
-                        //       builder: (context) {
-                        //         return AlertDialog(
-                        //           title: const Text("Error"),
-                        //           content: const Text("Please select an image"),
-                        //           actions: [
-                        //             TextButton(
-                        //               onPressed: () {
-                        //                 Navigator.pop(context);
-                        //               },
-                        //               child: const Text("OK"),
-                        //             ),
-                        //           ],
-                        //         );
-                        //       });
-                        //   return;
-                        // }
+                        if (image == null) {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text("Error"),
+                                  content: const Text("Please select an image"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text("OK"),
+                                    ),
+                                  ],
+                                );
+                              });
+                          return;
+                        }
                         if (!formKey.currentState!.validate()) {
                           return;
                         }
-                        log('Signing up');
+
                         // Save the data
                         final val = await AuthService.signUpWithEmailPassword(
                           email: emailController.text,

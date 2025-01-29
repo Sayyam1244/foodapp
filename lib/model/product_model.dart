@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:helloworld/model/user_model.dart';
 
 class ProductModel {
   final String id;
@@ -12,6 +13,7 @@ class ProductModel {
   final String businessId;
   final DateTime? createdAt;
   final bool isDeleted;
+  UserModel? user;
 
   ProductModel({
     required this.id,
@@ -25,6 +27,7 @@ class ProductModel {
     required this.businessId,
     required this.createdAt,
     required this.isDeleted,
+    this.user,
   });
 
   factory ProductModel.fromMap(Map<String, dynamic> data) {
@@ -36,7 +39,7 @@ class ProductModel {
       priceAfterDiscount: data['priceAfterDiscount'],
       weight: data['weight'],
       stock: data['stock'],
-      imageUrl: data['imageUrl'],
+      imageUrl: data['image'],
       businessId: data['businessId'],
       createdAt: data['createdAt'] == null
           ? null
@@ -58,5 +61,35 @@ class ProductModel {
       'createdAt': createdAt,
       'isDeleted': isDeleted,
     };
+  }
+
+  ProductModel copyWith({
+    String? id,
+    String? productName,
+    String? productDescription,
+    double? priceBeforeDiscount,
+    double? priceAfterDiscount,
+    double? weight,
+    int? stock,
+    String? imageUrl,
+    String? businessId,
+    DateTime? createdAt,
+    bool? isDeleted,
+    UserModel? user,
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      productName: productName ?? this.productName,
+      productDescription: productDescription ?? this.productDescription,
+      priceBeforeDiscount: priceBeforeDiscount ?? this.priceBeforeDiscount,
+      priceAfterDiscount: priceAfterDiscount ?? this.priceAfterDiscount,
+      weight: weight ?? this.weight,
+      stock: stock ?? this.stock,
+      imageUrl: imageUrl ?? this.imageUrl,
+      businessId: businessId ?? this.businessId,
+      createdAt: createdAt ?? this.createdAt,
+      isDeleted: isDeleted ?? this.isDeleted,
+      user: user ?? this.user,
+    );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart'; // Import for TapGestureRecognizer
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:helloworld/presentation/home_screen.dart';
+import 'package:helloworld/presentation/customer_home/customer_home.dart';
 import 'package:helloworld/presentation/reset_password_screen.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/utils/app_validator.dart';
@@ -77,7 +77,6 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
-                  validator: AppValidator.passwordCheck,
                   controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
@@ -179,7 +178,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
+                            builder: (context) => const CustomerHomeScreen(),
                           ),
                           (route) => false,
                         );

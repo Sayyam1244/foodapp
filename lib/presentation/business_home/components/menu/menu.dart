@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,7 +42,22 @@ class _MenuScreenState extends State<MenuScreen> {
                   return Text('Error: ${snapshot.error}');
                 } else if (!snapshot.hasData ||
                     (snapshot.data?.docs.isEmpty ?? true)) {
-                  return const Text('No products available');
+                  return const Expanded(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 50),
+                        Text(
+                          'No products available',
+                          style: TextStyle(
+                            color: Color(
+                              0xFFFFF4E2,
+                            ),
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
                 } else {
                   final products = snapshot.data!.docs
                       .map((e) => ProductModel.fromMap(e.data()))
@@ -64,6 +81,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               Container(
                                 height: 105,
                                 width: 105,
+                                clipBehavior: Clip.hardEdge,
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFAECE77),
                                   borderRadius: BorderRadius.circular(12),
@@ -81,28 +99,61 @@ class _MenuScreenState extends State<MenuScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Product name: ${product.productName}",
-                                      style: const TextStyle(fontSize: 12),
+                                      product.productName,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xff2D531A),
+                                      ),
                                     ),
                                     Text(
                                       "Description: ${product.productDescription}",
-                                      style: const TextStyle(fontSize: 12),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                    Text(
-                                      "Price Before discount: ${product.priceBeforeDiscount}",
-                                      style: const TextStyle(fontSize: 12),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          "Price Before discount: ",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "${product.priceBeforeDiscount}",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                            decorationColor: Colors.red,
+                                            decorationThickness: 2,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     Text(
                                       "Price after discount: ${product.priceAfterDiscount}",
-                                      style: const TextStyle(fontSize: 12),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
+                                    const SizedBox(height: 6),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           "Stock: ${product.stock}",
-                                          style: const TextStyle(fontSize: 12),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -125,8 +176,37 @@ class _MenuScreenState extends State<MenuScreen> {
                                         const SizedBox(width: 10),
                                         InkWell(
                                             onTap: () {
-                                              FirestoreService.instance
-                                                  .deleteProduct(product.id);
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (context) => AlertDialog(
+                                                            title: const Text(
+                                                                'Delete Product'),
+                                                            content: const Text(
+                                                                'Are you sure you want to delete this product?'),
+                                                            actions: [
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                  child: const Text(
+                                                                      'Cancel')),
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    await FirestoreService
+                                                                        .instance
+                                                                        .deleteProduct(
+                                                                            product.id);
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                  child: const Text(
+                                                                      'Delete')),
+                                                            ],
+                                                          ));
                                             },
                                             child: const Icon(Icons.delete)),
                                       ],
@@ -162,7 +242,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
               child: const Text(
-                "Add Item",
+                "Add Product",
                 style: TextStyle(fontSize: 18),
               ),
             ),

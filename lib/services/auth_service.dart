@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AuthService {
   static Future signUpWithEmailPassword({
@@ -20,13 +22,13 @@ class AuthService {
         password: password,
       );
       //TODO: Enable firebase storage
-      // String? imageUrl;
-      // if (image != null) {
-      //   final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      //   final storageRef = FirebaseStorage.instance.ref('users/$fileName.png');
-      //   await storageRef.putFile(image);
-      //   imageUrl = await storageRef.getDownloadURL();
-      // }
+      String? imageUrl;
+      if (image != null) {
+        final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+        final storageRef = FirebaseStorage.instance.ref('users/$fileName.png');
+        await storageRef.putFile(image);
+        imageUrl = await storageRef.getDownloadURL();
+      }
 
       await FirebaseFirestore.instance
           .collection('users')
@@ -37,7 +39,7 @@ class AuthService {
         'email': email,
         if (category != null) 'category': category,
         if (location != null) 'location': location,
-        // if (image != null) 'image': imageUrl,
+        if (image != null) 'image': imageUrl,
         if (phoneNumber != null) 'phoneNumber': phoneNumber,
         'role': role, // 'business' , 'customer',
         'isDeleted': false,
@@ -45,7 +47,12 @@ class AuthService {
 
       return userCredential.user;
     } catch (e) {
-      return e.toString();
+      final error = e.toString();
+      if (error.contains(']')) {
+        return error.split(']')[1].trim();
+      } else {
+        return error;
+      }
     }
   }
 
@@ -66,9 +73,16 @@ class AuthService {
         await FirebaseAuth.instance.signOut();
         return 'Invalid credentials';
       }
+
       return userCredential.user;
     } catch (e) {
-      return e.toString();
+      return 'Your email or password is incorrect, Please try again.';
+      // final error = e.toString();
+      // if (error.contains(']')) {
+      //   return error.split(']')[1].trim();
+      // } else {
+      //   return error;
+      // }
     }
   }
 
@@ -85,7 +99,12 @@ class AuthService {
       await FirebaseAuth.instance.currentUser!.updatePassword(newPassword);
       return true;
     } catch (e) {
-      return e.toString();
+      final error = e.toString();
+      if (error.contains(']')) {
+        return error.split(']')[1].trim();
+      } else {
+        return error;
+      }
     }
   }
 }

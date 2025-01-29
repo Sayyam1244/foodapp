@@ -29,13 +29,16 @@ class _MyAcccountState extends State<MyAcccount> {
                   Container(
                     height: 50,
                     width: 50,
+                    clipBehavior: Clip.hardEdge,
                     decoration: const BoxDecoration(
                       color: Color(0xFFFFF4E2),
                       shape: BoxShape.circle,
                     ),
                     child: FirestoreService.instance.currentUser!.image != null
                         ? Image.network(
-                            FirestoreService.instance.currentUser!.image!)
+                            FirestoreService.instance.currentUser!.image!,
+                            fit: BoxFit.cover,
+                          )
                         : const Icon(Icons.person),
                   ),
                   const SizedBox(width: 10),
@@ -114,12 +117,33 @@ class _MyAcccountState extends State<MyAcccount> {
                 title: 'Logout',
                 icon: Icons.logout,
                 onTap: () async {
-                  await AuthService.signOut();
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const WelcomeScreen()),
-                      (route) => false);
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: const Text("Logout"),
+                            content:
+                                const Text("Are you sure you want to logout?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Cancel"),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  await AuthService.signOut();
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const WelcomeScreen()),
+                                      (route) => false);
+                                },
+                                child: const Text("Logout"),
+                              ),
+                            ],
+                          ));
                 },
               ),
             ],

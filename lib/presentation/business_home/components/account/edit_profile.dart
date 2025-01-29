@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:helloworld/model/user_model.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
@@ -67,45 +68,64 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: InkWell(
-                      onTap: () {
-                        FilePickerService.pickFile().then((value) {
-                          setState(() {
-                            image = value;
+                  if (FirestoreService.instance.currentUser?.role == 'business')
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          FilePickerService.pickFile().then((value) {
+                            setState(() {
+                              image = value;
+                            });
                           });
-                        });
-                      },
-                      child: Container(
-                        height: 150,
-                        width: 150,
-                        clipBehavior: Clip.hardEdge,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFFF4E2), // Beige background
-                          shape: BoxShape.circle,
+                        },
+                        child: Container(
+                          height: 150,
+                          width: 150,
+                          clipBehavior: Clip.hardEdge,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFFF4E2), // Beige background
+                            shape: BoxShape.circle,
+                          ),
+                          child: image == null
+                              ? FirestoreService.instance.currentUser?.image !=
+                                      null
+                                  ? Image.network(FirestoreService
+                                      .instance.currentUser!.image!)
+                                  : const Icon(
+                                      Icons.camera_alt,
+                                      size: 50,
+                                      color: Color(
+                                          0xFF517F03), // Green color for icon
+                                    )
+                              : Image.file(
+                                  image!,
+                                  fit: BoxFit.cover,
+                                ),
+
+                          //  FirestoreService.instance.currentUser?.image !=
+                          //         null
+                          //     ? Image.network(
+                          //         FirestoreService.instance.currentUser!.image!)
+                          //     : image == null
+                          //         ? const Icon(
+                          //             Icons.camera_alt,
+                          //             size: 50,
+                          //             color: Color(
+                          //                 0xFF517F03), // Green color for icon
+                          //           )
+                          //         : Image.file(
+                          //             image!,
+                          //             fit: BoxFit.cover,
+                          //           ),
                         ),
-                        child: FirestoreService.instance.currentUser?.image !=
-                                null
-                            ? Image.network(
-                                FirestoreService.instance.currentUser!.image!)
-                            : image == null
-                                ? const Icon(
-                                    Icons.camera_alt,
-                                    size: 50,
-                                    color: Color(
-                                        0xFF517F03), // Green color for icon
-                                  )
-                                : Image.file(
-                                    image!,
-                                    fit: BoxFit.cover,
-                                  ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Business Name:",
-                    style: TextStyle(
+                  Text(
+                    FirestoreService.instance.currentUser?.role == 'business'
+                        ? "Business Name:"
+                        : "Name:",
+                    style: const TextStyle(
                       fontSize: 18,
                       color: Color(0xFFFFF4E2), // Beige color for text
                     ),
@@ -122,80 +142,124 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             BorderRadius.circular(30.0), // Rounded corners
                         borderSide: BorderSide.none, // No border line
                       ),
-                      hintText: "Enter business name",
+                      hintText: FirestoreService.instance.currentUser?.role ==
+                              'business'
+                          ? "Enter business name"
+                          : "Enter your name",
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Category:",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFFFFF4E2), // Beige color for text
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    value: categoryValue,
-                    validator: AppValidator.emptyCheck,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xFFFFF4E2), // Beige background
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Rounded corners
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    hint: const Text("Select category"),
-                    items: <String>[
-                      'Restaurants',
-                      'Cafes',
-                      'Groceries',
-                      'Bakeries',
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: const TextStyle(
-                            color: Color(
-                                0xFF517F03), // Text color for dropdown items
-                            fontSize: 16,
+                  if (FirestoreService.instance.currentUser?.role == 'business')
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Category:",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color(0xFFFFF4E2), // Beige color for text
                           ),
                         ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      categoryValue = newValue;
-                    },
-                    // Keep the dropdown from filling the entire screen
-                    isExpanded: false,
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Location (Neighborhood, Street):",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFFFFF4E2), // Beige color for text
+                        const SizedBox(height: 10),
+                        DropdownButtonFormField<String>(
+                          value: categoryValue,
+                          validator: AppValidator.emptyCheck,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor:
+                                const Color(0xFFFFF4E2), // Beige background
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                  30.0), // Rounded corners
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          hint: const Text("Select category"),
+                          items: <String>[
+                            'Restaurants',
+                            'Cafes',
+                            'Groceries',
+                            'Bakeries',
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: const TextStyle(
+                                  color: Color(
+                                      0xFF517F03), // Text color for dropdown items
+                                  fontSize: 16,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            categoryValue = newValue;
+                          },
+                          // Keep the dropdown from filling the entire screen
+                          isExpanded: false,
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Location (Neighborhood, Street):",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color(0xFFFFF4E2), // Beige color for text
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: locationController,
+                          validator: AppValidator.emptyCheck,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor:
+                                const Color(0xFFFFF4E2), // Beige background
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                  30.0), // Rounded corners
+                              borderSide: BorderSide.none, // No border line
+                            ),
+                            hintText: "Enter location",
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: locationController,
-                    validator: AppValidator.emptyCheck,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xFFFFF4E2), // Beige background
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Rounded corners
-                        borderSide: BorderSide.none, // No border line
-                      ),
-                      hintText: "Enter location",
+                  if (FirestoreService.instance.currentUser?.role == 'customer')
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Phone Number:",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color(0xFFFFF4E2), // Beige color for text
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: phoneNumberController,
+                          validator: AppValidator.phoneCheck,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor:
+                                const Color(0xFFFFF4E2), // Beige background
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                  30.0), // Rounded corners
+                              borderSide: BorderSide.none, // No border line
+                            ),
+                            hintText: "Enter your Phone Number",
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                      ],
                     ),
-                  ),
 
-                  const SizedBox(height: 30),
                   Center(
                     child: ElevatedButton(
                       onPressed: () async {
@@ -212,11 +276,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           role: FirestoreService.instance.currentUser!.role,
                           isDeleted: false,
                         );
-                        await FirestoreService.instance.setUser(
+                        final val = await FirestoreService.instance.setUser(
                           user,
                           image: image,
                         );
                         Navigator.pop(context);
+                        if (val.runtimeType == String) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(val),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Profile updated successfully"),
+                            ),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(
