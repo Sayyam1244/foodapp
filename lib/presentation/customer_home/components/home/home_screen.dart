@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/model/user_model.dart';
+import 'package:helloworld/presentation/menu/menu_screen.dart';
 import 'package:helloworld/services/firestore_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -71,7 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: categories
                     .map((e) => InkWell(
                           onTap: () {
-                            selectedCat = e;
+                            if (selectedCat == e) {
+                              selectedCat = '';
+                            } else {
+                              selectedCat = e;
+                            }
                             setState(() {});
                           },
                           child: Container(
@@ -124,60 +129,70 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: business.length,
                       itemBuilder: (context, index) {
                         final item = business[index];
-                        return Stack(
-                          alignment: Alignment.centerLeft,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              margin: const EdgeInsets.only(left: 50),
-                              padding:
-                                  const EdgeInsets.only(top: 30, bottom: 30),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(42),
-                                color: const Color(0xFFFFF4E2),
+                        return InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BusinessMenuScreen(userModel: item),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    item.name,
-                                    maxLines: 2,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF517F03),
+                            );
+                          },
+                          child: Stack(
+                            alignment: Alignment.centerLeft,
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.only(left: 50),
+                                padding:
+                                    const EdgeInsets.only(top: 30, bottom: 30),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(42),
+                                  color: const Color(0xFFFFF4E2),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      item.name,
+                                      maxLines: 2,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF517F03),
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    "${item.location}",
-                                    maxLines: 2,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF517F03),
+                                    Text(
+                                      "${item.location}",
+                                      maxLines: 2,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF517F03),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            Container(
-                              height: 95,
-                              width: 95,
-                              clipBehavior: Clip.hardEdge,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFAECE77),
-                                shape: BoxShape.circle,
+                              Container(
+                                height: 95,
+                                width: 95,
+                                clipBehavior: Clip.hardEdge,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFAECE77),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: item.image != null
+                                    ? Image.network(
+                                        item.image!,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : const Icon(Icons.fastfood),
                               ),
-                              child: item.image != null
-                                  ? Image.network(
-                                      item.image!,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : const Icon(Icons.fastfood),
-                            ),
-                          ],
+                            ],
+                          ),
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) {

@@ -186,4 +186,19 @@ class FirestoreService {
       yield users;
     }
   }
+
+  Future getProducts(String businessId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('products')
+          .where('isDeleted', isEqualTo: false)
+          .where('businessId', isEqualTo: businessId)
+          .get();
+      return snapshot.docs.map((doc) {
+        return ProductModel.fromMap(doc.data());
+      }).toList();
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }
