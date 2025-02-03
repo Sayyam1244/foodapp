@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/model/user_model.dart';
+import 'package:helloworld/presentation/cart/cart_screen.dart';
+import 'package:helloworld/services/cart_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
 
 class BusinessMenuScreen extends StatefulWidget {
@@ -94,114 +96,133 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                   const Divider(),
                   const SizedBox(height: 16),
                   Expanded(
-                    child: ListView.builder(
+                    child: ListView.separated(
                       itemCount: products.length,
                       itemBuilder: (context, index) {
                         final product = products[index];
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: const Color(0xFFFFF4E2),
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 105,
-                                width: 105,
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFAECE77),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: product.imageUrl != null
-                                    ? Image.network(
-                                        product.imageUrl!,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : const Icon(Icons.fastfood),
+                        return InkWell(
+                          onTap: () {
+                            final val = CartService.instance.addItemInCart(
+                                productModel: product,
+                                price: product.priceAfterDiscount);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(val),
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      product.productName,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xff2D531A),
-                                      ),
-                                    ),
-                                    Text(
-                                      "Description: ${product.productDescription}",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Row(
-                                      children: [
-                                        const Text(
-                                          "Price Before discount: ",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          "${product.priceBeforeDiscount}",
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                            decoration:
-                                                TextDecoration.lineThrough,
-                                            decorationColor: Colors.red,
-                                            decorationThickness: 2,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      "Price after discount: ${product.priceAfterDiscount}",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "Stock: ${product.stock}",
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        const Text(
-                                          "Add to cart",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                            );
+
+                            //
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFFFF4E2),
+                            ),
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 105,
+                                  width: 105,
+                                  clipBehavior: Clip.hardEdge,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFAECE77),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: product.imageUrl != null
+                                      ? Image.network(
+                                          product.imageUrl!,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const Icon(Icons.fastfood),
                                 ),
-                              ),
-                              const SizedBox(width: 10),
-                            ],
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        product.productName,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xff2D531A),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Description: ${product.productDescription}",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            "Price Before discount: ",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            "${product.priceBeforeDiscount}",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12,
+                                              decoration:
+                                                  TextDecoration.lineThrough,
+                                              decorationColor: Colors.red,
+                                              decorationThickness: 2,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        "Price after discount: ${product.priceAfterDiscount}",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Stock: ${product.stock}",
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          const Text(
+                                            "Add to cart",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                              ],
+                            ),
                           ),
                         );
                       },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const SizedBox(
+                        height: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -211,13 +232,22 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                       borderRadius: BorderRadius.circular(12),
                       color: const Color(0xFFAECE77),
                     ),
-                    child: const Center(
-                        child: Text(
-                      'Open cart',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    )),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const CartScreen(),
+                          ),
+                        );
+                      },
+                      child: const Center(
+                          child: Text(
+                        'Open cart',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      )),
+                    ),
                   ),
                 ],
               ),
