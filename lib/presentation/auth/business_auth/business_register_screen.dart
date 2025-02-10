@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:helloworld/presentation/business_home/business_home.dart';
 import 'package:helloworld/presentation/auth/business_auth/business_login_screen.dart';
@@ -49,7 +51,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
             // Allows scrolling for small screens
             child: Form(
@@ -81,10 +83,15 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                                 color:
                                     Color(0xFF517F03), // Green color for icon
                               )
-                            : Image.file(
-                                image!,
-                                fit: BoxFit.cover,
-                              ),
+                            : kIsWeb
+                                ? Image.network(
+                                    image!.path,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                    image!,
+                                    fit: BoxFit.cover,
+                                  ),
                       ),
                     ),
                   ),
@@ -121,42 +128,57 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                  DropdownButtonFormField<String>(
-                    validator: AppValidator.emptyCheck,
-
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xFFFFF4E2), // Beige background
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Rounded corners
-                        borderSide: BorderSide.none,
+                  DropdownButton2<String>(
+                    buttonStyleData: ButtonStyleData(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF4E2),
+                        borderRadius: BorderRadius.circular(30.0),
                       ),
                     ),
+                    dropdownStyleData: DropdownStyleData(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF4E2),
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ),
+                    underline: Container(),
+
+                    // validator: AppValidator.emptyCheck,
+                    // decoration: InputDecoration(
+                    //   filled: true,
+                    //   fillColor: const Color(0xFFFFF4E2),
+                    //   border: OutlineInputBorder(
+                    //     borderRadius: BorderRadius.circular(30.0),
+                    //     borderSide: BorderSide.none,
+                    //   ),
+                    // ),
                     hint: const Text("Select category"),
+                    isExpanded: true,
                     items: <String>[
                       'Restaurants',
                       'Cafes',
                       'Groceries',
                       'Bakeries',
                     ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
+                      return DropdownMenuItem(
                         value: value,
                         child: Text(
                           value,
                           style: const TextStyle(
-                            color: Color(
-                                0xFF517F03), // Text color for dropdown items
+                            color: Color(0xFF517F03),
                             fontSize: 16,
                           ),
                         ),
                       );
                     }).toList(),
+
+                    value: categoryValue,
                     onChanged: (String? newValue) {
                       categoryValue = newValue;
+                      setState(() {});
                     },
-                    // Keep the dropdown from filling the entire screen
-                    isExpanded: false,
                   ),
                   const SizedBox(height: 20),
                   const Text(
@@ -238,9 +260,30 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
+
                   Center(
                     child: ElevatedButton(
                       onPressed: () async {
+                        if (categoryValue == null) {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text("Error"),
+                                  content:
+                                      const Text("Please select a category"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text("OK"),
+                                    ),
+                                  ],
+                                );
+                              });
+                          return;
+                        }
                         if (image == null) {
                           showDialog(
                               context: context,

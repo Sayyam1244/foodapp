@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:helloworld/main.dart';
+import 'package:helloworld/model/cart_model.dart';
 import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/model/user_model.dart';
 import 'package:helloworld/presentation/welcome_screen.dart';
@@ -197,6 +198,51 @@ class FirestoreService {
       return snapshot.docs.map((doc) {
         return ProductModel.fromMap(doc.data());
       }).toList();
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Stream<List<ProductModel>> getProductsStream(String businessId) async* {
+    await for (var snapshot in FirebaseFirestore.instance
+        .collection('products')
+        .where('isDeleted', isEqualTo: false)
+        .where('businessId', isEqualTo: businessId)
+        .snapshots()) {
+      List<ProductModel> products = snapshot.docs.map((doc) {
+        return ProductModel.fromMap(doc.data());
+      }).toList();
+      yield products;
+    }
+  }
+
+  Future placeOrder(CartModel cartModel) async {
+    double totalPrice = 0;
+    for (var element in cartModel.items) {
+      totalPrice += element.price * element.quantity;
+    }
+    try {
+      final docRef = FirebaseFirestore.instance.collection('orders').doc();
+      docRef.set({
+        'docId': docRef.id,
+        'userId': currentUser!.uid,
+        'products': cartModel.items.map((e) => e.toJson()).toList(),
+        'totalPrice': totalPrice,
+        'createdAt': FieldValue.serverTimestamp(),
+        'status': 'pending',
+      });
+      //adjust stock
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+      for (var element in cartModel.items) {
+        final productRef = FirebaseFirestore.instance
+            .collection('products')
+            .doc(element.productId);
+        final product = await productRef.get();
+        final stock = product.data()!['stock'];
+        batch.update(productRef, {'stock': stock - element.quantity});
+      }
+      await batch.commit();
+      return true;
     } catch (e) {
       return e.toString();
     }
