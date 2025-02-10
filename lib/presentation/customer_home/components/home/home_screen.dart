@@ -188,6 +188,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ? Image.network(
                                         item.image!,
                                         fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Icon(Icons.business),
                                       )
                                     : const Icon(Icons.fastfood),
                               ),

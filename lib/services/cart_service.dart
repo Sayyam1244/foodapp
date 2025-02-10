@@ -12,6 +12,16 @@ class CartService {
     items: [],
     createdDate: DateTime.now(),
   );
+
+  double totalPrice() {
+    double total = 0;
+    for (var item in cartModel.items) {
+      total += (item.price * item.quantity);
+    }
+
+    return total;
+  }
+
   addItemInCart({
     required ProductModel productModel,
     required double price,

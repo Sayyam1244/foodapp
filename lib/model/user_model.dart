@@ -8,6 +8,7 @@ class UserModel {
   final String role;
   final String? image;
   final bool isDeleted;
+  final int? points;
 
   UserModel({
     required this.isDeleted,
@@ -19,6 +20,7 @@ class UserModel {
     this.location,
     required this.role,
     this.image,
+    this.points,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> data) {
@@ -32,6 +34,7 @@ class UserModel {
       location: data['location'],
       role: data['role'],
       image: data['image'],
+      points: data['points'],
     );
   }
 
@@ -46,6 +49,7 @@ class UserModel {
       'location': location,
       'role': role,
       'image': image,
+      'points': points,
     };
   }
 
@@ -60,6 +64,7 @@ class UserModel {
     String? location,
     String? role,
     String? image,
+    int? points,
   }) {
     return UserModel(
       isDeleted: isDeleted ?? this.isDeleted,
@@ -71,6 +76,7 @@ class UserModel {
       location: location ?? this.location,
       role: role ?? this.role,
       image: image ?? this.image,
+      points: points ?? this.points,
     );
   }
 }
