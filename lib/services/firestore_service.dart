@@ -216,7 +216,7 @@ class FirestoreService {
     }
   }
 
-  Future placeOrder(CartModel cartModel) async {
+  Future placeOrder(CartModel cartModel, int pointsUsed, previousPoints) async {
     double totalPrice = 0;
     for (var element in cartModel.items) {
       totalPrice += element.price * element.quantity;
@@ -242,9 +242,42 @@ class FirestoreService {
         batch.update(productRef, {'stock': stock - element.quantity});
       }
       await batch.commit();
+      //adjust points
+      final userRef =
+          FirebaseFirestore.instance.collection('users').doc(currentUser!.uid);
+
+      await userRef.update({'points': previousPoints - pointsUsed});
       return true;
     } catch (e) {
       return e.toString();
+    }
+  }
+
+  Stream<List<CartModel>> streamUserOrders() async* {
+    final usersStream = getUsersStream('business');
+
+    await for (var users in usersStream) {
+      await for (var snapshot in FirebaseFirestore.instance
+          .collection('orders')
+          .where('userId', isEqualTo: currentUser!.uid)
+          .snapshots()) {
+        List<CartModel> orders = [];
+
+        for (var doc in snapshot.docs) {
+          final data = CartModel.fromJson(doc.data());
+
+          final user = users
+              .where(
+                (user) => user.uid == data.items.first.businessId,
+              )
+              .firstOrNull;
+
+          data.businessUser = user;
+          orders.add(data);
+        }
+
+        yield orders;
+      }
     }
   }
 }

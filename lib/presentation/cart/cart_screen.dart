@@ -190,10 +190,13 @@ class _CartScreenState extends State<CartScreen> {
                         // setState(() {
                         //   isLoading = false;
                         // });
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const CheckoutScreen()));
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CheckoutScreen(),
+                          ),
+                        );
+                        setState(() {});
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(

@@ -128,4 +128,8 @@ class CartService {
       return "Failed to place order";
     }
   }
+
+  void clearCart() {
+    cartModel.items.clear();
+  }
 }
