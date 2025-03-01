@@ -2,6 +2,7 @@ import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/model/user_model.dart';
 
 class CartModel {
+  final String? orderId;
   UserModel? businessUser;
   final String? id;
   final String? userId;
@@ -9,15 +10,19 @@ class CartModel {
   final String? total;
   final List<CartItemModel> items;
   final DateTime createdDate;
+  final String? discount;
 
-  CartModel(
-      {this.status,
-      this.total,
-      this.id,
-      this.userId,
-      this.businessUser,
-      required this.items,
-      required this.createdDate});
+  CartModel({
+    this.orderId,
+    this.status,
+    this.total,
+    this.id,
+    this.userId,
+    this.businessUser,
+    required this.items,
+    required this.createdDate,
+    this.discount,
+  });
   CartModel copyWith({
     String? id,
     String? userId,
@@ -34,9 +39,10 @@ class CartModel {
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
     return CartModel(
+      orderId: json['order_id'].toString(),
       status: json['status'],
-      total: json['total'],
-      id: json['id'],
+      total: json['totalPrice'].toString(),
+      id: json['docId'],
       userId: json['userId'],
       items: (json['products'] as List)
           .map((item) => CartItemModel.fromJson(item))
@@ -44,6 +50,7 @@ class CartModel {
       createdDate: json['createdDate'] != null
           ? DateTime.parse(json['createdDate'])
           : DateTime.now(),
+      discount: json['discount'].toString(),
     );
   }
 

@@ -188,6 +188,18 @@ class FirestoreService {
     }
   }
 
+  Future<List<UserModel>> getUsersList(String type) async {
+    final data = await FirebaseFirestore.instance
+        .collection('users')
+        .where('isDeleted', isEqualTo: false)
+        .where('role', isEqualTo: type)
+        .get();
+    List<UserModel> users = data.docs.map((doc) {
+      return UserModel.fromMap(doc.data());
+    }).toList();
+    return users;
+  }
+
   Future getProducts(String businessId) async {
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -198,6 +210,16 @@ class FirestoreService {
       return snapshot.docs.map((doc) {
         return ProductModel.fromMap(doc.data());
       }).toList();
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future getSingleProduct(String id) async {
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('products').doc(id).get();
+      return ProductModel.fromMap(snapshot.data()!);
     } catch (e) {
       return e.toString();
     }
@@ -216,7 +238,11 @@ class FirestoreService {
     }
   }
 
-  Future placeOrder(CartModel cartModel, int pointsUsed, previousPoints) async {
+  Future placeOrder(
+    CartModel cartModel,
+    int pointsUsed,
+    previousPoints,
+  ) async {
     double totalPrice = 0;
     for (var element in cartModel.items) {
       totalPrice += element.price * element.quantity;
@@ -229,7 +255,9 @@ class FirestoreService {
         'products': cartModel.items.map((e) => e.toJson()).toList(),
         'totalPrice': totalPrice,
         'createdAt': FieldValue.serverTimestamp(),
-        'status': 'pending',
+        'status': 'active',
+        'discount': pointsUsed > 0 ? pointsUsed / 1000 : 0,
+        'order_id': _generateUnique8NumbersString(),
       });
       //adjust stock
       WriteBatch batch = FirebaseFirestore.instance.batch();
@@ -254,30 +282,34 @@ class FirestoreService {
   }
 
   Stream<List<CartModel>> streamUserOrders() async* {
-    final usersStream = getUsersStream('business');
+    final userList = await getUsersList('business');
 
-    await for (var users in usersStream) {
-      await for (var snapshot in FirebaseFirestore.instance
-          .collection('orders')
-          .where('userId', isEqualTo: currentUser!.uid)
-          .snapshots()) {
-        List<CartModel> orders = [];
+    // await for (var users in usersStream) {
+    await for (var snapshot in FirebaseFirestore.instance
+        .collection('orders')
+        .where('userId', isEqualTo: currentUser!.uid)
+        .snapshots()) {
+      List<CartModel> orders = [];
 
-        for (var doc in snapshot.docs) {
-          final data = CartModel.fromJson(doc.data());
+      for (var doc in snapshot.docs) {
+        final data = CartModel.fromJson(doc.data());
 
-          final user = users
-              .where(
-                (user) => user.uid == data.items.first.businessId,
-              )
-              .firstOrNull;
+        final user = userList
+            .where(
+              (user) => user.uid == data.items.first.businessId,
+            )
+            .firstOrNull;
 
-          data.businessUser = user;
-          orders.add(data);
-        }
-
-        yield orders;
+        data.businessUser = user;
+        orders.add(data);
       }
+
+      yield orders;
+      // }
     }
+  }
+
+  _generateUnique8NumbersString() {
+    return DateTime.now().millisecondsSinceEpoch.toString().substring(1, 8);
   }
 }

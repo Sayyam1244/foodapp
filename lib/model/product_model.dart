@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:helloworld/model/user_model.dart';
+import 'package:helloworld/services/firestore_service.dart';
 
 class ProductModel {
   final String id;

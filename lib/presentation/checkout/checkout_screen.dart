@@ -271,9 +271,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                         child: InkWell(
                             onTap: () async {
+                              if (CartService
+                                  .instance.cartModel.items.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Cart is empty'),
+                                  ),
+                                );
+                                return;
+                              }
                               setState(() {
                                 isLoading = true;
                               });
+                              //99999
                               //adjust points
 
                               await FirestoreService.instance
