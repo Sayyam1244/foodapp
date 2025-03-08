@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -6,14 +8,23 @@ import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/services/firestore_service.dart';
 
 class OrderDetailScreen extends StatefulWidget {
-  const OrderDetailScreen({super.key, required this.order});
+  const OrderDetailScreen(
+      {super.key, required this.order, this.isBusinessSide = false});
   final CartModel order;
+  final bool isBusinessSide;
 
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
 }
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
+  changeStatus(status) async {
+    await FirebaseFirestore.instance
+        .collection('orders')
+        .doc(widget.order.id)
+        .update({"status": status});
+  }
+
   final List<ProductModel> products = [];
   bool isLoading = true;
   getProducts() async {
@@ -54,9 +65,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: widget.order.businessUser?.image != null
+                  child: widget.order.userModel?.image != null
                       ? Image.network(
-                          widget.order.businessUser?.image ?? '',
+                          widget.order.userModel?.image ?? '',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return const Icon(
@@ -74,13 +85,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     children: [
                       const SizedBox(height: 8),
                       Text(
-                        (widget.order.businessUser?.name ?? '').toUpperCase(),
+                        (widget.order.userModel?.name ?? '').toUpperCase(),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
+                      const SizedBox(height: 24),
                       Padding(
                         padding: const EdgeInsets.only(top: 14),
                         child: Row(
@@ -122,7 +134,74 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
               ],
             ),
+
             const SizedBox(height: 10),
+            const Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                ('Order Status'),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('orders')
+                    .doc(widget.order.id)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData == false) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    );
+                  }
+                  final orderStreamdata =
+                      CartModel.fromJson(snapshot.data!.data()!);
+
+                  return Row(
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: orderStreamdata.status == 'active',
+                            onChanged: (v) {
+                              changeStatus('active');
+                            },
+                          ),
+                          const Text('Active'),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: orderStreamdata.status == 'ready',
+                            onChanged: (v) {
+                              changeStatus('ready');
+                            },
+                          ),
+                          const Text('Ready'),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: orderStreamdata.status == 'picked_up',
+                            onChanged: (v) {
+                              changeStatus('picked_up');
+                            },
+                          ),
+                          const Text('Picked Up'),
+                        ],
+                      ),
+                    ],
+                  );
+                }),
+
             Divider(color: Colors.grey.shade200, thickness: 1),
             //
             if (isLoading) const Center(child: CircularProgressIndicator()),

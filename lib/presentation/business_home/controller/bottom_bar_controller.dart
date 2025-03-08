@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:helloworld/model/custom_bottom_bar_model.dart';
 import 'package:helloworld/presentation/business_home/components/account/account.dart';
 import 'package:helloworld/presentation/business_home/components/menu/menu.dart';
+import 'package:helloworld/presentation/business_home/components/orders/orders.dart';
 
 class CustomBottomBarController {
   static int selectedIndex = 2;
@@ -9,7 +10,7 @@ class CustomBottomBarController {
     BottomBarModel(
       title: "Orders",
       icon: const Icon(Icons.fire_truck),
-      page: const SizedBox(),
+      page: const OrdersScreen(),
     ),
     BottomBarModel(
       title: "Menu",

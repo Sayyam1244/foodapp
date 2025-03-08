@@ -4,6 +4,7 @@ import 'package:helloworld/model/user_model.dart';
 class CartModel {
   final String? orderId;
   UserModel? businessUser;
+  UserModel? userModel;
   final String? id;
   final String? userId;
   final String? status;
@@ -13,6 +14,7 @@ class CartModel {
   final String? discount;
 
   CartModel({
+    this.userModel,
     this.orderId,
     this.status,
     this.total,

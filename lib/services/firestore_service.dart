@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:helloworld/main.dart';
@@ -302,6 +304,32 @@ class FirestoreService {
 
         data.businessUser = user;
         orders.add(data);
+      }
+
+      yield orders;
+      // }
+    }
+  }
+
+  Stream<List<CartModel>> streamUserOrdersForBusiness() async* {
+    final userList = await getUsersList('customer');
+
+    // await for (var users in usersStream) {
+    await for (var snapshot
+        in FirebaseFirestore.instance.collection('orders').snapshots()) {
+      List<CartModel> orders = [];
+
+      for (var doc in snapshot.docs) {
+        final data = CartModel.fromJson(doc.data());
+
+        if (data.items.first.businessId ==
+            FirebaseAuth.instance.currentUser!.uid) {
+          final user =
+              userList.where((user) => user.uid == data.userId).firstOrNull;
+
+          data.userModel = user;
+          orders.add(data);
+        }
       }
 
       yield orders;
