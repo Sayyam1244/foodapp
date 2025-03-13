@@ -1,4 +1,8 @@
+import 'dart:developer';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:helloworld/services/notifications_services.dart';
 import 'auth/business_auth/business_login_screen.dart'; // Import the BusinessLoginScreen class
 import 'auth/customer_auth/customer_login_screen.dart'; // Import the CustomerLoginScreen class
 
@@ -7,6 +11,11 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // NotificationServies().showFlutterNotification(const RemoteMessage(
+    //     notification: RemoteNotification(
+    //   title: 'Welcome to FoodSaver!',
+    //   body: 'Get started by logging in as a customer or business.',
+    // )));
     return Scaffold(
       backgroundColor: const Color(0xFF517F03), // Green background
       body: SafeArea(

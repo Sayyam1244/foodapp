@@ -11,9 +11,11 @@ dependencies:
   dropdown_button2: ^2.3.9
   firebase_auth: ^5.2.0
   firebase_core: ^3.4.0
+  firebase_messaging: ^15.1.0
   firebase_storage: ^12.2.0
   flutter:
     sdk: flutter
+  flutter_local_notifications: ^18.0.1
   image_picker: ^1.1.2
   intl: ^0.20.2
 
