@@ -49,6 +49,10 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ratings = widget.userModel.ratings ?? [];
+    final totalRatings = ratings.fold(
+        0, (previousValue, element) => previousValue.toInt() + element.toInt());
+    final averageRating = totalRatings / ratings.length;
     return Scaffold(
       backgroundColor: const Color(0xFF517F03),
       body: isLoading
@@ -85,12 +89,33 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          widget.userModel.name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.userModel.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                            if (ratings.isNotEmpty)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.star, color: Colors.yellow),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    "${averageRating.toStringAsFixed(1)} (${ratings.length})",
+                                    style: const TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
                         ),
                       )
                     ],

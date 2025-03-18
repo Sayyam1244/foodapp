@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:helloworld/services/file_picker_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
+import 'package:helloworld/services/notifications_services.dart';
 import 'package:helloworld/utils/app_validator.dart';
 
 class AddItem extends StatefulWidget {
@@ -276,6 +278,15 @@ class _AddItemState extends State<AddItem> {
                           stock: int.parse(stockController.text),
                           image: image,
                         );
+                        if (!val.contains('error')) {
+                          await sendBulkNotifications(
+                            title: 'FoodSaver',
+                            subtitle:
+                                '${FirestoreService.instance.currentUser?.name} has added a new deal, Check it out!',
+                            type: 'NEW_PRODUCT',
+                            dynamicId: FirebaseAuth.instance.currentUser!.uid,
+                          );
+                        }
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(val),

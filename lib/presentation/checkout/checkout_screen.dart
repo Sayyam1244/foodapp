@@ -64,7 +64,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   );
                 }
                 final user = UserModel.fromMap(snapshot.data!.data()!);
-                final pointsConvertedToDollars = user.points! / 1000;
+                final pointsConvertedToDollars = (user.points ?? 0) / 1000;
                 final discount = pointsConvertedToDollars >=
                         CartService.instance.totalPrice()
                     ? CartService.instance.totalPrice()
@@ -222,7 +222,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '\$${calculateDiscount(user.points!)}',
+                                  '\$${calculateDiscount(user.points ?? 0)}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium!
@@ -249,7 +249,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '\$${CartService.instance.totalPrice() - calculateDiscount(user.points!)}',
+                                  '\$${CartService.instance.totalPrice() - calculateDiscount(user.points ?? 0)}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium!

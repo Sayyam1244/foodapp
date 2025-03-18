@@ -100,9 +100,9 @@ class FirestoreService {
         'createdAt': FieldValue.serverTimestamp(),
         "isDeleted": false,
       });
-      return 'Product added successfully';
+      return docRef.id;
     } catch (e) {
-      return e.toString();
+      return "error: ${e.toString()}";
     }
   }
 
@@ -182,6 +182,7 @@ class FirestoreService {
         .collection('users')
         .where('isDeleted', isEqualTo: false)
         .where('role', isEqualTo: type)
+        .orderBy('name', descending: false)
         .snapshots()) {
       List<UserModel> users = snapshot.docs.map((doc) {
         return UserModel.fromMap(doc.data());

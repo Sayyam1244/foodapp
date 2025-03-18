@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:helloworld/model/cart_model.dart';
 import 'package:helloworld/model/product_model.dart';
+import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
 
 class OrderDetailScreen extends StatefulWidget {
@@ -83,11 +86,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       Text(
                         (widget.order.userModel?.name ?? '').toUpperCase(),
                         style: const TextStyle(
                           fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        (widget.order.userModel?.phoneNumber ?? '')
+                            .toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -136,71 +148,73 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
 
             const SizedBox(height: 10),
-            const Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                ('Order Status'),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+            if (FirestoreService.instance.currentUser?.role == 'business')
+              const Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  ('Order Status'),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('orders')
-                    .doc(widget.order.id)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData == false) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                      ),
-                    );
-                  }
-                  final orderStreamdata =
-                      CartModel.fromJson(snapshot.data!.data()!);
+            if (FirestoreService.instance.currentUser?.role == 'business')
+              StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('orders')
+                      .doc(widget.order.id)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData == false) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      );
+                    }
+                    final orderStreamdata =
+                        CartModel.fromJson(snapshot.data!.data()!);
 
-                  return Row(
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: orderStreamdata.status == 'active',
-                            onChanged: (v) {
-                              changeStatus('active');
-                            },
-                          ),
-                          const Text('Active'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: orderStreamdata.status == 'ready',
-                            onChanged: (v) {
-                              changeStatus('ready');
-                            },
-                          ),
-                          const Text('Ready'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: orderStreamdata.status == 'picked_up',
-                            onChanged: (v) {
-                              changeStatus('picked_up');
-                            },
-                          ),
-                          const Text('Picked Up'),
-                        ],
-                      ),
-                    ],
-                  );
-                }),
+                    return Row(
+                      children: [
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: orderStreamdata.status == 'active',
+                              onChanged: (v) {
+                                changeStatus('active');
+                              },
+                            ),
+                            const Text('Active'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: orderStreamdata.status == 'ready',
+                              onChanged: (v) {
+                                changeStatus('ready');
+                              },
+                            ),
+                            const Text('Ready'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: orderStreamdata.status == 'picked_up',
+                              onChanged: (v) {
+                                changeStatus('picked_up');
+                              },
+                            ),
+                            const Text('Picked Up'),
+                          ],
+                        ),
+                      ],
+                    );
+                  }),
 
             Divider(color: Colors.grey.shade200, thickness: 1),
             //

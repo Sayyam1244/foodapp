@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -42,12 +43,48 @@ class _MyAcccountState extends State<MyAcccount> {
                         : const Icon(Icons.person),
                   ),
                   const SizedBox(width: 10),
-                  Text(
-                    "Hello, ${FirestoreService.instance.currentUser!.name}",
-                    style: const TextStyle(
-                      color: Color(0xFFFFF4E2),
-                      fontSize: 20,
-                    ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Hello, ${FirestoreService.instance.currentUser!.name}",
+                        style: const TextStyle(
+                          color: Color(0xFFFFF4E2),
+                          fontSize: 20,
+                        ),
+                      ),
+                      StreamBuilder(
+                          stream: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(FirestoreService.instance.currentUser!.uid)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox();
+                            }
+                            final ratings = snapshot.data?['ratings'] ?? [];
+                            final totalRatings = ratings.fold(
+                                0,
+                                (previousValue, element) =>
+                                    previousValue + element);
+                            final averageRating = totalRatings / ratings.length;
+                            return Row(
+                              children: [
+                                const Icon(Icons.star, color: Colors.yellow),
+                                const SizedBox(width: 5),
+                                Text(
+                                  "${averageRating.toStringAsFixed(1)} (${ratings.length})",
+                                  style: const TextStyle(
+                                    color: Color(0xFFFFF4E2),
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                    ],
                   ),
                 ],
               ),

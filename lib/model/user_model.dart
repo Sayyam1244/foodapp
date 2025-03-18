@@ -9,6 +9,7 @@ class UserModel {
   final String? image;
   final bool isDeleted;
   final int? points;
+  List<num>? ratings;
 
   UserModel({
     required this.isDeleted,
@@ -21,6 +22,7 @@ class UserModel {
     required this.role,
     this.image,
     this.points,
+    this.ratings,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> data) {
@@ -35,6 +37,7 @@ class UserModel {
       role: data['role'],
       image: data['image'],
       points: data['points'],
+      ratings: data['ratings'] != null ? List<num>.from(data['ratings']) : null,
     );
   }
 
@@ -50,6 +53,7 @@ class UserModel {
       'role': role,
       'image': image,
       'points': points,
+      'ratings': ratings,
     };
   }
 

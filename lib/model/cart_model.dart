@@ -12,6 +12,7 @@ class CartModel {
   final List<CartItemModel> items;
   final DateTime createdDate;
   final String? discount;
+  final double? rating;
 
   CartModel({
     this.userModel,
@@ -24,6 +25,7 @@ class CartModel {
     required this.items,
     required this.createdDate,
     this.discount,
+    this.rating,
   });
   CartModel copyWith({
     String? id,
@@ -53,6 +55,7 @@ class CartModel {
           ? DateTime.parse(json['createdDate'])
           : DateTime.now(),
       discount: json['discount'].toString(),
+      rating: json['rating'],
     );
   }
 

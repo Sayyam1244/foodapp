@@ -107,7 +107,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           );
                         },
                         child: Container(
-                          height: 105,
+                          height: item.rating != null ? 120 : 105,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             color: const Color(0xFFFFF4E2),
@@ -157,6 +157,26 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         color: Colors.black45,
                                       ),
                                     ),
+                                    const Spacer(),
+                                    if (item.rating != null)
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.star,
+                                            color: Colors.yellow,
+                                            size: 18,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            (item.rating ?? 0).toString(),
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black45,
+                                            ),
+                                          ),
+                                        ],
+                                      )
                                   ],
                                 ),
                               ),

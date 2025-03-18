@@ -129,6 +129,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: business.length,
                       itemBuilder: (context, index) {
                         final item = business[index];
+                        final ratings = item.ratings ?? [];
+                        final totalRatings = ratings.fold(
+                            0,
+                            (previousValue, element) =>
+                                previousValue.toInt() + element.toInt());
+                        final averageRating = totalRatings / ratings.length;
                         return InkWell(
                           onTap: () {
                             Navigator.of(context).push(
@@ -173,6 +179,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: Color(0xFF517F03),
                                       ),
                                     ),
+                                    if (ratings.isNotEmpty)
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.star,
+                                              color: Colors.yellow),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            "${averageRating.toStringAsFixed(1)} (${ratings.length})",
+                                            style: const TextStyle(
+                                              color: Colors.green,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                   ],
                                 ),
                               ),

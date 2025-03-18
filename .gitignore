@@ -23,3 +23,6 @@ build/
 
 # Mac related
 .DS_Store
+
+# FVM Version Cache
+.fvm/

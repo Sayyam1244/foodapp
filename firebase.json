@@ -30,8 +30,8 @@
   },
   "functions": [
     {
-      "source": "functions",
-      "codebase": "default",
+      "source": "notifications",
+      "codebase": "foodapp",
       "ignore": [
         "node_modules",
         ".git",

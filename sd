@@ -1,0 +1,22 @@
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+
+admin.initializeApp();
+
+exports.sendTaskNotification = functions.https.onRequest(async (req, res) => {
+    const { title, subtitle, type, dynamicId } = req.body;
+    const message = {
+        notification: {
+            title: title,
+            body: subtitle,
+        },
+        data: {
+            type: type,
+            dynamicId: dynamicId,
+        },
+        topic: 'all'
+    };
+
+    await admin.messaging().send(message);
+    return res.status(200).send({ 'success': true });
+});
