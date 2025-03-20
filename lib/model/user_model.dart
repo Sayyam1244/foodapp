@@ -10,6 +10,7 @@ class UserModel {
   final bool isDeleted;
   final int? points;
   List<num>? ratings;
+  final num? gmSaved;
 
   UserModel({
     required this.isDeleted,
@@ -23,6 +24,7 @@ class UserModel {
     this.image,
     this.points,
     this.ratings,
+    this.gmSaved,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> data) {
@@ -38,6 +40,7 @@ class UserModel {
       image: data['image'],
       points: data['points'],
       ratings: data['ratings'] != null ? List<num>.from(data['ratings']) : null,
+      gmSaved: data['gmSaved'],
     );
   }
 
@@ -54,6 +57,7 @@ class UserModel {
       'image': image,
       'points': points,
       'ratings': ratings,
+      'gmSaved': gmSaved,
     };
   }
 
@@ -69,6 +73,7 @@ class UserModel {
     String? role,
     String? image,
     int? points,
+    num? gmSaved,
   }) {
     return UserModel(
       isDeleted: isDeleted ?? this.isDeleted,
@@ -81,6 +86,7 @@ class UserModel {
       role: role ?? this.role,
       image: image ?? this.image,
       points: points ?? this.points,
+      gmSaved: gmSaved ?? this.gmSaved,
     );
   }
 }

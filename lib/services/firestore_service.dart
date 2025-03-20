@@ -13,8 +13,7 @@ import 'package:helloworld/presentation/welcome_screen.dart';
 
 class FirestoreService {
   FirestoreService._privateConstructor();
-  static final FirestoreService _instance =
-      FirestoreService._privateConstructor();
+  static final FirestoreService _instance = FirestoreService._privateConstructor();
   static FirestoreService get instance => _instance;
 
   UserModel? currentUser;
@@ -30,10 +29,7 @@ class FirestoreService {
         imageUrl = await storageRef.getDownloadURL();
       }
       final usr = user.copyWith(image: imageUrl);
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .set(usr.toMap());
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(usr.toMap());
       return await getUser(user.uid);
     } catch (e) {
       return 'Error happened, Please try again later.';
@@ -42,15 +38,12 @@ class FirestoreService {
 
   Future<UserModel?> getUser(String uid) async {
     try {
-      DocumentSnapshot doc =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
       if (doc.exists) {
         currentUser = UserModel.fromMap(doc.data() as Map<String, dynamic>);
         if (currentUser?.isDeleted == true) {
-          Navigator.pushAndRemoveUntil(
-              navigatorKey.currentContext!,
-              MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-              (route) => false);
+          Navigator.pushAndRemoveUntil(navigatorKey.currentContext!,
+              MaterialPageRoute(builder: (context) => const WelcomeScreen()), (route) => false);
         }
         return currentUser;
       } else {
@@ -124,12 +117,9 @@ class FirestoreService {
 
       docRef.update({
         if (productName != null) 'productName': productName,
-        if (productDescription != null)
-          'productDescription': productDescription,
-        if (priceBeforeDiscount != null)
-          'priceBeforeDiscount': priceBeforeDiscount,
-        if (priceAfterDiscount != null)
-          'priceAfterDiscount': priceAfterDiscount,
+        if (productDescription != null) 'productDescription': productDescription,
+        if (priceBeforeDiscount != null) 'priceBeforeDiscount': priceBeforeDiscount,
+        if (priceAfterDiscount != null) 'priceAfterDiscount': priceAfterDiscount,
         if (weight != null) 'weight': weight,
         if (stock != null) 'stock': stock,
         // if (imageUrl != null) 'image': imageUrl,
@@ -142,10 +132,7 @@ class FirestoreService {
 
   Future deleteProduct(docId) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('products')
-          .doc(docId)
-          .update({
+      await FirebaseFirestore.instance.collection('products').doc(docId).update({
         'isDeleted': true,
       });
       return true;
@@ -220,8 +207,7 @@ class FirestoreService {
 
   Future getSingleProduct(String id) async {
     try {
-      final snapshot =
-          await FirebaseFirestore.instance.collection('products').doc(id).get();
+      final snapshot = await FirebaseFirestore.instance.collection('products').doc(id).get();
       return ProductModel.fromMap(snapshot.data()!);
     } catch (e) {
       return e.toString();
@@ -245,12 +231,17 @@ class FirestoreService {
     CartModel cartModel,
     int pointsUsed,
     previousPoints,
+    num gmSaved,
   ) async {
     double totalPrice = 0;
     for (var element in cartModel.items) {
       totalPrice += element.price * element.quantity;
     }
     try {
+      num orderTotalGms = 0;
+      for (final item in cartModel.items) {
+        orderTotalGms = orderTotalGms + (item.product?.weight ?? 0);
+      }
       final docRef = FirebaseFirestore.instance.collection('orders').doc();
       docRef.set({
         'docId': docRef.id,
@@ -265,19 +256,19 @@ class FirestoreService {
       //adjust stock
       WriteBatch batch = FirebaseFirestore.instance.batch();
       for (var element in cartModel.items) {
-        final productRef = FirebaseFirestore.instance
-            .collection('products')
-            .doc(element.productId);
+        final productRef = FirebaseFirestore.instance.collection('products').doc(element.productId);
         final product = await productRef.get();
         final stock = product.data()!['stock'];
         batch.update(productRef, {'stock': stock - element.quantity});
       }
       await batch.commit();
       //adjust points
-      final userRef =
-          FirebaseFirestore.instance.collection('users').doc(currentUser!.uid);
+      final userRef = FirebaseFirestore.instance.collection('users').doc(currentUser!.uid);
 
-      await userRef.update({'points': previousPoints - pointsUsed});
+      await userRef.update({
+        'points': previousPoints - pointsUsed,
+        'gmSaved': gmSaved + orderTotalGms,
+      });
       return true;
     } catch (e) {
       return e.toString();
@@ -316,17 +307,14 @@ class FirestoreService {
     final userList = await getUsersList('customer');
 
     // await for (var users in usersStream) {
-    await for (var snapshot
-        in FirebaseFirestore.instance.collection('orders').snapshots()) {
+    await for (var snapshot in FirebaseFirestore.instance.collection('orders').snapshots()) {
       List<CartModel> orders = [];
 
       for (var doc in snapshot.docs) {
         final data = CartModel.fromJson(doc.data());
 
-        if (data.items.first.businessId ==
-            FirebaseAuth.instance.currentUser!.uid) {
-          final user =
-              userList.where((user) => user.uid == data.userId).firstOrNull;
+        if (data.items.first.businessId == FirebaseAuth.instance.currentUser!.uid) {
+          final user = userList.where((user) => user.uid == data.userId).firstOrNull;
 
           data.userModel = user;
           orders.add(data);

@@ -65,8 +65,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 }
                 final user = UserModel.fromMap(snapshot.data!.data()!);
                 final pointsConvertedToDollars = (user.points ?? 0) / 1000;
-                final discount = pointsConvertedToDollars >=
-                        CartService.instance.totalPrice()
+                final discount = pointsConvertedToDollars >= CartService.instance.totalPrice()
                     ? CartService.instance.totalPrice()
                     : pointsConvertedToDollars;
 
@@ -78,10 +77,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'Redeem your points',
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  color: Colors.white,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color: Colors.white,
+                            ),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -101,49 +99,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               ],
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor:
-                                    const Color(0xFFFFF4E2), // Beige background
+                                fillColor: const Color(0xFFFFF4E2), // Beige background
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      8.0), // Rounded corners
+                                  borderRadius: BorderRadius.circular(8.0), // Rounded corners
                                   borderSide: BorderSide.none, // No border line
                                 ),
-                                suffixIconConstraints:
-                                    const BoxConstraints(maxWidth: 60),
+                                suffixIconConstraints: const BoxConstraints(maxWidth: 60),
                                 suffixIcon: Padding(
                                   padding: const EdgeInsets.only(right: 8),
                                   child: SmallIconButton(
                                     icon: Icons.check,
                                     onPressed: () {
-                                      if (int.tryParse(pointController.text) ==
-                                          null) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                      if (int.tryParse(pointController.text) == null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text(
-                                                'Please enter a valid number'),
+                                            content: Text('Please enter a valid number'),
                                           ),
                                         );
                                         return;
                                       }
-                                      if (int.tryParse(pointController.text)! >
-                                          user.points!) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                      if (int.tryParse(pointController.text)! > user.points!) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text(
-                                                'You do not have enough points'),
+                                            content: Text('You do not have enough points'),
                                           ),
                                         );
                                         return;
                                       }
-                                      if (int.tryParse(pointController.text)! <
-                                          1000) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                      if (int.tryParse(pointController.text)! < 1000) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text(
-                                                'Minimum points to redeem is 1000'),
+                                            content: Text('Minimum points to redeem is 1000'),
                                           ),
                                         );
                                         return;
@@ -163,10 +149,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'Order Summary',
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  color: Colors.white,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color: Colors.white,
+                            ),
                       ),
                       const SizedBox(height: 12),
                       Container(
@@ -184,20 +169,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 Expanded(
                                   child: Text(
                                     'Order Amount:',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                           color: Colors.white,
                                         ),
                                   ),
                                 ),
                                 Text(
                                   '\$${CartService.instance.totalPrice()}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
+                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                         color: Colors.white,
                                       ),
                                 ),
@@ -213,20 +192,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 Expanded(
                                   child: Text(
                                     'Redeemed Points:',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                           color: Colors.white,
                                         ),
                                   ),
                                 ),
                                 Text(
                                   '\$${calculateDiscount(user.points ?? 0)}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
+                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                         color: Colors.white,
                                       ),
                                 ),
@@ -240,20 +213,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 Expanded(
                                   child: Text(
                                     'Total Amount:',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(
+                                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                           color: Colors.white,
                                         ),
                                   ),
                                 ),
                                 Text(
                                   '\$${CartService.instance.totalPrice() - calculateDiscount(user.points ?? 0)}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(
+                                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                         color: Colors.white,
                                       ),
                                 ),
@@ -271,8 +238,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                         child: InkWell(
                             onTap: () async {
-                              if (CartService
-                                  .instance.cartModel.items.isEmpty) {
+                              if (CartService.instance.cartModel.items.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Cart is empty'),
@@ -284,22 +250,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 isLoading = true;
                               });
                               //99999
-                              //adjust points
 
                               await FirestoreService.instance
                                   .placeOrder(
                                 CartService.instance.cartModel,
-                                int.parse(pointController.text.isEmpty
-                                    ? '0'
-                                    : pointController.text),
+                                int.parse(pointController.text.isEmpty ? '0' : pointController.text),
                                 user.points ?? 0,
+                                user.gmSaved ?? 0,
                               )
                                   .then((value) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(value == true
-                                        ? 'Order Placed Successfully'
-                                        : value),
+                                    content: Text(value == true ? 'Order Placed Successfully' : value),
                                   ),
                                 );
                                 CartService.instance.clearCart();
@@ -314,10 +276,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               child: Center(
                                 child: Text(
                                   'Place Order',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(
+                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
                                         fontWeight: FontWeight.w600,
                                         color: Colors.black87,
                                       ),

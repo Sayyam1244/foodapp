@@ -26,8 +26,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
   }
 
   Future<void> _fetchProducts() async {
-    final val =
-        await FirestoreService.instance.getProducts(widget.userModel.uid);
+    final val = await FirestoreService.instance.getProducts(widget.userModel.uid);
     if (val is String) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -50,8 +49,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
   @override
   Widget build(BuildContext context) {
     final ratings = widget.userModel.ratings ?? [];
-    final totalRatings = ratings.fold(
-        0, (previousValue, element) => previousValue.toInt() + element.toInt());
+    final totalRatings = ratings.fold(0, (previousValue, element) => previousValue.toInt() + element.toInt());
     final averageRating = totalRatings / ratings.length;
     return Scaffold(
       backgroundColor: const Color(0xFF517F03),
@@ -76,14 +74,12 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                         width: 80,
                         height: 80,
                         clipBehavior: Clip.hardEdge,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.white),
+                        decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
                         child: widget.userModel.image != null
                             ? Image.network(
                                 widget.userModel.image!,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(Icons.business),
+                                errorBuilder: (context, error, stackTrace) => const Icon(Icons.business),
                               )
                             : const Icon(Icons.business),
                       ),
@@ -128,9 +124,11 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                       itemCount: products.length,
                       itemBuilder: (context, index) {
                         final product = products[index];
-                        bool ifProductAlreadyInCart =
-                            CartService.instance.cartModel.items.any(
-                                (element) => element.product!.id == product.id);
+                        bool ifProductAlreadyInCart = CartService.instance.cartModel.items
+                            .any((element) => element.product!.id == product.id);
+                        if (product.stock == 0) {
+                          return const SizedBox.shrink();
+                        }
                         return Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
@@ -152,9 +150,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                     ? Image.network(
                                         product.imageUrl!,
                                         fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                const Icon(Icons.error),
+                                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
                                       )
                                     : const Icon(Icons.fastfood),
                               ),
@@ -193,8 +189,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 12,
-                                            decoration:
-                                                TextDecoration.lineThrough,
+                                            decoration: TextDecoration.lineThrough,
                                             decorationColor: Colors.red,
                                             decorationThickness: 2,
                                           ),
@@ -210,8 +205,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                     ),
                                     const SizedBox(height: 6),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           "Stock: ${product.stock}",
@@ -222,25 +216,18 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                         ),
                                         if (ifProductAlreadyInCart)
                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
+                                            mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
                                               SmallIconButton(
                                                 onPressed: () async {
-                                                  CartService.instance
-                                                      .decrementItemInCart(
+                                                  CartService.instance.decrementItemInCart(
                                                     productId: product.id,
                                                   );
                                                   setState(() {});
                                                 },
-                                                icon: CartService.instance
-                                                            .cartModel.items
-                                                            .firstWhere(
-                                                                (element) =>
-                                                                    element
-                                                                        .product!
-                                                                        .id ==
-                                                                    product.id)
+                                                icon: CartService.instance.cartModel.items
+                                                            .firstWhere((element) =>
+                                                                element.product!.id == product.id)
                                                             .quantity ==
                                                         1
                                                     ? Icons.delete
@@ -248,11 +235,9 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                               ),
                                               const SizedBox(width: 10),
                                               Text(
-                                                CartService
-                                                    .instance.cartModel.items
-                                                    .firstWhere((element) =>
-                                                        element.product!.id ==
-                                                        product.id)
+                                                CartService.instance.cartModel.items
+                                                    .firstWhere(
+                                                        (element) => element.product!.id == product.id)
                                                     .quantity
                                                     .toString(),
                                                 style: const TextStyle(
@@ -262,9 +247,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                               const SizedBox(width: 10),
                                               SmallIconButton(
                                                 onPressed: () async {
-                                                  final val = CartService
-                                                      .instance
-                                                      .incrementItemInCart(
+                                                  final val = CartService.instance.incrementItemInCart(
                                                     productId: product.id,
                                                   );
                                                   setState(() {});
@@ -276,11 +259,8 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                         else
                                           SmallIconButton(
                                             onPressed: () async {
-                                              final val = CartService.instance
-                                                  .addItemInCart(
-                                                      productModel: product,
-                                                      price: product
-                                                          .priceAfterDiscount);
+                                              final val = CartService.instance.addItemInCart(
+                                                  productModel: product, price: product.priceAfterDiscount);
                                               setState(() {});
                                             },
                                             icon: Icons.add,
@@ -294,10 +274,15 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                           ),
                         );
                       },
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const SizedBox(
-                        height: 12,
-                      ),
+                      separatorBuilder: (BuildContext context, int index) {
+                        final product = products[index];
+                        if (product.stock == 0) {
+                          return const SizedBox.shrink();
+                        }
+                        return const SizedBox(
+                          height: 12,
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -317,17 +302,13 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                           setState(() {});
                         },
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 14),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                           child: Row(
                             children: [
                               Expanded(
                                 child: Text(
                                   'Open cart (${CartService.instance.cartModel.items.length})',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(
+                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
                                         fontWeight: FontWeight.w600,
                                         color: Colors.black87,
                                       ),
@@ -335,10 +316,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                               ),
                               Text(
                                 '\$${CartService.instance.totalPrice()}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
+                                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                       fontWeight: FontWeight.w600,
                                       color: Colors.black87,
                                     ),
@@ -360,8 +338,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
 }
 
 class SmallIconButton extends StatelessWidget {
-  const SmallIconButton(
-      {super.key, required this.icon, required this.onPressed});
+  const SmallIconButton({super.key, required this.icon, required this.onPressed});
   final IconData icon;
   final Function() onPressed;
   @override

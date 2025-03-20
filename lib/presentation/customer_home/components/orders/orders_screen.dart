@@ -18,8 +18,8 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  List<String> orderType = ["active", "ready", "picked_up"];
-
+  List<String> orderType = ["active", "picked_up"];
+  Map nameMapped = {'active': "Active orders", 'picked_up': "Previous Orders"};
   String selectedType = 'active';
   @override
   Widget build(BuildContext context) {
@@ -37,15 +37,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
             }
             final orders = snapshot.data as List<CartModel>;
             List<CartModel> activeOrders = [];
-            List<CartModel> readyOrders = [];
+
             List<CartModel> pickedUpOrders = [];
 
             for (final order in orders) {
-              if (order.status == orderType[0]) {
+              if (order.status != 'picked_up') {
                 activeOrders.add(order);
-              } else if (order.status == orderType[1]) {
-                readyOrders.add(order);
-              } else if (order.status == orderType[2]) {
+              } else if (order.status == 'picked_up') {
                 pickedUpOrders.add(order);
               }
             }
@@ -70,21 +68,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 child: Container(
                                   margin: const EdgeInsets.only(right: 10),
                                   height: 50,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 24),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
-                                    color: const Color.fromARGB(
-                                        255, 143, 168, 100),
+                                    color: const Color.fromARGB(255, 143, 168, 100),
                                     border: Border.all(
-                                      color: selectedType == e
-                                          ? Colors.black
-                                          : Colors.transparent,
+                                      color: selectedType == e ? Colors.black : Colors.transparent,
                                     ),
                                   ),
                                   child: Center(
                                     child: Text(
-                                      '$e ${(e == orderType[0] ? activeOrders.length : e == orderType[1] ? readyOrders.length : pickedUpOrders.length)}',
+                                      '${nameMapped[e]}',
                                       style: const TextStyle(
                                         color: Colors.white,
                                       ),
@@ -103,11 +97,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   child: ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     itemBuilder: ((context, index) {
-                      final item = selectedType == orderType[0]
-                          ? activeOrders[index]
-                          : selectedType == orderType[1]
-                              ? readyOrders[index]
-                              : pickedUpOrders[index];
+                      final item = selectedType == orderType[0] ? activeOrders[index] : pickedUpOrders[index];
                       return InkWell(
                         onTap: () {
                           Navigator.of(context).push(
@@ -119,10 +109,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           );
                         },
                         child: Container(
-                          height: (item.status == orderType[2] &&
-                                  item.rating == null)
-                              ? 140
-                              : 120,
+                          height: (item.status == orderType[1] && item.rating == null) ? 140 : 120,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             color: const Color(0xFFFFF4E2),
@@ -143,8 +130,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     ? Image.network(
                                         item.businessUser?.image ?? '',
                                         fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
+                                        errorBuilder: (context, error, stackTrace) {
                                           return const Icon(Icons.fastfood);
                                         },
                                       )
@@ -156,8 +142,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           item.businessUser?.name ?? "",
@@ -201,13 +186,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     ),
                                     const Spacer(),
                                     // if(order is completed and not rated)
-                                    if (item.status == orderType[2] &&
-                                        item.rating == null)
+                                    if (item.status == orderType[1] && item.rating == null)
                                       InkWell(
                                         onTap: () {
                                           showRatingPopup(context, (v) {
-                                            submitRating(v, item.id!,
-                                                item.businessUser!.uid);
+                                            submitRating(v, item.id!, item.businessUser!.uid);
                                           });
                                         },
                                         child: const Text(
@@ -238,12 +221,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     separatorBuilder: (BuildContext context, int index) {
                       return const SizedBox(height: 10);
                     },
-                    itemCount: (selectedType == orderType[0]
-                            ? activeOrders
-                            : selectedType == orderType[1]
-                                ? readyOrders
-                                : pickedUpOrders)
-                        .length,
+                    itemCount: (selectedType == orderType[0] ? activeOrders : pickedUpOrders).length,
                   ),
                 )
               ],
@@ -259,10 +237,7 @@ submitRating(double rating, String orderId, businessId) async {
   await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
     'rating': rating,
   });
-  final val = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(businessId)
-      .get();
+  final val = await FirebaseFirestore.instance.collection('users').doc(businessId).get();
 
   final user = UserModel.fromMap(val.data()!);
 

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:helloworld/model/cart_model.dart';
 import 'package:helloworld/presentation/order_detail/order_detail_screen.dart';
@@ -61,16 +63,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 child: Container(
                                   margin: const EdgeInsets.only(right: 10),
                                   height: 50,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 24),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
-                                    color: const Color.fromARGB(
-                                        255, 143, 168, 100),
+                                    color: const Color.fromARGB(255, 143, 168, 100),
                                     border: Border.all(
-                                      color: selectedType == e
-                                          ? Colors.black
-                                          : Colors.transparent,
+                                      color: selectedType == e ? Colors.black : Colors.transparent,
                                     ),
                                   ),
                                   child: Center(
@@ -94,15 +92,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   child: ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     itemBuilder: ((context, index) {
-                      final item = selectedType == orderType[0]
-                          ? pendingOrders[index]
-                          : completedOrders[index];
+                      final item =
+                          selectedType == orderType[0] ? pendingOrders[index] : completedOrders[index];
                       return InkWell(
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => OrderDetailScreen(
-                                  order: item, isBusinessSide: true),
+                              builder: (context) => OrderDetailScreen(order: item, isBusinessSide: true),
                             ),
                           );
                         },
@@ -121,8 +117,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           "Order ID: ${item.orderId ?? ''}",
@@ -196,10 +191,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     separatorBuilder: (BuildContext context, int index) {
                       return const SizedBox(height: 10);
                     },
-                    itemCount: (selectedType == orderType[0]
-                            ? pendingOrders
-                            : completedOrders)
-                        .length,
+                    itemCount: (selectedType == orderType[0] ? pendingOrders : completedOrders).length,
                   ),
                 )
               ],

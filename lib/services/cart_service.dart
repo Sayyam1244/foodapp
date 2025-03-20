@@ -29,6 +29,11 @@ class CartService {
     if (productModel.stock < 1) {
       return 'Not enough stock available for this product';
     }
+    if (cartModel.items.isNotEmpty) {
+      if (productModel.businessId != cartModel.items.first.businessId) {
+        clearCart();
+      }
+    }
 
     var existingItem = cartModel.items.firstWhere(
       (item) => item.productId == productModel.id,
@@ -67,23 +72,19 @@ class CartService {
   }
 
   incrementItemInCart({required String productId}) {
-    final index =
-        cartModel.items.indexWhere((element) => element.productId == productId);
+    final index = cartModel.items.indexWhere((element) => element.productId == productId);
     final product = cartModel.items[index].product;
     if (cartModel.items[index].quantity < (product?.stock ?? 0)) {
-      cartModel.items[index] = cartModel.items[index]
-          .copyWith(quantity: cartModel.items[index].quantity + 1);
+      cartModel.items[index] = cartModel.items[index].copyWith(quantity: cartModel.items[index].quantity + 1);
     } else {
       return 'Cannot add more. Reached maximum stock.';
     }
   }
 
   decrementItemInCart({required String productId}) {
-    final index =
-        cartModel.items.indexWhere((element) => element.productId == productId);
+    final index = cartModel.items.indexWhere((element) => element.productId == productId);
     if (cartModel.items[index].quantity > 1) {
-      cartModel.items[index] = cartModel.items[index]
-          .copyWith(quantity: cartModel.items[index].quantity - 1);
+      cartModel.items[index] = cartModel.items[index].copyWith(quantity: cartModel.items[index].quantity - 1);
     } else {
       cartModel.items.removeAt(index);
     }

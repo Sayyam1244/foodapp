@@ -48,12 +48,8 @@ class CartModel {
       total: json['totalPrice'].toString(),
       id: json['docId'],
       userId: json['userId'],
-      items: (json['products'] as List)
-          .map((item) => CartItemModel.fromJson(item))
-          .toList(),
-      createdDate: json['createdDate'] != null
-          ? DateTime.parse(json['createdDate'])
-          : DateTime.now(),
+      items: (json['products'] as List).map((item) => CartItemModel.fromJson(item)).toList(),
+      createdDate: json['createdDate'] != null ? DateTime.parse(json['createdDate']) : DateTime.now(),
       discount: json['discount'].toString(),
       rating: json['rating'],
     );
@@ -72,7 +68,7 @@ class CartItemModel {
   final String productId;
   final String businessId;
   int quantity;
-  final double price;
+  final num price;
   final DateTime createdDate;
   ProductModel? product;
 
