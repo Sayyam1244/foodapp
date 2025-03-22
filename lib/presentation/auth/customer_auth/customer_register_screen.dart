@@ -1,9 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:helloworld/presentation/common/custom_textfield.dart';
+import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/presentation/customer_home/customer_home.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/utils/app_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
 
 class CustomerRegisterScreen extends StatefulWidget {
   const CustomerRegisterScreen({Key? key}) : super(key: key);
@@ -13,11 +19,12 @@ class CustomerRegisterScreen extends StatefulWidget {
 }
 
 class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
-  final customerName = TextEditingController();
+  final customerNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final phoneNumbercontroller = TextEditingController();
+  final phoneNumberController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+
   final passRulesList = [
     "• Password must contain at least one letter",
     "• Password must contain at least one number",
@@ -27,19 +34,9 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF517F03), // Green background
+      backgroundColor: whiteColor,
       appBar: AppBar(
-        title: const Text(
-          "Customer Register",
-          style: TextStyle(color: Color(0xFFFFF4E2)), // Beige color for text
-        ),
-        backgroundColor: const Color(0xFF517F03), // Match the background color
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back
-          },
-        ),
+        backgroundColor: Colors.transparent,
       ),
       body: SafeArea(
         child: Padding(
@@ -48,130 +45,68 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
             key: formKey,
             child: SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Name:",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFFFFF4E2), // Beige color for text
+                  Center(
+                    child: Text(
+                      'Customer Register',
+                      style: headlineTextStyle.copyWith(
+                        color: primaryColor,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: customerName,
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    labelText: 'Enter Name:',
+                    controller: customerNameController,
+                    hintText: 'Name',
                     validator: AppValidator.emptyCheck,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xFFFFF4E2), // Beige background
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Rounded corners
-                        borderSide: BorderSide.none, // No border line
-                      ),
-                      hintText: "Enter your name",
-                    ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Email:",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFFFFF4E2), // Beige color for text
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
+                  CustomTextField(
+                    labelText: 'Enter Email:',
                     controller: emailController,
+                    hintText: 'Email',
                     validator: AppValidator.emailCheck,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xFFFFF4E2), // Beige background
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Rounded corners
-                        borderSide: BorderSide.none, // No border line
-                      ),
-                      hintText: "Enter your email",
-                    ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Phone Number:",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFFFFF4E2), // Beige color for text
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
+                  CustomTextField(
+                    labelText: 'Enter Phone Number:',
+                    controller: phoneNumberController,
+                    hintText: 'Phone Number',
+                    validator: AppValidator.phoneCheck,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
                     ],
-                    controller: phoneNumbercontroller,
-                    validator: AppValidator.phoneCheck,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xFFFFF4E2), // Beige background
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Rounded corners
-                        borderSide: BorderSide.none, // No border line
-                      ),
-                      hintText: "Enter your Phone Number",
-                    ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Password:",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFFFFF4E2), // Beige color for text
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
+                  CustomTextField(
+                    labelText: 'Enter Password:',
                     controller: passwordController,
-                    obscureText: true,
+                    hintText: '********',
                     validator: AppValidator.passwordCheck,
-                    decoration: InputDecoration(
-                      errorMaxLines: 3,
-                      filled: true,
-                      fillColor: const Color(0xFFFFF4E2), // Beige background
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Rounded corners
-                        borderSide: BorderSide.none, // No border line
-                      ),
-                      hintText: "Enter your password",
-                    ),
+                    obscureText: true,
                   ),
                   const SizedBox(height: 10),
                   ...passRulesList.map(
-                    (e) => Text(
-                      e,
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    (rule) => Text(
+                      rule,
+                      style: bodySmallTextStyle.copyWith(color: Colors.grey),
                     ),
                   ),
-
-                  // const Text(
-                  //   'Password must contain at least one letter and one number, and be longer than 8 characters',
-                  //   maxLines: 3,
-                  // ),
                   const SizedBox(height: 30),
                   Center(
-                    child: ElevatedButton(
-                      onPressed: () async {
+                    child: PrimaryButton(
+                      buttonText: 'Register',
+                      onTap: () async {
                         if (!formKey.currentState!.validate()) {
                           return;
                         }
                         final val = await AuthService.signUpWithEmailPassword(
-                          phoneNumber: phoneNumbercontroller.text,
+                          phoneNumber: phoneNumberController.text,
                           email: emailController.text,
                           password: passwordController.text,
-                          name: customerName.text,
+                          name: customerNameController.text,
                           role: "customer",
                         );
                         if (val is User) {
@@ -188,7 +123,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                             builder: (context) {
                               return AlertDialog(
                                 title: const Text("Failed to register"),
-                                content: Text(val),
+                                content: Text(val.toString()),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
@@ -202,20 +137,8 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                           );
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(
-                            0xFFAECE77), // Darker Green register button color
-                        foregroundColor: Colors.white, // Text color
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 15),
-                      ),
-                      child: const Text(
-                        "Register",
-                        style: TextStyle(fontSize: 18),
-                      ),
                     ),
                   ),
-                  const SizedBox(height: 20), // Space below the button
                 ],
               ),
             ),

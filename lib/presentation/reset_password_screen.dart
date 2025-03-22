@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/utils/app_validator.dart';
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
+import 'package:helloworld/presentation/common/custom_textfield.dart';
+import 'package:helloworld/presentation/common/primary_button.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({Key? key}) : super(key: key);
@@ -16,17 +20,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF517F03), // Green background
+      backgroundColor: whiteColor,
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: Colors.transparent,
+        title: Text(
           "Reset Password",
-          style: TextStyle(color: Color(0xFFFFF4E2)), // Beige color for text
+          style: headlineTextStyle.copyWith(color: primaryColor),
         ),
-        backgroundColor: const Color(0xFF517F03), // Match the background color
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: primaryColor),
           onPressed: () {
-            Navigator.pop(context); // Navigate back
+            Navigator.pop(context);
           },
         ),
       ),
@@ -38,32 +42,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   "Enter your email to reset password:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFFFFF4E2), // Beige color for text
-                  ),
+                  style: bodyLargeTextStyle.copyWith(color: primaryColor),
                 ),
-                const SizedBox(height: 10),
-                TextFormField(
+                const SizedBox(height: 20),
+                CustomTextField(
+                  labelText: 'Email',
                   controller: emailController,
+                  hintText: 'example@example.com',
                   validator: AppValidator.emailCheck,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFFFFF4E2), // Beige background
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(30.0), // Rounded corners
-                      borderSide: BorderSide.none, // No border line
-                    ),
-                    hintText: "example@example.com",
-                  ),
                 ),
-                const SizedBox(height: 30), // Space below email input
+                const SizedBox(height: 30),
                 Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
+                  child: PrimaryButton(
+                    buttonText: "Send Reset Link",
+                    onTap: () async {
                       if (!formKey.currentState!.validate()) {
                         return;
                       }
@@ -74,8 +68,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         builder: (context) {
                           return AlertDialog(
                             title: const Text("Reset Link Sent"),
-                            content: const Text(
-                                "A password reset link has been sent to your email."),
+                            content: const Text("A password reset link has been sent to your email."),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -88,20 +81,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         },
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFFAECE77), // Darker Green button color
-                      foregroundColor: Colors.white, // Text color
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 50, vertical: 15),
-                    ),
-                    child: const Text(
-                      "Send Reset Link",
-                      style: TextStyle(fontSize: 18),
-                    ),
                   ),
                 ),
-                const SizedBox(height: 20), // Space below button
               ],
             ),
           ),

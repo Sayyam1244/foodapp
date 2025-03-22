@@ -5,8 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/model/user_model.dart';
+import 'package:helloworld/presentation/common/custom_textfield.dart';
 import 'package:helloworld/presentation/menu/menu_screen.dart';
 import 'package:helloworld/services/firestore_service.dart';
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,42 +31,31 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF517F03),
+      backgroundColor: whiteColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: (MediaQuery.of(context).padding.top + 20)),
-            Image.asset(
-              'assets/logo.png',
-              fit: BoxFit.contain,
-              height: 50,
-            ),
+
             const SizedBox(height: 12),
             Text(
               'Hello, ${FirestoreService.instance.currentUser?.name ?? ''}',
-              style: const TextStyle(
-                color: Color(0xFFFFF4E2),
-              ),
+              style: bodyMediumTextStyle.copyWith(fontWeight: FontWeight.w500),
             ),
+            const SizedBox(height: 8),
+
+            Text('Where do you want to eat?', style: headlineTextStyle.copyWith(color: primaryColor)),
             const SizedBox(height: 12),
-            TextField(
+            CustomTextField(
+              prefixIcon: const Icon(Icons.search),
               controller: searchController,
               onChanged: (value) {
                 toSearch = value;
                 setState(() {});
               },
-              decoration: const InputDecoration(
-                hintText: 'Search for businesses',
-                filled: true,
-                fillColor: Color(0xFFFFF4E2),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide.none,
-                ),
-                prefixIcon: Icon(Icons.search),
-              ),
+              hintText: 'Search for a businesses',
             ),
             const SizedBox(height: 12),
             SingleChildScrollView(
@@ -81,12 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           child: Container(
                             margin: const EdgeInsets.only(right: 12),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                             decoration: BoxDecoration(
-                              color: selectedCat == e
-                                  ? const Color(0xFFAECE77)
-                                  : const Color(0xFFFFF4E2),
+                              color: selectedCat == e ? const Color(0xFFAECE77) : const Color(0xFFFFF4E2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(e),
@@ -104,24 +93,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
-                } else if (!snapshot.hasData ||
-                    (snapshot.data?.isEmpty ?? true)) {
+                } else if (!snapshot.hasData || (snapshot.data?.isEmpty ?? true)) {
                   return const Text('No products available');
                 } else {
                   final unFilteredBusiness = snapshot.data ?? [];
                   List<UserModel> business = [];
                   if (toSearch.isNotEmpty) {
-                    business.addAll(unFilteredBusiness.where((element) =>
-                        element.name
-                            .toLowerCase()
-                            .contains(toSearch.toLowerCase())));
+                    business.addAll(unFilteredBusiness
+                        .where((element) => element.name.toLowerCase().contains(toSearch.toLowerCase())));
                   } else {
                     business.addAll(unFilteredBusiness);
                   }
                   if (selectedCat.isNotEmpty) {
-                    business = business
-                        .where((element) => element.category == selectedCat)
-                        .toList();
+                    business = business.where((element) => element.category == selectedCat).toList();
                   }
 
                   return Expanded(
@@ -131,16 +115,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         final item = business[index];
                         final ratings = item.ratings ?? [];
                         final totalRatings = ratings.fold(
-                            0,
-                            (previousValue, element) =>
-                                previousValue.toInt() + element.toInt());
+                            0, (previousValue, element) => previousValue.toInt() + element.toInt());
                         final averageRating = totalRatings / ratings.length;
                         return InkWell(
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    BusinessMenuScreen(userModel: item),
+                                builder: (context) => BusinessMenuScreen(userModel: item),
                               ),
                             );
                           },
@@ -150,8 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Container(
                                 width: double.infinity,
                                 margin: const EdgeInsets.only(left: 50),
-                                padding:
-                                    const EdgeInsets.only(top: 30, bottom: 30),
+                                padding: const EdgeInsets.only(top: 30, bottom: 30),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(42),
                                   color: const Color(0xFFFFF4E2),
@@ -181,11 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     if (ratings.isNotEmpty)
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          const Icon(Icons.star,
-                                              color: Colors.yellow),
+                                          const Icon(Icons.star, color: Colors.yellow),
                                           const SizedBox(width: 5),
                                           Text(
                                             "${averageRating.toStringAsFixed(1)} (${ratings.length})",
@@ -212,9 +190,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ? Image.network(
                                         item.image!,
                                         fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                const Icon(Icons.business),
+                                        errorBuilder: (context, error, stackTrace) =>
+                                            const Icon(Icons.business),
                                       )
                                     : const Icon(Icons.fastfood),
                               ),

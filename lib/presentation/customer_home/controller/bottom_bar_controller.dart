@@ -9,7 +9,7 @@ class CustomBottomBarController {
   static List<BottomBarModel> pages = [
     BottomBarModel(
       title: "Home",
-      icon: const Icon(Icons.home),
+      icon: const Icon(Icons.home_filled),
       page: const HomeScreen(),
     ),
     BottomBarModel(

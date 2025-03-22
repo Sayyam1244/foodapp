@@ -1,23 +1,17 @@
-import 'dart:developer';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:helloworld/services/notifications_services.dart';
-import 'auth/business_auth/business_login_screen.dart'; // Import the BusinessLoginScreen class
-import 'auth/customer_auth/customer_login_screen.dart'; // Import the CustomerLoginScreen class
+import 'package:helloworld/presentation/auth/customer_auth/customer_login_screen.dart';
+import 'package:helloworld/presentation/common/primary_button.dart';
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
+import 'auth/business_auth/business_login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // NotificationServies().showFlutterNotification(const RemoteMessage(
-    //     notification: RemoteNotification(
-    //   title: 'Welcome to FoodSaver!',
-    //   body: 'Get started by logging in as a customer or business.',
-    // )));
     return Scaffold(
-      backgroundColor: const Color(0xFF517F03), // Green background
+      backgroundColor: whiteColor,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -27,8 +21,8 @@ class WelcomeScreen extends StatelessWidget {
             Column(
               children: [
                 Image.asset(
-                  'assets/logo.png', // Replace with your logo asset path
-                  height: 200, // Increased logo height to make it larger
+                  'assets/logo.png',
+                  height: 200,
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 10),
@@ -40,13 +34,8 @@ class WelcomeScreen extends StatelessWidget {
 
             // "Are you a" Text
             const Text(
-              "Are you a",
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Roboto',
-              ),
+              "Who are you",
+              style: titleTextStyle,
             ),
 
             // Spacer
@@ -57,67 +46,29 @@ class WelcomeScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const CustomerLoginScreen(), // Navigate to CustomerLoginScreen
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFFFFF4E2), // Beige button color
-                      foregroundColor: const Color(0xFF517F03), // Text color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Customer",
-                        style: TextStyle(
-                          fontSize: 18, // Increased button font size
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Roboto',
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const BusinessLoginScreen(), // Navigate to BusinessLoginScreen
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFFFFF4E2), // Beige button color
-                      foregroundColor: const Color(0xFF517F03), // Text color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Business",
-                        style: TextStyle(
-                          fontSize: 18, // Increased button font size
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Roboto',
-                        ),
-                      ),
-                    ),
-                  ),
+                  PrimaryButton(
+                      buttonText: 'Customer',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const CustomerLoginScreen(), // Navigate to BusinessLoginScreen
+                          ),
+                        );
+                      }),
+                  const SizedBox(height: 10),
+                  PrimaryButton(
+                      buttonText: 'Business',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const BusinessLoginScreen(), // Navigate to BusinessLoginScreen
+                          ),
+                        );
+                      }),
                 ],
               ),
             ),
