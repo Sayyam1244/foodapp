@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:helloworld/model/product_model.dart';
@@ -27,6 +28,22 @@ class _HomeScreenState extends State<HomeScreen> {
     'Groceries',
     'Bakeries',
   ];
+
+  String getCategoryIcon(String category) {
+    switch (category) {
+      case 'Restaurants':
+        return 'assets/store.png';
+      case 'Cafes':
+        return 'assets/tea.png';
+      case 'Groceries':
+        return 'assets/bag.png';
+      case 'Bakeries':
+        return 'assets/bread.png';
+      default:
+        return '';
+    }
+  }
+
   final searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -72,18 +89,35 @@ class _HomeScreenState extends State<HomeScreen> {
                             setState(() {});
                           },
                           child: Container(
+                            height: 80,
+                            width: 80,
                             margin: const EdgeInsets.only(right: 12),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                             decoration: BoxDecoration(
-                              color: selectedCat == e ? const Color(0xFFAECE77) : const Color(0xFFFFF4E2),
+                              color: selectedCat == e ? primaryColor : Colors.grey[200],
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(e),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  getCategoryIcon(e),
+                                  height: 40,
+                                  width: 40,
+                                  color: selectedCat == e ? whiteColor : Colors.black,
+                                ),
+                                Text(e,
+                                    style: bodySmallTextStyle.copyWith(
+                                        fontSize: 10, color: selectedCat == e ? whiteColor : Colors.black)),
+                              ],
+                            ),
                           ),
                         ))
                     .toList(),
               ),
             ),
+            const SizedBox(height: 12),
+
             //one time request get request
             //stream
             StreamBuilder<List<UserModel>>(
@@ -125,77 +159,68 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             );
                           },
-                          child: Stack(
-                            alignment: Alignment.centerLeft,
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                margin: const EdgeInsets.only(left: 50),
-                                padding: const EdgeInsets.only(top: 30, bottom: 30),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(42),
-                                  color: const Color(0xFFFFF4E2),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      item.name,
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF517F03),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: Colors.grey[200],
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 95,
+                                  width: 95,
+                                  clipBehavior: Clip.hardEdge,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade400, borderRadius: BorderRadius.circular(4)
+                                      // shape: BoxShape.circle,
                                       ),
+                                  child: item.image != null
+                                      ? Image.network(
+                                          item.image!,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) =>
+                                              const Icon(Icons.business),
+                                        )
+                                      : const Icon(Icons.fastfood),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(height: 22),
+                                      Text(
+                                        item.name,
+                                        maxLines: 2,
+                                        textAlign: TextAlign.center,
+                                        style: bodyLargeTextStyle.copyWith(fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "${item.location}",
+                                        maxLines: 2,
+                                        textAlign: TextAlign.center,
+                                        style: bodyMediumTextStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if (ratings.isNotEmpty)
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.star_rounded, color: Colors.orange, size: 16),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          "${averageRating.toStringAsFixed(1)} (${ratings.length})",
+                                          style: bodySmallTextStyle.copyWith(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      "${item.location}",
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF517F03),
-                                      ),
-                                    ),
-                                    if (ratings.isNotEmpty)
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          const Icon(Icons.star, color: Colors.yellow),
-                                          const SizedBox(width: 5),
-                                          Text(
-                                            "${averageRating.toStringAsFixed(1)} (${ratings.length})",
-                                            style: const TextStyle(
-                                              color: Colors.green,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                height: 95,
-                                width: 95,
-                                clipBehavior: Clip.hardEdge,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFAECE77),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: item.image != null
-                                    ? Image.network(
-                                        item.image!,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) =>
-                                            const Icon(Icons.business),
-                                      )
-                                    : const Icon(Icons.fastfood),
-                              ),
-                            ],
+                                  ),
+                              ],
+                            ),
                           ),
                         );
                       },

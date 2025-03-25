@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:helloworld/presentation/common/custom_textfield.dart';
+import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/utils/app_validator.dart';
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
 
 class ChangePassScreen extends StatefulWidget {
   const ChangePassScreen({Key? key}) : super(key: key);
@@ -16,19 +20,14 @@ class _ChangePassScreenState extends State<ChangePassScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF517F03), // Green background
+      backgroundColor: whiteColor,
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: Colors.transparent,
+        title: Text(
           "Change Password",
-          style: TextStyle(color: Color(0xFFFFF4E2)), // Beige color for text
+          style: headlineTextStyle.copyWith(color: primaryColor),
         ),
-        backgroundColor: const Color(0xFF517F03), // Match the background color
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back
-          },
-        ),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: Padding(
@@ -39,34 +38,18 @@ class _ChangePassScreenState extends State<ChangePassScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-                const Text(
-                  "New Password:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFFFFF4E2), // Beige color for text
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
+                CustomTextField(
+                  labelText: 'New Password:',
                   controller: newPasswordController,
-                  obscureText: true,
+                  hintText: 'Enter new password',
                   validator: AppValidator.passwordCheck,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFFFFF4E2), // Beige background
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(30.0), // Rounded corners
-                      borderSide: BorderSide.none, // No border line
-                    ),
-                    hintText: "Enter new password",
-                  ),
+                  obscureText: true,
                 ),
-
-                const SizedBox(height: 30), // Space below inputs
+                const SizedBox(height: 30),
                 Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
+                  child: PrimaryButton(
+                    buttonText: 'Change Password',
+                    onTap: () async {
                       if (!formKey.currentState!.validate()) {
                         return;
                       }
@@ -82,27 +65,27 @@ class _ChangePassScreenState extends State<ChangePassScreen> {
                         );
                         Navigator.pop(context);
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(val.toString()),
-                          ),
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text("Failed to change password"),
+                              content: Text(val.toString()),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
                         );
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFFAECE77), // Darker Green button color
-                      foregroundColor: Colors.white, // Text color
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 50, vertical: 15),
-                    ),
-                    child: const Text(
-                      "Change Password",
-                      style: TextStyle(fontSize: 18),
-                    ),
                   ),
                 ),
-                const SizedBox(height: 20), // Space below button
               ],
             ),
           ),

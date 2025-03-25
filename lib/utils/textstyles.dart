@@ -31,7 +31,7 @@ const bodyMediumTextStyle = TextStyle(
 
 const bodySmallTextStyle = TextStyle(
   fontSize: 12,
-  color: whiteColor,
+  color: primaryColor,
   fontWeight: FontWeight.w400,
   fontFamily: 'Roboto',
 );

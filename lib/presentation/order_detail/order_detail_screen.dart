@@ -9,10 +9,11 @@ import 'package:helloworld/model/cart_model.dart';
 import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
 
 class OrderDetailScreen extends StatefulWidget {
-  const OrderDetailScreen(
-      {super.key, required this.order, this.isBusinessSide = false});
+  const OrderDetailScreen({super.key, required this.order, this.isBusinessSide = false});
   final CartModel order;
   final bool isBusinessSide;
 
@@ -22,18 +23,14 @@ class OrderDetailScreen extends StatefulWidget {
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   changeStatus(status) async {
-    await FirebaseFirestore.instance
-        .collection('orders')
-        .doc(widget.order.id)
-        .update({"status": status});
+    await FirebaseFirestore.instance.collection('orders').doc(widget.order.id).update({"status": status});
   }
 
   final List<ProductModel> products = [];
   bool isLoading = true;
   getProducts() async {
     for (final item in widget.order.items) {
-      final product =
-          await FirestoreService.instance.getSingleProduct(item.productId);
+      final product = await FirestoreService.instance.getSingleProduct(item.productId);
       products.add(product);
     }
     setState(() {
@@ -49,11 +46,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userInOrder = widget.order.userModel ?? widget.order.businessUser;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF517F03),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF517F03),
-      ),
+      backgroundColor: whiteColor,
+      appBar: AppBar(backgroundColor: whiteColor),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -65,12 +62,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   height: 40,
                   width: 40,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: widget.order.userModel?.image != null
+                  child: userInOrder?.image != null
                       ? Image.network(
-                          widget.order.userModel?.image ?? '',
+                          userInOrder?.image ?? '',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return const Icon(
@@ -88,25 +85,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     children: [
                       // const SizedBox(height: 8),
                       Text(
-                        (widget.order.userModel?.name ?? '').toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                        (userInOrder?.name ?? '').toUpperCase(),
+                        style: bodyLargeTextStyle,
                       ),
                       Text(
-                        (widget.order.userModel?.phoneNumber ?? '')
+                        ((userInOrder?.phoneNumber == null || (userInOrder?.phoneNumber?.isEmpty ?? true))
+                                ? 'No phone number'
+                                : userInOrder?.phoneNumber)!
                             .toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                        style: bodySmallTextStyle,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 14),
                       Padding(
-                        padding: const EdgeInsets.only(top: 14),
+                        padding: const EdgeInsets.only(top: 14, right: 24),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -114,27 +105,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               children: [
                                 const Text(
                                   "Order ID",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                  ),
+                                  style: titleTextStyle,
                                 ),
                                 const SizedBox(height: 5),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: primaryColor,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Text(
-                                    widget.order.orderId ?? '',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Color(0xFF517F03),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  child: Text(widget.order.orderId ?? '',
+                                      style: bodyLargeTextStyle.copyWith(
+                                        color: whiteColor,
+                                      )),
                                 ),
                               ],
                             ),
@@ -156,26 +139,22 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: primaryColor,
                   ),
                 ),
               ),
             if (FirestoreService.instance.currentUser?.role == 'business')
               StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('orders')
-                      .doc(widget.order.id)
-                      .snapshots(),
+                  stream: FirebaseFirestore.instance.collection('orders').doc(widget.order.id).snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData == false) {
                       return const Center(
                         child: CircularProgressIndicator(
-                          color: Colors.white,
+                          color: primaryColor,
                         ),
                       );
                     }
-                    final orderStreamdata =
-                        CartModel.fromJson(snapshot.data!.data()!);
+                    final orderStreamdata = CartModel.fromJson(snapshot.data!.data()!);
 
                     return Row(
                       children: [
@@ -232,7 +211,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           "${widget.order.items[index].quantity}x",
                           style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.white,
+                            color: primaryColor,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -245,14 +224,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
-                                  color: Colors.white,
+                                  color: primaryColor,
                                 ),
                               ),
                               Text(
                                 item.productDescription,
                                 style: const TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white,
+                                  color: primaryColor,
                                 ),
                               ),
                             ],
@@ -263,7 +242,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           "\$${widget.order.items[index].price}",
                           style: const TextStyle(
                             fontSize: 18,
-                            color: Colors.white,
+                            color: primaryColor,
                           ),
                         ),
                       ],
@@ -287,96 +266,108 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: primaryColor,
                   ),
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Status",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Status",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: primaryColor,
+                            ),
+                          ),
+                          Text(
+                            "${widget.order.status?.toUpperCase()}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: primaryColor,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Text(
-                      "${widget.order.status?.toUpperCase()}",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Sub Total",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: primaryColor,
+                            ),
+                          ),
+                          Text(
+                            "\$${double.parse(widget.order.total!) + double.parse(widget.order.discount ?? '0')}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: primaryColor,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Sub Total",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Discount",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: primaryColor,
+                            ),
+                          ),
+                          Text(
+                            "\$${double.parse(widget.order.discount ?? '0')}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: primaryColor,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Text(
-                      "\$${double.parse(widget.order.total!) + double.parse(widget.order.discount ?? '0')}",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Total",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor,
+                            ),
+                          ),
+                          Text(
+                            "\$${widget.order.total}",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: primaryColor,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Discount",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      "\$${double.parse(widget.order.discount ?? '0')}",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Total",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      "\$${widget.order.total}",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 30),
               ],

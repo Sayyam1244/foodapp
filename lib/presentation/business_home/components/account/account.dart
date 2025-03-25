@@ -7,6 +7,8 @@ import 'package:helloworld/presentation/business_home/components/account/edit_pr
 import 'package:helloworld/presentation/welcome_screen.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
 
 class MyAcccount extends StatefulWidget {
   const MyAcccount({super.key});
@@ -19,21 +21,21 @@ class _MyAcccountState extends State<MyAcccount> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFF517F03),
+        backgroundColor: whiteColor,
         body: Center(
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                SizedBox(height: MediaQuery.of(context).padding.top + 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: 50,
-                      width: 50,
+                      height: 60,
+                      width: 60,
                       clipBehavior: Clip.hardEdge,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFFF4E2),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
                         shape: BoxShape.circle,
                       ),
                       child: FirestoreService.instance.currentUser!.image != null
@@ -48,13 +50,8 @@ class _MyAcccountState extends State<MyAcccount> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Hello, ${FirestoreService.instance.currentUser!.name}",
-                          style: const TextStyle(
-                            color: Color(0xFFFFF4E2),
-                            fontSize: 20,
-                          ),
-                        ),
+                        Text("Welcome, ${FirestoreService.instance.currentUser!.name}",
+                            style: titleTextStyle),
                         if (FirestoreService.instance.currentUser?.role == 'business')
                           StreamBuilder(
                               stream: FirebaseFirestore.instance
@@ -97,16 +94,14 @@ class _MyAcccountState extends State<MyAcccount> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "My Wallet",
-                          style: TextStyle(color: Color(0xFFFFF4E2), fontSize: 18),
-                        ),
+                        Text("My Wallet", style: bodyLargeTextStyle.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 5),
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFF4E2),
+                            color: Colors.grey.shade200,
+                            border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: StreamBuilder(
@@ -125,28 +120,15 @@ class _MyAcccountState extends State<MyAcccount> {
                                 children: [
                                   const Icon(
                                     Icons.account_balance_wallet_outlined,
-                                    color: Color(0xFF517F03),
-                                    size: 44,
+                                    color: Colors.black,
+                                    size: 34,
                                   ),
                                   const SizedBox(width: 10),
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        "$points",
-                                        style: const TextStyle(
-                                          color: Color(0xFF517F03),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const Text(
-                                        "Points available",
-                                        style: TextStyle(
-                                          color: Color(0xFF517F03),
-                                          fontSize: 12,
-                                        ),
-                                      ),
+                                      Text("$points", style: bodyLargeTextStyle),
+                                      const Text("Points available", style: bodySmallTextStyle),
                                     ],
                                   ),
                                 ],
@@ -155,10 +137,8 @@ class _MyAcccountState extends State<MyAcccount> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          "You helped saved",
-                          style: TextStyle(color: Color(0xFFFFF4E2), fontSize: 18),
-                        ),
+                        Text("You helped saved",
+                            style: bodyLargeTextStyle.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 5),
                         StreamBuilder(
                             stream: FirebaseFirestore.instance
@@ -182,27 +162,15 @@ class _MyAcccountState extends State<MyAcccount> {
                                             width: double.infinity,
                                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFFFFF4E2),
+                                              color: Colors.grey.shade200,
+                                              border: Border.all(color: Colors.black),
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Center(
-                                              child: Text(
-                                                '${gmSaved.toInt()} g',
-                                                style: const TextStyle(
-                                                  color: Color(0xFF517F03),
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
+                                              child: Text('${gmSaved.toInt()} g', style: bodySmallTextStyle),
                                             )),
                                         const SizedBox(height: 5),
-                                        const Text(
-                                          "Food Rescued",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                          ),
-                                        ),
+                                        const Text("Food Rescued", style: bodySmallTextStyle),
                                       ],
                                     ),
                                   ),
@@ -214,27 +182,15 @@ class _MyAcccountState extends State<MyAcccount> {
                                             width: double.infinity,
                                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFFFFF4E2),
+                                              color: Colors.grey.shade200,
+                                              border: Border.all(color: Colors.black),
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Center(
-                                              child: Text(
-                                                '${co2.toInt()} g',
-                                                style: const TextStyle(
-                                                  color: Color(0xFF517F03),
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
+                                              child: Text('${co2.toInt()} g', style: bodySmallTextStyle),
                                             )),
                                         const SizedBox(height: 5),
-                                        const Text(
-                                          "CO2",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                          ),
-                                        ),
+                                        const Text("CO2", style: bodySmallTextStyle),
                                       ],
                                     ),
                                   ),
@@ -330,7 +286,7 @@ class _MyAcccountState extends State<MyAcccount> {
                             ));
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 100),
               ],
             ),
           ),
@@ -354,8 +310,8 @@ class AcccountSettingTile extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 30),
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF4E2),
-        borderRadius: BorderRadius.circular(30),
+        color: primaryColor,
+        borderRadius: BorderRadius.circular(4),
       ),
       child: InkWell(
         onTap: onTap,
@@ -363,13 +319,13 @@ class AcccountSettingTile extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: const Color(0xFF517F03),
+              color: whiteColor,
               size: 36,
             ),
             const SizedBox(width: 10),
             Text(
               title,
-              style: const TextStyle(color: Color(0xFF517F03), fontSize: 16, fontWeight: FontWeight.w600),
+              style: const TextStyle(color: whiteColor, fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ],
         ),

@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:helloworld/model/user_model.dart';
-import 'package:helloworld/services/auth_service.dart';
+import 'package:helloworld/presentation/common/custom_textfield.dart';
+import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/services/firestore_service.dart';
 import 'package:helloworld/services/file_picker_service.dart';
 import 'package:helloworld/utils/app_validator.dart';
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
-    UserModel? user = FirestoreService.instance.currentUser;
+    final user = FirestoreService.instance.currentUser;
     if (user != null) {
       businessNameController.text = user.name;
       categoryValue = user.category;
@@ -44,271 +45,116 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF517F03), // Green background
+      backgroundColor: whiteColor,
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: Colors.transparent,
+        title: Text(
           "Edit Profile",
-          style: TextStyle(color: Color(0xFFFFF4E2)), // Beige color for text
-        ),
-        backgroundColor: const Color(0xFF517F03), // Match background color
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back
-          },
+          style: headlineTextStyle.copyWith(color: primaryColor),
         ),
       ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            // Allows scrolling for small screens
-            child: Form(
-              key: formKey,
+          child: Form(
+            key: formKey,
+            child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (FirestoreService.instance.currentUser?.role == 'business')
-                    Center(
-                      child: InkWell(
-                        onTap: () {
-                          FilePickerService.pickFile().then((value) {
-                            setState(() {
-                              image = value;
-                            });
-                          });
-                        },
-                        child: Container(
-                          height: 150,
-                          width: 150,
-                          clipBehavior: Clip.hardEdge,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFFF4E2), // Beige background
-                            shape: BoxShape.circle,
-                          ),
-                          child: image == null
-                              ? FirestoreService.instance.currentUser?.image !=
-                                      null
-                                  ? Image.network(FirestoreService
-                                      .instance.currentUser!.image!)
-                                  : const Icon(
-                                      Icons.camera_alt,
-                                      size: 50,
-                                      color: Color(
-                                          0xFF517F03), // Green color for icon
-                                    )
-                              : Image.file(
-                                  image!,
-                                  fit: BoxFit.cover,
-                                ),
-
-                          //  FirestoreService.instance.currentUser?.image !=
-                          //         null
-                          //     ? Image.network(
-                          //         FirestoreService.instance.currentUser!.image!)
-                          //     : image == null
-                          //         ? const Icon(
-                          //             Icons.camera_alt,
-                          //             size: 50,
-                          //             color: Color(
-                          //                 0xFF517F03), // Green color for icon
-                          //           )
-                          //         : Image.file(
-                          //             image!,
-                          //             fit: BoxFit.cover,
-                          //           ),
-                        ),
+                  Center(
+                    child: InkWell(
+                      onTap: () async {
+                        final pickedImage = await FilePickerService.pickFile();
+                        setState(() {
+                          image = pickedImage;
+                        });
+                      },
+                      child: CircleAvatar(
+                        radius: 75,
+                        backgroundColor: Colors.grey.shade200,
+                        backgroundImage: image != null
+                            ? FileImage(image!)
+                            : FirestoreService.instance.currentUser?.image != null
+                                ? NetworkImage(FirestoreService.instance.currentUser!.image!)
+                                    as ImageProvider<Object>?
+                                : null,
+                        child: image == null && FirestoreService.instance.currentUser?.image == null
+                            ? const Icon(Icons.camera_alt, size: 50, color: primaryColor)
+                            : null,
                       ),
                     ),
+                  ),
                   const SizedBox(height: 20),
-                  Text(
-                    FirestoreService.instance.currentUser?.role == 'business'
+                  CustomTextField(
+                    labelText: FirestoreService.instance.currentUser?.role == 'business'
                         ? "Business Name:"
                         : "Name:",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFFFFF4E2), // Beige color for text
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
                     controller: businessNameController,
+                    hintText: "Enter your name",
                     validator: AppValidator.emptyCheck,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xFFFFF4E2), // Beige background
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Rounded corners
-                        borderSide: BorderSide.none, // No border line
-                      ),
-                      hintText: FirestoreService.instance.currentUser?.role ==
-                              'business'
-                          ? "Enter business name"
-                          : "Enter your name",
-                    ),
                   ),
                   const SizedBox(height: 20),
-                  if (FirestoreService.instance.currentUser?.role == 'business')
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Category:",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Color(0xFFFFF4E2), // Beige color for text
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        DropdownButtonFormField<String>(
-                          value: categoryValue,
-                          validator: AppValidator.emptyCheck,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor:
-                                const Color(0xFFFFF4E2), // Beige background
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  30.0), // Rounded corners
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          hint: const Text("Select category"),
-                          items: <String>[
-                            'Restaurants',
-                            'Cafes',
-                            'Groceries',
-                            'Bakeries',
-                          ].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                                style: const TextStyle(
-                                  color: Color(
-                                      0xFF517F03), // Text color for dropdown items
-                                  fontSize: 16,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            categoryValue = newValue;
-                          },
-                          // Keep the dropdown from filling the entire screen
-                          isExpanded: false,
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          "Location (Neighborhood, Street):",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Color(0xFFFFF4E2), // Beige color for text
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: locationController,
-                          validator: AppValidator.emptyCheck,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor:
-                                const Color(0xFFFFF4E2), // Beige background
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  30.0), // Rounded corners
-                              borderSide: BorderSide.none, // No border line
-                            ),
-                            hintText: "Enter location",
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                      ],
+                  if (FirestoreService.instance.currentUser?.role == 'business') ...[
+                    DropdownButtonFormField<String>(
+                      value: categoryValue,
+                      validator: AppValidator.emptyCheck,
+                      decoration: const InputDecoration(border: InputBorder.none),
+                      items: ['Restaurants', 'Cafes', 'Groceries', 'Bakeries']
+                          .map((value) => DropdownMenuItem(
+                                value: value,
+                                child: Text(value, style: bodyLargeTextStyle),
+                              ))
+                          .toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          categoryValue = newValue;
+                        });
+                      },
                     ),
-                  if (FirestoreService.instance.currentUser?.role == 'customer')
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Phone Number:",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Color(0xFFFFF4E2), // Beige color for text
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: phoneNumberController,
-                          validator: AppValidator.phoneCheck,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor:
-                                const Color(0xFFFFF4E2), // Beige background
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  30.0), // Rounded corners
-                              borderSide: BorderSide.none, // No border line
-                            ),
-                            hintText: "Enter your Phone Number",
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                      ],
+                    const SizedBox(height: 20),
+                    CustomTextField(
+                      labelText: "Location (Neighborhood, Street):",
+                      controller: locationController,
+                      hintText: "Enter location",
+                      validator: AppValidator.emptyCheck,
                     ),
-
+                  ],
+                  if (FirestoreService.instance.currentUser?.role == 'customer') ...[
+                    CustomTextField(
+                      labelText: "Phone Number:",
+                      controller: phoneNumberController,
+                      hintText: "Enter your phone number",
+                      validator: AppValidator.phoneCheck,
+                    ),
+                  ],
+                  const SizedBox(height: 30),
                   Center(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (!formKey.currentState!.validate()) {
-                          return;
-                        }
-                        UserModel user = UserModel(
-                          uid: FirestoreService.instance.currentUser!.uid,
+                    child: PrimaryButton(
+                      buttonText: "Save",
+                      onTap: () async {
+                        if (!formKey.currentState!.validate()) return;
+
+                        final user = FirestoreService.instance.currentUser!.copyWith(
                           name: businessNameController.text,
-                          email: emailController.text,
-                          phoneNumber: phoneNumberController.text,
                           category: categoryValue,
                           location: locationController.text,
-                          role: FirestoreService.instance.currentUser!.role,
-                          isDeleted: false,
+                          phoneNumber: phoneNumberController.text,
                         );
-                        final val = await FirestoreService.instance.setUser(
-                          user,
-                          image: image,
-                        );
-                        Navigator.pop(context);
-                        if (val.runtimeType == String) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(val),
-                            ),
-                          );
+
+                        final result = await FirestoreService.instance.setUser(user, image: image);
+
+                        if (result is String) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Profile updated successfully"),
-                            ),
+                            const SnackBar(content: Text("Profile updated successfully")),
                           );
+                          Navigator.pop(context);
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(
-                            0xFFAECE77), // Darker Green save button color
-                        foregroundColor: Colors.white, // Text color
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 15),
-                      ),
-                      child: const Text(
-                        "Save",
-                        style: TextStyle(fontSize: 18),
-                      ),
                     ),
                   ),
-                  const SizedBox(height: 20), // Space below the button
                 ],
               ),
             ),
