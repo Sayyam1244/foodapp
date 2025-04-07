@@ -8,7 +8,11 @@ import 'package:flutter/widgets.dart';
 import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/presentation/business_home/components/menu/add_item.dart';
 import 'package:helloworld/presentation/business_home/components/menu/edit_item.dart';
+import 'package:helloworld/presentation/checkout/checkout_screen.dart';
+import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/services/firestore_service.dart';
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -21,7 +25,7 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF517F03),
+      backgroundColor: whiteColor,
       body: Center(
         child: Column(
           children: [
@@ -40,8 +44,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   return const CircularProgressIndicator();
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
-                } else if (!snapshot.hasData ||
-                    (snapshot.data?.docs.isEmpty ?? true)) {
+                } else if (!snapshot.hasData || (snapshot.data?.docs.isEmpty ?? true)) {
                   return const Expanded(
                     child: Column(
                       children: [
@@ -59,9 +62,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                   );
                 } else {
-                  final products = snapshot.data!.docs
-                      .map((e) => ProductModel.fromMap(e.data()))
-                      .toList();
+                  final products = snapshot.data!.docs.map((e) => ProductModel.fromMap(e.data())).toList();
 
                   return Expanded(
                     child: ListView.separated(
@@ -72,18 +73,18 @@ class _MenuScreenState extends State<MenuScreen> {
                         return Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: const Color(0xFFFFF4E2),
+                            color: Colors.grey.shade200,
                           ),
                           padding: const EdgeInsets.all(10),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                height: 105,
-                                width: 105,
+                                height: 80,
+                                width: 80,
                                 clipBehavior: Clip.hardEdge,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFAECE77),
+                                  color: Colors.grey.shade200,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: product.imageUrl != null
@@ -98,123 +99,84 @@ class _MenuScreenState extends State<MenuScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      product.productName,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xff2D531A),
-                                      ),
-                                    ),
-                                    Text(
-                                      "Description: ${product.productDescription}",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
+                                    Text(product.productName,
+                                        style: bodyLargeTextStyle.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        )),
+                                    Text(product.productDescription, style: bodySmallTextStyle),
                                     Row(
                                       children: [
-                                        const Text(
-                                          "Price Before discount: ",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        Text("${product.priceAfterDiscount}",
+                                            style: bodyMediumTextStyle.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                        const SizedBox(width: 4),
                                         Text(
                                           "${product.priceBeforeDiscount}",
-                                          style: const TextStyle(
+                                          style: bodySmallTextStyle.copyWith(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                            decoration:
-                                                TextDecoration.lineThrough,
+                                            decoration: TextDecoration.lineThrough,
                                             decorationColor: Colors.red,
                                             decorationThickness: 2,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    Text(
-                                      "Price after discount: ${product.priceAfterDiscount}",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          "Stock: ${product.stock}",
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        Text("Stock: ${product.stock}",
+                                            style: bodyMediumTextStyle.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            )),
                                       ],
                                     ),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        InkWell(
-                                            onTap: () {
+                                        SmallIconButton(
+                                            icon: Icons.edit,
+                                            onPressed: () {
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      EditItem(
+                                                  builder: (context) => EditItem(
                                                     product: product,
                                                   ),
                                                 ),
                                               );
-                                            },
-                                            child: const Icon(Icons.edit)),
+                                            }),
                                         const SizedBox(width: 10),
-                                        InkWell(
-                                            onTap: () {
+                                        SmallIconButton(
+                                            onPressed: () {
                                               showDialog(
                                                   context: context,
-                                                  builder:
-                                                      (context) => AlertDialog(
-                                                            title: const Text(
-                                                                'Delete Product'),
-                                                            content: const Text(
-                                                                'Are you sure you want to delete this product?'),
-                                                            actions: [
-                                                              TextButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  child: const Text(
-                                                                      'Cancel')),
-                                                              TextButton(
-                                                                  onPressed:
-                                                                      () async {
-                                                                    await FirestoreService
-                                                                        .instance
-                                                                        .deleteProduct(
-                                                                            product.id);
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  child: const Text(
-                                                                      'Delete')),
-                                                            ],
-                                                          ));
+                                                  builder: (context) => AlertDialog(
+                                                        title: const Text('Delete Product'),
+                                                        content: const Text(
+                                                            'Are you sure you want to delete this product?'),
+                                                        actions: [
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(context);
+                                                              },
+                                                              child: const Text('Cancel')),
+                                                          TextButton(
+                                                              onPressed: () async {
+                                                                await FirestoreService.instance
+                                                                    .deleteProduct(product.id);
+                                                                Navigator.pop(context);
+                                                              },
+                                                              child: const Text('Delete')),
+                                                        ],
+                                                      ));
                                             },
-                                            child: const Icon(Icons.delete)),
+                                            icon: Icons.delete),
                                       ],
                                     )
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 10),
                             ],
                           ),
                         );
@@ -228,25 +190,17 @@ class _MenuScreenState extends State<MenuScreen> {
               },
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () async {
-                // navigate to AddItem
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const AddItem()));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    const Color(0xFFAECE77), // Darker Green login button color
-                foregroundColor: Colors.white, // Text color
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-              ),
-              child: const Text(
-                "Add Product",
-                style: TextStyle(fontSize: 18),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: PrimaryButton(
+                onTap: () async {
+                  // navigate to AddItem
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const AddItem()));
+                },
+                buttonText: 'Add Product',
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 100),
           ],
         ),
       ),

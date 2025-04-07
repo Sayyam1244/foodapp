@@ -1,10 +1,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:helloworld/model/cart_model.dart';
 import 'package:helloworld/presentation/order_detail/order_detail_screen.dart';
 import 'package:helloworld/services/firestore_service.dart';
+import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/date_formatter.dart';
+import 'package:helloworld/utils/textstyles.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -14,13 +17,13 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  List<String> orderType = ["Incoming orders", "Completed"];
+  List<String> orderType = ["Incoming orders", "Incoming Completed"];
 
   String selectedType = 'Incoming orders';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF517F03),
+      backgroundColor: whiteColor,
       body: StreamBuilder(
           stream: FirestoreService.instance.streamUserOrdersForBusiness(),
           builder: (context, snapshot) {
@@ -62,12 +65,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.only(right: 10),
-                                  height: 50,
+                                  height: 40,
                                   padding: const EdgeInsets.symmetric(horizontal: 24),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: const Color.fromARGB(255, 143, 168, 100),
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: primaryColor,
                                     border: Border.all(
+                                      width: 2,
                                       color: selectedType == e ? Colors.black : Colors.transparent,
                                     ),
                                   ),
@@ -103,11 +107,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           );
                         },
                         child: Container(
-                          height: item.rating != null ? 120 : 105,
+                          height: item.rating != null ? 120 : 100,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: const Color(0xFFFFF4E2),
-                          ),
+                              borderRadius: BorderRadius.circular(12), color: Colors.grey.shade200),
                           padding: const EdgeInsets.all(14),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,47 +121,41 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          "Order ID: ${item.orderId ?? ''}",
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xff2D531A),
-                                          ),
-                                        ),
+                                        Text("Order ID: ${item.orderId ?? ''}", style: titleTextStyle),
                                         Text(
                                           "\$${item.total!}",
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
+                                          style: titleTextStyle.copyWith(fontSize: 14),
                                         ),
                                       ],
                                     ),
+                                    Text(item.createdDate.formattedDate, style: bodyMediumTextStyle),
+                                    const SizedBox(height: 4),
                                     Text(
-                                      item.createdDate.formattedDate,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xff2D531A),
-                                      ),
-                                    ),
-                                    Text(
-                                      item.status!,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black45,
+                                      item.status!.toUpperCase().replaceAll("_", ' '),
+                                      style: bodyMediumTextStyle.copyWith(
+                                        color: Colors.black,
                                       ),
                                     ),
                                     const Spacer(),
                                     if (item.rating != null)
                                       Row(
                                         children: [
-                                          const Icon(
-                                            Icons.star,
-                                            color: Colors.yellow,
-                                            size: 18,
+                                          RatingBar.builder(
+                                            initialRating: item.rating!.toDouble(),
+                                            minRating: 1,
+                                            direction: Axis.horizontal,
+                                            allowHalfRating: true,
+                                            itemCount: 5,
+                                            itemSize: 14,
+                                            ignoreGestures: true,
+                                            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                            itemBuilder: (context, _) => const Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                            ),
+                                            onRatingUpdate: (rating) {
+                                              log(rating.toString());
+                                            },
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
@@ -173,14 +169,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         ],
                                       )
                                   ],
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              const Center(
-                                child: Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  color: Color(0xff2D531A),
-                                  size: 16,
                                 ),
                               ),
                             ],
