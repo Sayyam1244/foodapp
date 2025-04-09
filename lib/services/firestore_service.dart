@@ -18,9 +18,9 @@ class FirestoreService {
 
   UserModel? currentUser;
 
+  // Set user data in Firestore, upload image if provided
   Future setUser(UserModel user, {File? image}) async {
     try {
-      //TODO: Enable firebase storage
       String? imageUrl = user.image;
       if (image != null) {
         final fileName = DateTime.now().millisecondsSinceEpoch.toString();
@@ -36,6 +36,7 @@ class FirestoreService {
     }
   }
 
+  // Get user data from Firestore
   Future<UserModel?> getUser(String uid) async {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
@@ -54,6 +55,7 @@ class FirestoreService {
     }
   }
 
+  // Mark user account as deleted
   Future<bool> deleteAccount(String uid) async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -65,6 +67,7 @@ class FirestoreService {
     }
   }
 
+  // Add a new product to Firestore
   Future<String> addProduct(
       {required String productName,
       required String productDescription,
@@ -99,6 +102,7 @@ class FirestoreService {
     }
   }
 
+  // Update product details in Firestore
   Future<String> updateProduct(
       {String? id,
       String? productName,
@@ -109,10 +113,6 @@ class FirestoreService {
       int? stock,
       File? image}) async {
     try {
-      // final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      // final storageRef = FirebaseStorage.instance.ref('products/$fileName.png');
-      // await storageRef.putFile(image!);
-      // final imageUrl = storageRef.getDownloadURL();
       final docRef = FirebaseFirestore.instance.collection('products').doc(id);
 
       docRef.update({
@@ -122,7 +122,6 @@ class FirestoreService {
         if (priceAfterDiscount != null) 'priceAfterDiscount': priceAfterDiscount,
         if (weight != null) 'weight': weight,
         if (stock != null) 'stock': stock,
-        // if (imageUrl != null) 'image': imageUrl,
       });
       return 'Product updated successfully';
     } catch (e) {
@@ -130,6 +129,7 @@ class FirestoreService {
     }
   }
 
+  // Mark product as deleted in Firestore
   Future deleteProduct(docId) async {
     try {
       await FirebaseFirestore.instance.collection('products').doc(docId).update({
@@ -141,29 +141,7 @@ class FirestoreService {
     }
   }
 
-  // Stream<List<ProductModel>> getProductsStream() async* {
-  //   Stream<List<UserModel>> usersStream = getUsersStream();
-
-  //   await for (var snapshot in FirebaseFirestore.instance
-  //       .collection('products')
-  //       .where('isDeleted', isEqualTo: false)
-  //       .snapshots()) {
-  //     List<UserModel> users = await usersStream.first;
-
-  //     List<ProductModel> products = snapshot.docs.map((doc) {
-  //       ProductModel productModel = ProductModel.fromMap(doc.data());
-
-  //       productModel.user = users
-  //           .where((user) => user.uid == productModel.businessId)
-  //           .firstOrNull;
-
-  //       return productModel;
-  //     }).toList();
-
-  //     yield products;
-  //   }
-  // }
-
+  // Stream list of users based on role
   Stream<List<UserModel>> getUsersStream(String type) async* {
     await for (var snapshot in FirebaseFirestore.instance
         .collection('users')
@@ -178,6 +156,7 @@ class FirestoreService {
     }
   }
 
+  // Get list of users based on role
   Future<List<UserModel>> getUsersList(String type) async {
     final data = await FirebaseFirestore.instance
         .collection('users')
@@ -190,6 +169,7 @@ class FirestoreService {
     return users;
   }
 
+  // Get list of products for a specific business
   Future getProducts(String businessId) async {
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -205,6 +185,7 @@ class FirestoreService {
     }
   }
 
+  // Get a single product by ID
   Future getSingleProduct(String id) async {
     try {
       final snapshot = await FirebaseFirestore.instance.collection('products').doc(id).get();
@@ -214,6 +195,7 @@ class FirestoreService {
     }
   }
 
+  // Stream list of products for a specific business
   Stream<List<ProductModel>> getProductsStream(String businessId) async* {
     await for (var snapshot in FirebaseFirestore.instance
         .collection('products')
@@ -227,6 +209,7 @@ class FirestoreService {
     }
   }
 
+  // Place an order and update stock and user points
   Future placeOrder(
     CartModel cartModel,
     int pointsUsed,
@@ -253,7 +236,7 @@ class FirestoreService {
         'discount': pointsUsed > 0 ? pointsUsed / 1000 : 0,
         'order_id': _generateUnique8NumbersString(),
       });
-      //adjust stock
+      // Adjust stock
       WriteBatch batch = FirebaseFirestore.instance.batch();
       for (var element in cartModel.items) {
         final productRef = FirebaseFirestore.instance.collection('products').doc(element.productId);
@@ -262,7 +245,7 @@ class FirestoreService {
         batch.update(productRef, {'stock': stock - element.quantity});
       }
       await batch.commit();
-      //adjust points
+      // Adjust points
       final userRef = FirebaseFirestore.instance.collection('users').doc(currentUser!.uid);
 
       await userRef.update({
@@ -275,10 +258,10 @@ class FirestoreService {
     }
   }
 
+  // Stream orders for the current user
   Stream<List<CartModel>> streamUserOrders() async* {
     final userList = await getUsersList('business');
 
-    // await for (var users in usersStream) {
     await for (var snapshot in FirebaseFirestore.instance
         .collection('orders')
         .where('userId', isEqualTo: currentUser!.uid)
@@ -299,14 +282,13 @@ class FirestoreService {
       }
 
       yield orders;
-      // }
     }
   }
 
+  // Stream orders for businesses
   Stream<List<CartModel>> streamUserOrdersForBusiness() async* {
     final userList = await getUsersList('customer');
 
-    // await for (var users in usersStream) {
     await for (var snapshot in FirebaseFirestore.instance.collection('orders').snapshots()) {
       List<CartModel> orders = [];
 
@@ -322,10 +304,10 @@ class FirestoreService {
       }
 
       yield orders;
-      // }
     }
   }
 
+  // Generate a unique 8-digit string
   _generateUnique8NumbersString() {
     return DateTime.now().millisecondsSinceEpoch.toString().substring(1, 8);
   }

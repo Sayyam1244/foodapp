@@ -20,32 +20,33 @@ class AddItem extends StatefulWidget {
 }
 
 class _AddItemState extends State<AddItem> {
-  File? image;
-  final productNameController = TextEditingController();
-  final productDescriptionController = TextEditingController();
-  final priceBeforeDiscountController = TextEditingController();
-  final priceAfterDiscountController = TextEditingController();
-  final weightController = TextEditingController();
-  final stockController = TextEditingController();
-  String? categoryValue;
-  final formKey = GlobalKey<FormState>();
+  File? image; // Holds the selected image file
+  final productNameController = TextEditingController(); // Controller for product name
+  final productDescriptionController = TextEditingController(); // Controller for product description
+  final priceBeforeDiscountController = TextEditingController(); // Controller for price before discount
+  final priceAfterDiscountController = TextEditingController(); // Controller for price after discount
+  final weightController = TextEditingController(); // Controller for product weight
+  final stockController = TextEditingController(); // Controller for stock quantity
+  String? categoryValue; // Selected category value
+  final formKey = GlobalKey<FormState>(); // Form key for validation
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: whiteColor, // Set background color
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent, // Transparent app bar
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0), // Add padding around the form
           child: Form(
-            key: formKey,
+            key: formKey, // Attach form key for validation
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Title
                   Center(
                     child: Text(
                       'Add Product',
@@ -55,104 +56,111 @@ class _AddItemState extends State<AddItem> {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  // Image picker
                   Center(
                     child: InkWell(
                       onTap: () async {
-                        final pickedFile = await FilePickerService.pickFile();
+                        final pickedFile = await FilePickerService.pickFile(); // Pick an image file
                         setState(() {
-                          image = pickedFile;
+                          image = pickedFile; // Update the selected image
                         });
                       },
                       child: CircleAvatar(
                         radius: 50,
-                        backgroundColor: Colors.grey[200],
-                        backgroundImage: image != null ? FileImage(image!) : null,
+                        backgroundColor: Colors.grey[200], // Placeholder background color
+                        backgroundImage: image != null ? FileImage(image!) : null, // Display selected image
                         child: image == null
                             ? Icon(
                                 Icons.camera_alt,
-                                color: Colors.grey[600],
+                                color: Colors.grey[600], // Placeholder icon
                               )
                             : null,
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
+                  // Product name input
                   CustomTextField(
                     labelText: 'Product Name:',
                     controller: productNameController,
                     hintText: 'Enter product name',
-                    validator: AppValidator.emptyCheck,
+                    validator: AppValidator.emptyCheck, // Validate non-empty input
                   ),
                   const SizedBox(height: 20),
+                  // Product description input
                   CustomTextField(
                     labelText: 'Product Description:',
                     controller: productDescriptionController,
                     hintText: 'Enter product description',
-                    validator: AppValidator.emptyCheck,
-                    // maxLines: 3,
+                    validator: AppValidator.emptyCheck, // Validate non-empty input
                   ),
                   const SizedBox(height: 20),
+                  // Price before discount input
                   CustomTextField(
                     labelText: 'Price Before Discount:',
                     controller: priceBeforeDiscountController,
                     hintText: 'Enter price before discount',
                     validator: (value) {
                       if (AppValidator.numberCheck(value) != null) {
-                        return AppValidator.numberCheck(value);
+                        return AppValidator.numberCheck(value); // Validate numeric input
                       }
                       if (double.tryParse(value!)! <= 0) {
-                        return "Price before discount must be greater than zero";
+                        return "Price before discount must be greater than zero"; // Ensure positive value
                       }
                       return null;
                     },
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Allow digits only
+                    keyboardType: TextInputType.number, // Numeric keyboard
                   ),
                   const SizedBox(height: 20),
+                  // Price after discount input
                   CustomTextField(
                     labelText: 'Price After Discount:',
                     controller: priceAfterDiscountController,
                     hintText: 'Enter price after discount',
                     validator: (value) {
                       if (AppValidator.numberCheck(value) != null) {
-                        return AppValidator.numberCheck(value);
+                        return AppValidator.numberCheck(value); // Validate numeric input
                       }
                       if (double.tryParse(value!)! <= 0) {
-                        return "Price after discount must be greater than zero";
+                        return "Price after discount must be greater than zero"; // Ensure positive value
                       }
                       if (double.tryParse(value)! >= double.tryParse(priceBeforeDiscountController.text)!) {
-                        return "Price after discount must be less than price before discount";
+                        return "Price after discount must be less than price before discount"; // Ensure logical pricing
                       }
                       return null;
                     },
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Allow digits only
+                    keyboardType: TextInputType.number, // Numeric keyboard
                   ),
                   const SizedBox(height: 20),
+                  // Weight input
                   CustomTextField(
                     labelText: 'Weight (g):',
                     controller: weightController,
                     hintText: 'Enter weight in grams',
-                    validator: AppValidator.numberCheck,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
+                    validator: AppValidator.numberCheck, // Validate numeric input
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Allow digits only
+                    keyboardType: TextInputType.number, // Numeric keyboard
                   ),
                   const SizedBox(height: 20),
+                  // Stock input
                   CustomTextField(
                     labelText: 'Stock:',
                     controller: stockController,
                     hintText: 'Enter stock quantity',
-                    validator: AppValidator.numberCheck,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
+                    validator: AppValidator.numberCheck, // Validate numeric input
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Allow digits only
+                    keyboardType: TextInputType.number, // Numeric keyboard
                   ),
                   const SizedBox(height: 30),
+                  // Add product button
                   Center(
                     child: PrimaryButton(
                       buttonText: 'Add Product',
                       onTap: () async {
                         if (!formKey.currentState!.validate()) {
-                          return;
+                          return; // Stop if form is invalid
                         }
                         final val = await FirestoreService.instance.addProduct(
                           productName: productNameController.text,
@@ -164,6 +172,7 @@ class _AddItemState extends State<AddItem> {
                           image: image,
                         );
                         if (!val.contains('error')) {
+                          // Send notifications on success
                           await sendBulkNotifications(
                             title: 'FoodSaver',
                             subtitle:
@@ -177,8 +186,9 @@ class _AddItemState extends State<AddItem> {
                               backgroundColor: Colors.black,
                             ),
                           );
-                          clearFieldsAndImage();
+                          clearFieldsAndImage(); // Clear form fields and image
                         } else {
+                          // Show error message
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text("Failed to add product"),
@@ -198,6 +208,7 @@ class _AddItemState extends State<AddItem> {
     );
   }
 
+  // Clear all input fields and reset image
   void clearFieldsAndImage() {
     productNameController.clear();
     productDescriptionController.clear();

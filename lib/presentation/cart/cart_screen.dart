@@ -4,6 +4,7 @@ import 'package:helloworld/presentation/checkout/checkout_screen.dart';
 import 'package:helloworld/services/cart_service.dart';
 import 'package:helloworld/utils/textstyles.dart';
 
+// Main CartScreen widget
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
@@ -12,11 +13,11 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  bool isLoading = false;
+  bool isLoading = false; // Tracks loading state
 
   @override
   Widget build(BuildContext context) {
-    double total = 0;
+    double total = 0; // Calculate total price
     for (var item in CartService.instance.cartModel.items) {
       total += (item.price * item.quantity);
     }
@@ -24,28 +25,29 @@ class _CartScreenState extends State<CartScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Cart', style: titleTextStyle),
+        title: const Text('Cart', style: titleTextStyle), // AppBar title
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator()) // Show loader if loading
           : Column(
               children: [
                 Expanded(
                   child: ListView.builder(
-                    itemCount: CartService.instance.cartModel.items.length,
+                    itemCount: CartService.instance.cartModel.items.length, // Number of cart items
                     itemBuilder: (context, index) {
                       final cartItem = CartService.instance.cartModel.items[index];
                       return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: Colors.grey.shade200,
+                          color: Colors.grey.shade200, // Item background color
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Product image
                               Container(
                                 height: 80,
                                 width: 80,
@@ -59,13 +61,14 @@ class _CartScreenState extends State<CartScreen> {
                                         cartItem.product!.imageUrl!,
                                         fit: BoxFit.cover,
                                       )
-                                    : const Icon(Icons.fastfood),
+                                    : const Icon(Icons.fastfood), // Default icon
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    // Product details
                                     Text(cartItem.product?.productName ?? '',
                                         style: bodyLargeTextStyle.copyWith(
                                           fontWeight: FontWeight.bold,
@@ -85,6 +88,7 @@ class _CartScreenState extends State<CartScreen> {
                                         const SizedBox(),
                                         Row(
                                           children: [
+                                            // Decrement or delete item
                                             SmallIconButton(
                                               onPressed: () async {
                                                 CartService.instance.decrementItemInCart(
@@ -95,6 +99,7 @@ class _CartScreenState extends State<CartScreen> {
                                               icon: cartItem.quantity == 1 ? Icons.delete : Icons.remove,
                                             ),
                                             const SizedBox(width: 10),
+                                            // Item quantity
                                             Text(
                                               cartItem.quantity.toString(),
                                               style: const TextStyle(
@@ -103,6 +108,7 @@ class _CartScreenState extends State<CartScreen> {
                                               ),
                                             ),
                                             const SizedBox(width: 10),
+                                            // Increment item
                                             SmallIconButton(
                                               onPressed: () async {
                                                 final val = CartService.instance.incrementItemInCart(
@@ -133,6 +139,7 @@ class _CartScreenState extends State<CartScreen> {
                     },
                   ),
                 ),
+                // Place Order button
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
@@ -144,7 +151,7 @@ class _CartScreenState extends State<CartScreen> {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const CheckoutScreen(),
+                          builder: (context) => const CheckoutScreen(), // Navigate to checkout
                         ),
                       );
                       setState(() {});
@@ -162,6 +169,7 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                             ),
                           ),
+                          // Total price
                           Text(
                             '\$${CartService.instance.totalPrice().toStringAsFixed(2)}',
                             style: Theme.of(context).textTheme.titleMedium!.copyWith(
@@ -181,6 +189,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 }
 
+// Small button widget for increment/decrement
 class SmallIconButton extends StatelessWidget {
   const SmallIconButton({super.key, required this.icon, required this.onPressed});
   final IconData icon;

@@ -19,12 +19,14 @@ class CustomerRegisterScreen extends StatefulWidget {
 }
 
 class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
+  // Controllers for form fields
   final customerNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
+  // Password rules to display
   final passRulesList = [
     "• Password must contain at least one letter",
     "• Password must contain at least one number",
@@ -36,17 +38,18 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent, // Transparent app bar
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0), // Padding around the form
           child: Form(
-            key: formKey,
+            key: formKey, // Form key for validation
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Title
                   Center(
                     child: Text(
                       'Customer Register',
@@ -56,6 +59,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  // Name input field
                   CustomTextField(
                     labelText: 'Enter Name:',
                     controller: customerNameController,
@@ -63,6 +67,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                     validator: AppValidator.emptyCheck,
                   ),
                   const SizedBox(height: 20),
+                  // Email input field
                   CustomTextField(
                     labelText: 'Enter Email:',
                     controller: emailController,
@@ -70,24 +75,27 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                     validator: AppValidator.emailCheck,
                   ),
                   const SizedBox(height: 20),
+                  // Phone number input field
                   CustomTextField(
                     labelText: 'Enter Phone Number:',
                     controller: phoneNumberController,
                     hintText: 'Phone Number',
                     validator: AppValidator.phoneCheck,
                     inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
+                      FilteringTextInputFormatter.digitsOnly, // Allow digits only
                     ],
                   ),
                   const SizedBox(height: 20),
+                  // Password input field
                   CustomTextField(
                     labelText: 'Enter Password:',
                     controller: passwordController,
                     hintText: '********',
                     validator: AppValidator.passwordCheck,
-                    obscureText: true,
+                    obscureText: true, // Hide password input
                   ),
                   const SizedBox(height: 10),
+                  // Display password rules
                   ...passRulesList.map(
                     (rule) => Text(
                       rule,
@@ -95,13 +103,16 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
+                  // Register button
                   Center(
                     child: PrimaryButton(
                       buttonText: 'Register',
                       onTap: () async {
+                        // Validate form
                         if (!formKey.currentState!.validate()) {
                           return;
                         }
+                        // Attempt registration
                         final val = await AuthService.signUpWithEmailPassword(
                           phoneNumber: phoneNumberController.text,
                           email: emailController.text,
@@ -109,6 +120,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                           name: customerNameController.text,
                           role: "customer",
                         );
+                        // Navigate to home screen if successful
                         if (val is User) {
                           Navigator.pushAndRemoveUntil(
                             context,
@@ -118,6 +130,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                             (route) => false,
                           );
                         } else {
+                          // Show error dialog if registration fails
                           showDialog(
                             context: context,
                             builder: (context) {

@@ -26,10 +26,12 @@ class _MyAcccountState extends State<MyAcccount> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                // Add spacing for top padding
                 SizedBox(height: MediaQuery.of(context).padding.top + 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Display user profile image or default icon
                     Container(
                       height: 60,
                       width: 60,
@@ -50,8 +52,10 @@ class _MyAcccountState extends State<MyAcccount> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Display welcome message with user name
                         Text("Welcome, ${FirestoreService.instance.currentUser!.name}",
                             style: titleTextStyle),
+                        // Show ratings if user is a business
                         if (FirestoreService.instance.currentUser?.role == 'business')
                           StreamBuilder(
                               stream: FirebaseFirestore.instance
@@ -73,6 +77,7 @@ class _MyAcccountState extends State<MyAcccount> {
                                   children: [
                                     const Icon(Icons.star, color: Colors.yellow),
                                     const SizedBox(width: 5),
+                                    // Display average rating and count
                                     Text(
                                       "${averageRating.toStringAsFixed(1)} (${ratings.length})",
                                       style: const TextStyle(
@@ -88,12 +93,14 @@ class _MyAcccountState extends State<MyAcccount> {
                   ],
                 ),
                 const SizedBox(width: 10),
+                // Show wallet and saved stats if user is a customer
                 if (FirestoreService.instance.currentUser?.role == 'customer')
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Wallet section
                         Text("My Wallet", style: bodyLargeTextStyle.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 5),
                         Container(
@@ -116,6 +123,7 @@ class _MyAcccountState extends State<MyAcccount> {
                               final points = (snapshot.data?.data() as Map).containsKey('points')
                                   ? (snapshot.data?['points'] ?? 0)
                                   : 0;
+                              // Display wallet points
                               return Row(
                                 children: [
                                   const Icon(
@@ -137,6 +145,7 @@ class _MyAcccountState extends State<MyAcccount> {
                           ),
                         ),
                         const SizedBox(height: 20),
+                        // Saved stats section
                         Text("You helped saved",
                             style: bodyLargeTextStyle.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 5),
@@ -153,6 +162,7 @@ class _MyAcccountState extends State<MyAcccount> {
                                   ? (snapshot.data?['gmSaved'] ?? 0)
                                   : 0;
                               num co2 = gmSaved > 0 ? gmSaved * 2 : 0;
+                              // Display food rescued and CO2 saved
                               return Row(
                                 children: [
                                   Expanded(
@@ -202,6 +212,7 @@ class _MyAcccountState extends State<MyAcccount> {
                     ),
                   ),
                 const SizedBox(height: 20),
+                // Edit profile option
                 AcccountSettingTile(
                   title: 'Edit Profile',
                   icon: Icons.edit_note_rounded,
@@ -212,6 +223,7 @@ class _MyAcccountState extends State<MyAcccount> {
                   },
                 ),
                 const SizedBox(height: 20),
+                // Change password option
                 AcccountSettingTile(
                   title: 'Change Password',
                   icon: Icons.password,
@@ -222,6 +234,7 @@ class _MyAcccountState extends State<MyAcccount> {
                   },
                 ),
                 const SizedBox(height: 20),
+                // Delete account option
                 AcccountSettingTile(
                   title: 'Delete Account',
                   icon: Icons.close,
@@ -256,6 +269,7 @@ class _MyAcccountState extends State<MyAcccount> {
                   },
                 ),
                 const SizedBox(height: 20),
+                // Logout option
                 AcccountSettingTile(
                   title: 'Logout',
                   icon: Icons.logout,
@@ -317,12 +331,14 @@ class AcccountSettingTile extends StatelessWidget {
         onTap: onTap,
         child: Row(
           children: [
+            // Display icon
             Icon(
               icon,
               color: whiteColor,
               size: 36,
             ),
             const SizedBox(width: 10),
+            // Display title
             Text(
               title,
               style: const TextStyle(color: whiteColor, fontSize: 16, fontWeight: FontWeight.w600),

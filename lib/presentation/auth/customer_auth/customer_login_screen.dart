@@ -15,31 +15,33 @@ import 'customer_register_screen.dart'; // Import for the sign-up screen
 
 class CustomerLoginScreen extends StatefulWidget {
   const CustomerLoginScreen({Key? key}) : super(key: key);
+
   @override
   State<CustomerLoginScreen> createState() => _CustomerLoginScreenState();
 }
 
 class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
+  // Controllers for email and password input fields
   final emailController = TextEditingController(text: 'customer@gmail.com');
   final passwordController = TextEditingController(text: '12345678A');
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(); // Form key for validation
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: whiteColor, // Set background color
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent, // Transparent app bar
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0), // Add padding around the form
           child: Form(
-            key: formKey,
+            key: formKey, // Attach form key for validation
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Title
                 Center(
                   child: Text(
                     'Customer Login',
@@ -49,24 +51,27 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                // Email input field
                 CustomTextField(
                   labelText: 'Enter Email:',
                   controller: emailController,
                   hintText: 'Email',
-                  validator: AppValidator.emailCheck,
+                  validator: AppValidator.emailCheck, // Email validation
                 ),
                 const SizedBox(height: 20),
+                // Password input field
                 CustomTextField(
                   labelText: 'Enter Password:',
                   controller: passwordController,
                   hintText: '********',
-                  validator: AppValidator.passwordCheck,
-                  obscureText: true,
+                  validator: AppValidator.passwordCheck, // Password validation
+                  obscureText: true, // Hide password
                 ),
                 const SizedBox(height: 30),
                 Center(
                   child: Column(
                     children: [
+                      // Forgot password link
                       InkWell(
                         onTap: () {
                           Navigator.push(
@@ -85,51 +90,59 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
+                      // Login button
                       PrimaryButton(
-                          buttonText: 'Login',
-                          onTap: () async {
-                            if (!formKey.currentState!.validate()) {
-                              return;
-                            }
-                            final val = await AuthService.loginWithEmailPassword(
-                              emailController.text,
-                              passwordController.text,
-                              'customer',
-                            );
+                        buttonText: 'Login',
+                        onTap: () async {
+                          if (!formKey.currentState!.validate()) {
+                            return; // Stop if form is invalid
+                          }
+                          final val = await AuthService.loginWithEmailPassword(
+                            emailController.text,
+                            passwordController.text,
+                            'customer',
+                          );
 
-                            if (val is User) {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const CustomerHomeScreen(),
-                                ),
-                                (route) => false,
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: const Text("Failed to log in"),
-                                    content: Text(val.toString()), // Error message
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text("OK"),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          }),
+                          if (val is User) {
+                            // Navigate to home screen on success
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const CustomerHomeScreen(),
+                              ),
+                              (route) => false,
+                            );
+                          } else {
+                            // Show error dialog on failure
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text("Failed to log in"),
+                                  content: Text(val.toString()), // Error message
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text("OK"),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
                       const SizedBox(height: 10),
+                      // Sign-up link
                       RichText(
                         text: TextSpan(
                           children: [
-                            const TextSpan(text: "Don't have an account? ", style: bodyLargeTextStyle),
+                            const TextSpan(
+                              text: "Don't have an account? ",
+                              style: bodyLargeTextStyle,
+                            ),
                             TextSpan(
                               text: "Sign up",
                               style: bodyLargeTextStyle.copyWith(

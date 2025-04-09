@@ -11,55 +11,58 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: whiteColor, // Set background color
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
+          crossAxisAlignment: CrossAxisAlignment.center, // Center content horizontally
           children: [
             // Logo Section
             Column(
               children: [
                 Image.asset(
-                  'assets/logo.png',
+                  'assets/logo.png', // Display logo
                   height: 200,
                   fit: BoxFit.contain,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 10), // Add spacing below logo
               ],
             ),
 
             // Spacer
-            const SizedBox(height: 50),
+            const SizedBox(height: 50), // Add vertical spacing
 
-            // "Are you a" Text
+            // "Who are you" Text
             const Text(
-              "Who are you",
+              "Who are you", // Display title text
               style: titleTextStyle,
             ),
 
             // Spacer
-            const SizedBox(height: 20),
+            const SizedBox(height: 20), // Add vertical spacing
 
             // Buttons Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0), // Add horizontal padding
               child: Column(
                 children: [
+                  // Customer Button
                   PrimaryButton(
-                      buttonText: 'Customer',
+                      buttonText: 'Customer', // Button text
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                const CustomerLoginScreen(), // Navigate to BusinessLoginScreen
+                                const CustomerLoginScreen(), // Navigate to CustomerLoginScreen
                           ),
                         );
                       }),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 10), // Add spacing between buttons
+
+                  // Business Button
                   PrimaryButton(
-                      buttonText: 'Business',
+                      buttonText: 'Business', // Button text
                       onTap: () {
                         Navigator.push(
                           context,

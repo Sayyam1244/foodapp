@@ -20,15 +20,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String toSearch = '';
-  String selectedCat = '';
+  String toSearch = ''; // Search query
+  String selectedCat = ''; // Selected category
   final categories = [
     'Restaurants',
     'Cafes',
     'Groceries',
     'Bakeries',
-  ];
+  ]; // List of categories
 
+  // Get icon path based on category
   String getCategoryIcon(String category) {
     switch (category) {
       case 'Restaurants':
@@ -44,7 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  final searchController = TextEditingController();
+  final searchController = TextEditingController(); // Controller for search input
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,17 +56,22 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Add padding for top of the screen
             SizedBox(height: (MediaQuery.of(context).padding.top + 20)),
 
             const SizedBox(height: 12),
+            // Display greeting with user's name
             Text(
               'Hello, ${FirestoreService.instance.currentUser?.name ?? ''}',
               style: bodyMediumTextStyle.copyWith(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
 
+            // Display heading
             Text('Where do you want to eat?', style: headlineTextStyle.copyWith(color: primaryColor)),
             const SizedBox(height: 12),
+
+            // Search bar
             CustomTextField(
               prefixIcon: const Icon(Icons.search),
               controller: searchController,
@@ -75,12 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
               hintText: 'Search for a businesses',
             ),
             const SizedBox(height: 12),
+
+            // Horizontal scrollable list of categories
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: categories
                     .map((e) => InkWell(
                           onTap: () {
+                            // Toggle category selection
                             if (selectedCat == e) {
                               selectedCat = '';
                             } else {
@@ -100,12 +110,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                // Display category icon
                                 Image.asset(
                                   getCategoryIcon(e),
                                   height: 40,
                                   width: 40,
                                   color: selectedCat == e ? whiteColor : Colors.black,
                                 ),
+                                // Display category name
                                 Text(e,
                                     style: bodySmallTextStyle.copyWith(
                                         fontSize: 10, color: selectedCat == e ? whiteColor : Colors.black)),
@@ -118,30 +130,37 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 12),
 
-            //one time request get request
-            //stream
+            // StreamBuilder to fetch and display businesses
             StreamBuilder<List<UserModel>>(
               stream: FirestoreService.instance.getUsersStream('business'),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Show loading indicator
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
+                  // Show error message
                   return Text('Error: ${snapshot.error}');
                 } else if (!snapshot.hasData || (snapshot.data?.isEmpty ?? true)) {
+                  // Show message if no data is available
                   return const Text('No products available');
                 } else {
                   final unFilteredBusiness = snapshot.data ?? [];
                   List<UserModel> business = [];
+
+                  // Filter businesses based on search query
                   if (toSearch.isNotEmpty) {
                     business.addAll(unFilteredBusiness
                         .where((element) => element.name.toLowerCase().contains(toSearch.toLowerCase())));
                   } else {
                     business.addAll(unFilteredBusiness);
                   }
+
+                  // Filter businesses based on selected category
                   if (selectedCat.isNotEmpty) {
                     business = business.where((element) => element.category == selectedCat).toList();
                   }
 
+                  // Display filtered businesses in a list
                   return Expanded(
                     child: ListView.separated(
                       itemCount: business.length,
@@ -151,8 +170,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         final totalRatings = ratings.fold(
                             0, (previousValue, element) => previousValue.toInt() + element.toInt());
                         final averageRating = totalRatings / ratings.length;
+
                         return InkWell(
                           onTap: () {
+                            // Navigate to business menu screen
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => BusinessMenuScreen(userModel: item),
@@ -168,14 +189,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Display business image
                                 Container(
                                   height: 95,
                                   width: 95,
                                   clipBehavior: Clip.hardEdge,
                                   decoration: BoxDecoration(
-                                      color: Colors.grey.shade400, borderRadius: BorderRadius.circular(4)
-                                      // shape: BoxShape.circle,
-                                      ),
+                                      color: Colors.grey.shade400, borderRadius: BorderRadius.circular(4)),
                                   child: item.image != null
                                       ? Image.network(
                                           item.image!,
@@ -190,12 +210,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       const SizedBox(height: 22),
+                                      // Display business name
                                       Text(
                                         item.name,
                                         maxLines: 2,
                                         textAlign: TextAlign.center,
                                         style: bodyLargeTextStyle.copyWith(fontWeight: FontWeight.bold),
                                       ),
+                                      // Display business location
                                       Text(
                                         "${item.location}",
                                         maxLines: 2,
@@ -210,6 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     alignment: Alignment.topRight,
                                     child: Row(
                                       children: [
+                                        // Display average rating
                                         const Icon(Icons.star_rounded, color: Colors.orange, size: 16),
                                         const SizedBox(width: 5),
                                         Text(
@@ -239,18 +262,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-
-// payment -> business -> amount after processing, date, status, 
-// list of business
-// each business its pending balance which we collected on their behalf in our stripe account
-// we will have a page, in that page user will be seeing its balance (pending balance)
-// they will have a button to request payout
-// they will add a request which will be displayed to the admin to processed.
-// when they add a request. they will be attaching there bank details.
-// admin acceptes the request. the amount is deducted from their app wallet. and you transfer the amount to the bank manually. 
-
-
-
-//
-

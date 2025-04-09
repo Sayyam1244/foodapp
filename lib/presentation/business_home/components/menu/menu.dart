@@ -29,8 +29,9 @@ class _MenuScreenState extends State<MenuScreen> {
       body: Center(
         child: Column(
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 50), // Spacer at the top
             StreamBuilder(
+              // Stream to fetch products from Firestore
               stream: FirebaseFirestore.instance
                   .collection('products')
                   .where('isDeleted', isNotEqualTo: true)
@@ -41,10 +42,13 @@ class _MenuScreenState extends State<MenuScreen> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Show loading indicator while fetching data
                   return const CircularProgressIndicator();
                 } else if (snapshot.hasError) {
+                  // Show error message if there's an error
                   return Text('Error: ${snapshot.error}');
                 } else if (!snapshot.hasData || (snapshot.data?.docs.isEmpty ?? true)) {
+                  // Show message if no products are available
                   return const Expanded(
                     child: Column(
                       children: [
@@ -62,15 +66,18 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                   );
                 } else {
+                  // Map Firestore data to product models
                   final products = snapshot.data!.docs.map((e) => ProductModel.fromMap(e.data())).toList();
 
                   return Expanded(
+                    // Display products in a list
                     child: ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       itemCount: products.length,
                       itemBuilder: (context, index) {
                         var product = products[index];
                         return Container(
+                          // Product card
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             color: Colors.grey.shade200,
@@ -79,6 +86,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Product image
                               Container(
                                 height: 80,
                                 width: 80,
@@ -94,23 +102,27 @@ class _MenuScreenState extends State<MenuScreen> {
                                       )
                                     : const Icon(Icons.fastfood),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 10), // Spacer between image and details
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    // Product name
                                     Text(product.productName,
                                         style: bodyLargeTextStyle.copyWith(
                                           fontWeight: FontWeight.bold,
                                         )),
+                                    // Product description
                                     Text(product.productDescription, style: bodySmallTextStyle),
                                     Row(
                                       children: [
+                                        // Discounted price
                                         Text("${product.priceAfterDiscount}",
                                             style: bodyMediumTextStyle.copyWith(
                                               fontWeight: FontWeight.bold,
                                             )),
                                         const SizedBox(width: 4),
+                                        // Original price (strikethrough)
                                         Text(
                                           "${product.priceBeforeDiscount}",
                                           style: bodySmallTextStyle.copyWith(
@@ -125,6 +137,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
+                                        // Stock information
                                         Text("Stock: ${product.stock}",
                                             style: bodyMediumTextStyle.copyWith(
                                               fontWeight: FontWeight.bold,
@@ -134,6 +147,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
+                                        // Edit button
                                         SmallIconButton(
                                             icon: Icons.edit,
                                             onPressed: () {
@@ -146,7 +160,8 @@ class _MenuScreenState extends State<MenuScreen> {
                                                 ),
                                               );
                                             }),
-                                        const SizedBox(width: 10),
+                                        const SizedBox(width: 10), // Spacer between buttons
+                                        // Delete button
                                         SmallIconButton(
                                             onPressed: () {
                                               showDialog(
@@ -156,11 +171,13 @@ class _MenuScreenState extends State<MenuScreen> {
                                                         content: const Text(
                                                             'Are you sure you want to delete this product?'),
                                                         actions: [
+                                                          // Cancel button
                                                           TextButton(
                                                               onPressed: () {
                                                                 Navigator.pop(context);
                                                               },
                                                               child: const Text('Cancel')),
+                                                          // Confirm delete button
                                                           TextButton(
                                                               onPressed: () async {
                                                                 await FirestoreService.instance
@@ -182,25 +199,25 @@ class _MenuScreenState extends State<MenuScreen> {
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) {
-                        return const SizedBox(height: 20);
+                        return const SizedBox(height: 20); // Spacer between product cards
                       },
                     ),
                   );
                 }
               },
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 30), // Spacer before Add Product button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: PrimaryButton(
+                // Navigate to AddItem screen
                 onTap: () async {
-                  // navigate to AddItem
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const AddItem()));
                 },
                 buttonText: 'Add Product',
               ),
             ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 100), // Spacer at the bottom
           ],
         ),
       ),

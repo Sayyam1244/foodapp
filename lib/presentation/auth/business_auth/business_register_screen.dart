@@ -22,14 +22,15 @@ class BusinessRegisterScreen extends StatefulWidget {
 }
 
 class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
-  File? image;
-  final businessNameController = TextEditingController();
-  final locationController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  String? categoryValue;
-  final formKey = GlobalKey<FormState>();
+  File? image; // Holds the selected image file
+  final businessNameController = TextEditingController(); // Controller for business name input
+  final locationController = TextEditingController(); // Controller for location input
+  final emailController = TextEditingController(); // Controller for email input
+  final passwordController = TextEditingController(); // Controller for password input
+  String? categoryValue; // Selected category value
+  final formKey = GlobalKey<FormState>(); // Form key for validation
 
+  // Password rules to display
   final passRulesList = [
     "• Password must contain at least one letter",
     "• Password must contain at least one number",
@@ -39,19 +40,20 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: whiteColor, // Set background color
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent, // Transparent app bar
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0), // Add padding around the form
           child: Form(
-            key: formKey,
+            key: formKey, // Attach form key for validation
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Title
                   Center(
                     child: Text(
                       'Business Register',
@@ -61,35 +63,38 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  // Image picker
                   Center(
                     child: InkWell(
                       onTap: () async {
-                        final pickedFile = await FilePickerService.pickFile();
+                        final pickedFile = await FilePickerService.pickFile(); // Pick an image file
                         setState(() {
-                          image = pickedFile;
+                          image = pickedFile; // Update the selected image
                         });
                       },
                       child: CircleAvatar(
                         radius: 50,
                         backgroundColor: Colors.grey[200],
-                        backgroundImage: image != null ? FileImage(image!) : null,
+                        backgroundImage: image != null ? FileImage(image!) : null, // Display selected image
                         child: image == null
                             ? Icon(
                                 Icons.camera_alt,
                                 color: Colors.grey[600],
                               )
-                            : null,
+                            : null, // Show camera icon if no image is selected
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
+                  // Business name input
                   CustomTextField(
                     labelText: 'Enter Business Name:',
                     controller: businessNameController,
                     hintText: 'Business Name',
-                    validator: AppValidator.emptyCheck,
+                    validator: AppValidator.emptyCheck, // Validate non-empty input
                   ),
                   const SizedBox(height: 20),
+                  // Category dropdown
                   DropdownButtonFormField2<String>(
                     decoration: InputDecoration(
                       filled: true,
@@ -100,7 +105,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                       ),
                     ),
                     hint: const Text('Select Category'),
-                    value: categoryValue,
+                    value: categoryValue, // Selected category
                     items: <String>[
                       'Restaurants',
                       'Cafes',
@@ -114,34 +119,39 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
-                        categoryValue = newValue;
+                        categoryValue = newValue; // Update selected category
                       });
                     },
-                    validator: (value) => value == null ? 'Please select a category' : null,
+                    validator: (value) =>
+                        value == null ? 'Please select a category' : null, // Validate selection
                   ),
                   const SizedBox(height: 20),
+                  // Location input
                   CustomTextField(
                     labelText: 'Enter Location:',
                     controller: locationController,
                     hintText: 'Neighborhood, Street',
-                    validator: AppValidator.emptyCheck,
+                    validator: AppValidator.emptyCheck, // Validate non-empty input
                   ),
                   const SizedBox(height: 20),
+                  // Email input
                   CustomTextField(
                     labelText: 'Enter Email:',
                     controller: emailController,
                     hintText: 'Email',
-                    validator: AppValidator.emailCheck,
+                    validator: AppValidator.emailCheck, // Validate email format
                   ),
                   const SizedBox(height: 20),
+                  // Password input
                   CustomTextField(
                     labelText: 'Enter Password:',
                     controller: passwordController,
                     hintText: '********',
-                    validator: AppValidator.passwordCheck,
-                    obscureText: true,
+                    validator: AppValidator.passwordCheck, // Validate password rules
+                    obscureText: true, // Hide password input
                   ),
                   const SizedBox(height: 10),
+                  // Display password rules
                   ...passRulesList.map(
                     (rule) => Text(
                       rule,
@@ -149,14 +159,16 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
+                  // Register button
                   Center(
                     child: PrimaryButton(
                       buttonText: 'Register',
                       onTap: () async {
                         if (!formKey.currentState!.validate()) {
-                          return;
+                          return; // Stop if form is invalid
                         }
                         if (image == null) {
+                          // Show error if no image is selected
                           showDialog(
                             context: context,
                             builder: (context) {
@@ -176,6 +188,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                           );
                           return;
                         }
+                        // Attempt to register the user
                         final val = await AuthService.signUpWithEmailPassword(
                           email: emailController.text,
                           password: passwordController.text,
@@ -187,6 +200,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                         );
                         log(val.toString());
                         if (val is User) {
+                          // Navigate to home screen on success
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
@@ -195,6 +209,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                             (route) => false,
                           );
                         } else {
+                          // Show error dialog on failure
                           showDialog(
                             context: context,
                             builder: (context) {

@@ -12,65 +12,68 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class NotificationServies {
-  static final NotificationServies _notificationServies =
-      NotificationServies._internal();
+  // Singleton instance
+  static final NotificationServies _notificationServies = NotificationServies._internal();
   factory NotificationServies() {
     return _notificationServies;
   }
 
   NotificationServies._internal();
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+
+  // Local notifications plugin
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  // Request notification permissions
   Future<void> permission() async {
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
   }
 
+  // Notification channel for Android
   static const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'our_notification_channel',
-    'our channel',
+    'our_notification_channel', // Channel ID
+    'our channel', // Channel name
     description: 'This channel is used for important notifications.',
     importance: Importance.max,
     playSound: true,
   );
-//AIzaSyCNOwAsoA8vCB-bzW_0Sk_sIay_a8NBeIo
+
+  // Setup notifications
   Future<void> setupFlutterNotifications() async {
-    permission();
-    //
+    permission(); // Request permissions
+
+    // Get FCM token
     final fcmToken = await FirebaseMessaging.instance.getToken();
 
+    // Create notification channel
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    //
+    // Initialize local notifications
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
-    //
+
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (details) {
         log('message');
-        ontapNotification(
-            message: jsonDecode(details.payload!),
-            context: navigatorKey.currentContext);
+        // Handle notification tap
+        ontapNotification(message: jsonDecode(details.payload!), context: navigatorKey.currentContext);
       },
     );
-    // FirebaseMessaging.onBackgroundMessage(registerBackgroundMessage);
 
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+    // Set foreground notification options
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
     );
-    //
+
+    // Listen for foreground messages
     FirebaseMessaging.onMessage.listen(
       (event) async {
         showFlutterNotification(event);
@@ -78,6 +81,7 @@ class NotificationServies {
     );
   }
 
+  // Show local notification
   Future<void> showFlutterNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
     await flutterLocalNotificationsPlugin.show(
@@ -92,53 +96,36 @@ class NotificationServies {
           channelDescription: channel.description,
         ),
       ),
-      payload: jsonEncode(message.data),
+      payload: jsonEncode(message.data), // Pass data as payload
     );
   }
 
-  static ontapNotification(
-      {required Map<String, dynamic> message, BuildContext? context}) async {
-    final uid = message['uid'];
-    final userRes =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  // Handle notification tap
+  static ontapNotification({required Map<String, dynamic> message, BuildContext? context}) async {
+    final uid = message['uid']; // Extract user ID from message
+    final userRes = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     final userModel = UserModel.fromMap(userRes.data()!);
+
+    // Navigate to BusinessMenuScreen
     Navigator.of(navigatorKey.currentContext!).push(
       MaterialPageRoute(
         builder: (context) => BusinessMenuScreen(userModel: userModel),
       ),
     );
   }
-
-//   ontapNotificationHandlers() async {
-//     RemoteMessage? initialMessage =
-//         await FirebaseMessaging.instance.getInitialMessage();
-
-//     if (initialMessage != null) {
-//       ontapNotification(
-//           message: initialMessage.data, context: navigatorKey.currentContext);
-//     } else {
-//       print("initialMessage is Empty ${initialMessage?.messageId ?? ''}");
-//     }
-//     FirebaseMessaging.onMessageOpenedApp.listen(
-//       (event) {
-//         print('bg $event');
-//         ontapNotification(
-//             message: event.data, context: navigatorKey.currentContext);
-//       },
-//     );
-//   }
 }
 
+// Send bulk notifications to users
 Future<void> sendBulkNotifications({
   required String title,
   required String subtitle,
   required String type,
   required String dynamicId,
 }) async {
-  const String url =
-      'https://us-central1-foodsaverapp-8fb2d.cloudfunctions.net/sendBulkNotifications';
+  const String url = 'https://us-central1-foodsaverapp-8fb2d.cloudfunctions.net/sendBulkNotifications';
 
   try {
+    // Send POST request to notification endpoint
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -147,7 +134,7 @@ Future<void> sendBulkNotifications({
         'subtitle': subtitle,
         'type': type,
         'dynamicId': dynamicId,
-        'uid': FirebaseAuth.instance.currentUser!.uid,
+        'uid': FirebaseAuth.instance.currentUser!.uid, // Current user ID
       }),
     );
 

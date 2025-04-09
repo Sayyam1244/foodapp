@@ -16,21 +16,22 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  File? image;
-  final businessNameController = TextEditingController();
-  String? categoryValue;
-  final locationController = TextEditingController();
-  final emailController = TextEditingController();
-  final phoneNumberController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
+  File? image; // Holds the selected profile image
+  final businessNameController = TextEditingController(); // Controller for name input
+  String? categoryValue; // Selected category value
+  final locationController = TextEditingController(); // Controller for location input
+  final emailController = TextEditingController(); // Controller for email input
+  final phoneNumberController = TextEditingController(); // Controller for phone number input
+  final formKey = GlobalKey<FormState>(); // Key for form validation
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+    _loadUserData(); // Load user data on initialization
   }
 
   Future<void> _loadUserData() async {
+    // Fetch current user data and populate fields
     final user = FirestoreService.instance.currentUser;
     if (user != null) {
       businessNameController.text = user.name;
@@ -38,7 +39,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       locationController.text = user.location ?? '';
       emailController.text = user.email;
       phoneNumberController.text = user.phoneNumber ?? '';
-      setState(() {});
+      setState(() {}); // Update UI
     }
   }
 
@@ -57,17 +58,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
-            key: formKey,
+            key: formKey, // Attach form key for validation
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Profile image picker
                   Center(
                     child: InkWell(
                       onTap: () async {
                         final pickedImage = await FilePickerService.pickFile();
                         setState(() {
-                          image = pickedImage;
+                          image = pickedImage; // Update selected image
                         });
                       },
                       child: CircleAvatar(
@@ -86,6 +88,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  // Name input field
                   CustomTextField(
                     labelText: FirestoreService.instance.currentUser?.role == 'business'
                         ? "Business Name:"
@@ -95,6 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     validator: AppValidator.emptyCheck,
                   ),
                   const SizedBox(height: 20),
+                  // Business-specific fields
                   if (FirestoreService.instance.currentUser?.role == 'business') ...[
                     DropdownButtonFormField<String>(
                       value: categoryValue,
@@ -108,7 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           .toList(),
                       onChanged: (newValue) {
                         setState(() {
-                          categoryValue = newValue;
+                          categoryValue = newValue; // Update selected category
                         });
                       },
                     ),
@@ -120,6 +124,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       validator: AppValidator.emptyCheck,
                     ),
                   ],
+                  // Customer-specific fields
                   if (FirestoreService.instance.currentUser?.role == 'customer') ...[
                     CustomTextField(
                       labelText: "Phone Number:",
@@ -129,12 +134,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ],
                   const SizedBox(height: 30),
+                  // Save button
                   Center(
                     child: PrimaryButton(
                       buttonText: "Save",
                       onTap: () async {
-                        if (!formKey.currentState!.validate()) return;
+                        if (!formKey.currentState!.validate()) return; // Validate form
 
+                        // Update user data
                         final user = FirestoreService.instance.currentUser!.copyWith(
                           name: businessNameController.text,
                           category: categoryValue,
@@ -142,11 +149,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           phoneNumber: phoneNumberController.text,
                         );
 
+                        // Save updated user data
                         final result = await FirestoreService.instance.setUser(user, image: image);
 
                         if (result is String) {
+                          // Show error message
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
                         } else {
+                          // Show success message and navigate back
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Profile updated successfully")),
                           );

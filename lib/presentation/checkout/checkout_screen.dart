@@ -7,6 +7,7 @@ import 'package:helloworld/model/user_model.dart';
 import 'package:helloworld/services/cart_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
 
+// Checkout screen widget
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
 
@@ -15,9 +16,10 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  final pointController = TextEditingController();
-  bool isLoading = false;
+  final pointController = TextEditingController(); // Controller for points input
+  bool isLoading = false; // Loading state
 
+  // Calculate discount based on points
   double calculateDiscount(int points) {
     int enteredPoints = int.tryParse(pointController.text) ?? 0;
     int maxPoints = points;
@@ -40,7 +42,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator()) // Show loader if loading
           : StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('users')
@@ -48,9 +50,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   .snapshots(),
               builder: (ctx, snapshot) {
                 if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator()); // Show loader if no data
                 }
-                final user = UserModel.fromMap(snapshot.data!.data()!);
+                final user = UserModel.fromMap(snapshot.data!.data()!); // Parse user data
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -66,6 +68,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
+                      // Display available points
                       Text(
                         'Available Points to redeem: ${user.points ?? 0}',
                         style: const TextStyle(fontSize: 14, color: Colors.grey),
@@ -75,7 +78,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         children: [
                           Expanded(
                             child: TextField(
-                              controller: pointController,
+                              controller: pointController, // Input for redeeming points
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
@@ -91,6 +94,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   child: SmallIconButton(
                                     icon: Icons.check,
                                     onPressed: () {
+                                      // Validate points input
                                       if (int.tryParse(pointController.text) == null) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
@@ -136,6 +140,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
+                      // Order summary section
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -208,6 +213,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                       ),
                       const Spacer(),
+                      // Place order button
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
@@ -215,6 +221,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                         child: InkWell(
                           onTap: () async {
+                            // Validate cart and place order
                             if (CartService.instance.cartModel.items.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -271,6 +278,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 }
 
+// Small button with an icon
 class SmallIconButton extends StatelessWidget {
   const SmallIconButton({super.key, required this.icon, required this.onPressed});
   final IconData icon;

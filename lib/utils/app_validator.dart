@@ -1,4 +1,5 @@
 class AppValidator {
+  // Validates if the input is not null or empty. Returns an error message if invalid.
   static String? emptyCheck(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a value';
@@ -6,6 +7,7 @@ class AppValidator {
     return null;
   }
 
+  // Validates if the input is a valid email address. Returns an error message if invalid.
   static String? emailCheck(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter an email';
@@ -17,6 +19,7 @@ class AppValidator {
     return null;
   }
 
+  // Validates if the input is a valid phone number. Returns an error message if invalid.
   static String? phoneCheck(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a phone number';
@@ -28,6 +31,8 @@ class AppValidator {
     return null;
   }
 
+  // Validates if the input is a valid password. Returns an error message if invalid.
+  // Password must be at least 8 characters long and contain at least one letter and one number.
   static String? passwordCheck(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a password';
@@ -42,6 +47,7 @@ class AppValidator {
     return null;
   }
 
+  // Validates if the input is a valid number. Returns an error message if invalid.
   static String? numberCheck(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a number';

@@ -20,28 +20,32 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
+  // Order types and their display names
   List<String> orderType = ["active", "picked_up"];
   Map nameMapped = {'active': "Incoming orders", 'picked_up': "Previous Orders"};
-  String selectedType = 'active';
+  String selectedType = 'active'; // Default selected order type
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
       body: StreamBuilder(
+          // Stream to fetch user orders
           stream: FirestoreService.instance.streamUserOrders(),
           builder: (context, snapshot) {
             if (snapshot.hasData == false) {
+              // Show loading indicator if data is not available
               return const Center(
                 child: CircularProgressIndicator(
                   color: Colors.white,
                 ),
               );
             }
+
+            // Separate orders into active and picked-up categories
             final orders = snapshot.data as List<CartModel>;
             List<CartModel> activeOrders = [];
-
             List<CartModel> pickedUpOrders = [];
-
             for (final order in orders) {
               if (order.status != 'picked_up') {
                 activeOrders.add(order);
@@ -53,6 +57,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             return Column(
               children: [
                 SizedBox(height: (MediaQuery.of(context).padding.top + 20)),
+                // Order type selection tabs
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: SingleChildScrollView(
@@ -64,7 +69,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               (e) => InkWell(
                                 onTap: () {
                                   setState(() {
-                                    selectedType = e;
+                                    selectedType = e; // Update selected type
                                   });
                                 },
                                 child: Container(
@@ -81,7 +86,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      '${nameMapped[e]}',
+                                      '${nameMapped[e]}', // Display name of the order type
                                       style: const TextStyle(
                                         color: Colors.white,
                                       ),
@@ -96,6 +101,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                // List of orders based on selected type
                 Expanded(
                   child: ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -103,6 +109,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       final item = selectedType == orderType[0] ? activeOrders[index] : pickedUpOrders[index];
                       return InkWell(
                         onTap: () {
+                          // Navigate to order detail screen
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => OrderDetailScreen(
@@ -121,6 +128,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              // Display business image or fallback icon
                               Container(
                                 height: 60,
                                 width: 60,
@@ -140,6 +148,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     : const Icon(Icons.fastfood),
                               ),
                               const SizedBox(width: 10),
+                              // Display order details
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,33 +157,25 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          item.businessUser?.name ?? "",
+                                          item.businessUser?.name ?? "", // Business name
                                           style: bodyLargeTextStyle.copyWith(fontWeight: FontWeight.bold),
                                         ),
                                         Text(
-                                          "\$${item.total!}",
+                                          "\$${item.total!}", // Order total
                                           style: bodySmallTextStyle.copyWith(fontWeight: FontWeight.bold),
                                         ),
                                       ],
                                     ),
                                     Text(
-                                      item.orderId!,
+                                      item.orderId!, // Order ID
                                       style: bodySmallTextStyle,
                                     ),
                                     Text(
-                                      item.createdDate.formattedDate,
+                                      item.createdDate.formattedDate, // Order creation date
                                       style: bodySmallTextStyle,
                                     ),
-                                    // Text(
-                                    //   item.status!,
-                                    //   style: const TextStyle(
-                                    //     fontSize: 14,
-                                    //     fontWeight: FontWeight.bold,
-                                    //     color: Colors.black45,
-                                    //   ),
-                                    // ),
                                     const Spacer(),
-                                    // if(order is completed and not rated)
+                                    // Show rating option if order is completed but not rated
                                     if (item.status == orderType[1] && item.rating == null)
                                       InkWell(
                                         onTap: () {
@@ -212,25 +213,26 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 }
 
-// add rating in order
-
+// Submit rating for an order
 submitRating(double rating, String orderId, businessId) async {
+  // Update order with the new rating
   await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
     'rating': rating,
   });
-  final val = await FirebaseFirestore.instance.collection('users').doc(businessId).get();
 
+  // Fetch business user details
+  final val = await FirebaseFirestore.instance.collection('users').doc(businessId).get();
   final user = UserModel.fromMap(val.data()!);
 
+  // Update business user's ratings
   await FirebaseFirestore.instance.collection('users').doc(businessId).update({
     'ratings': [...(user.ratings ?? []), rating],
   });
 }
 
-// add rating in userprofile [4,5,2,1]
-
+// Show rating popup dialog
 showRatingPopup(context, Function(double rating) callback) {
-  double newRating = 3;
+  double newRating = 3; // Default rating value
   return showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -238,10 +240,9 @@ showRatingPopup(context, Function(double rating) callback) {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Rate your order',
+                    'Rate your order', // Dialog title
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -249,8 +250,9 @@ showRatingPopup(context, Function(double rating) callback) {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text('How was your experience?'),
+                  const Text('How was your experience?'), // Dialog subtitle
                   const SizedBox(height: 14),
+                  // Rating bar for user input
                   RatingBar.builder(
                     initialRating: newRating,
                     minRating: 1,
@@ -263,10 +265,11 @@ showRatingPopup(context, Function(double rating) callback) {
                       color: Colors.amber,
                     ),
                     onRatingUpdate: (rating) {
-                      newRating = rating;
+                      newRating = rating; // Update rating value
                     },
                   ),
                   const SizedBox(height: 14),
+                  // Submit button
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -275,8 +278,8 @@ showRatingPopup(context, Function(double rating) callback) {
                     ),
                     child: TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
-                        callback(newRating);
+                        Navigator.of(context).pop(); // Close dialog
+                        callback(newRating); // Pass rating to callback
                       },
                       child: const Text(
                         'Submit',

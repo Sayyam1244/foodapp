@@ -19,39 +19,43 @@ class CustomerHomeScreen extends StatefulWidget {
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   @override
   void initState() {
+    // Initialize topic subscription and fetch user data
     initTopic();
     FirestoreService.instance.getUser(FirebaseAuth.instance.currentUser!.uid).then((value) {
       setState(() {
-        isLoading = false;
+        isLoading = false; // Stop loading once data is fetched
       });
     });
     super.initState();
   }
 
+  // Subscribe to a topic for notifications
   initTopic() async {
     await FirebaseMessaging.instance.subscribeToTopic('all');
   }
 
-  bool isLoading = true;
+  bool isLoading = true; // Tracks loading state
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
       body: isLoading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(), // Show loader while loading
             )
-          : CustomBottomBarController.pages[CustomBottomBarController.selectedIndex].page,
+          : CustomBottomBarController
+              .pages[CustomBottomBarController.selectedIndex].page, // Show selected page
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: primaryColor,
+          color: primaryColor, // Background color for bottom navigation bar
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withOpacity(0.1), // Shadow effect
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -62,6 +66,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             children: CustomBottomBarController.pages
                 .mapIndexed((index, element) => InkWell(
                       onTap: () {
+                        // Update selected index on tap
                         setState(() {
                           CustomBottomBarController.selectedIndex = index;
                         });
@@ -74,7 +79,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                             Icon(
                               element.icon.icon,
                               color: CustomBottomBarController.selectedIndex == index
-                                  ? Colors.black54
+                                  ? Colors.black54 // Highlight selected icon
                                   : whiteColor,
                               size: 28,
                             ),
@@ -82,7 +87,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                               element.title,
                               style: TextStyle(
                                 color: CustomBottomBarController.selectedIndex == index
-                                    ? Colors.black54
+                                    ? Colors.black54 // Highlight selected text
                                     : whiteColor,
                               ),
                             ),
@@ -90,7 +95,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                       ),
                     ))
-                .toList()),
+                .toList()), // Generate navigation items dynamically
       ),
     );
   }

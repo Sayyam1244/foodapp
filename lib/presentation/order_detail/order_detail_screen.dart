@@ -12,6 +12,7 @@ import 'package:helloworld/services/firestore_service.dart';
 import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/textstyles.dart';
 
+// Screen to display order details
 class OrderDetailScreen extends StatefulWidget {
   const OrderDetailScreen({super.key, required this.order, this.isBusinessSide = false});
   final CartModel order;
@@ -22,12 +23,15 @@ class OrderDetailScreen extends StatefulWidget {
 }
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
+  // Function to change the order status
   changeStatus(status) async {
     await FirebaseFirestore.instance.collection('orders').doc(widget.order.id).update({"status": status});
   }
 
   final List<ProductModel> products = [];
   bool isLoading = true;
+
+  // Fetch products in the order
   getProducts() async {
     for (final item in widget.order.items) {
       final product = await FirestoreService.instance.getSingleProduct(item.productId);
@@ -40,7 +44,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   @override
   void initState() {
-    getProducts();
+    getProducts(); // Load products when the screen initializes
     super.initState();
   }
 
@@ -55,9 +59,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
+            // User information section
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // User profile image
                 Container(
                   height: 40,
                   width: 40,
@@ -79,11 +85,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       : const Icon(Icons.store_mall_directory_outlined),
                 ),
                 const SizedBox(width: 10),
+                // User name and phone number
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // const SizedBox(height: 8),
                       Text(
                         (userInOrder?.name ?? '').toUpperCase(),
                         style: bodyLargeTextStyle,
@@ -96,6 +102,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         style: bodySmallTextStyle,
                       ),
                       const SizedBox(height: 14),
+                      // Order ID display
                       Padding(
                         padding: const EdgeInsets.only(top: 14, right: 24),
                         child: Row(
@@ -131,6 +138,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
 
             const SizedBox(height: 10),
+
+            // Order status section for business users
             if (FirestoreService.instance.currentUser?.role == 'business')
               const Align(
                 alignment: Alignment.topLeft,
@@ -156,6 +165,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     }
                     final orderStreamdata = CartModel.fromJson(snapshot.data!.data()!);
 
+                    // Status checkboxes
                     return Row(
                       children: [
                         Row(
@@ -196,8 +206,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   }),
 
             Divider(color: Colors.grey.shade200, thickness: 1),
-            //
+
+            // Loading indicator while fetching products
             if (isLoading) const Center(child: CircularProgressIndicator()),
+
+            // List of products in the order
             if (!isLoading)
               Expanded(
                 child: ListView.separated(
@@ -207,6 +220,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Product quantity
                         Text(
                           "${widget.order.items[index].quantity}x",
                           style: const TextStyle(
@@ -215,6 +229,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
+                        // Product details
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,6 +253,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
+                        // Product price
                         Text(
                           "\$${widget.order.items[index].price}",
                           style: const TextStyle(
@@ -257,6 +273,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
               ),
 
+            // Order summary section
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -279,6 +296,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ),
                   child: Column(
                     children: [
+                      // Order status
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -301,6 +319,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
+                      // Subtotal
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -323,6 +342,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
+                      // Discount
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -345,6 +365,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 10),
+                      // Total
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

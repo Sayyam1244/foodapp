@@ -5,6 +5,7 @@ import 'package:helloworld/services/firestore_service.dart';
 import 'package:helloworld/utils/colors.dart';
 import 'package:collection/collection.dart';
 
+// Main screen for the business home
 class BusinessHomeScreen extends StatefulWidget {
   const BusinessHomeScreen({super.key});
 
@@ -13,8 +14,11 @@ class BusinessHomeScreen extends StatefulWidget {
 }
 
 class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
+  bool isLoading = true; // Tracks loading state
+
   @override
   void initState() {
+    // Fetch user data and update loading state
     FirestoreService.instance.getUser(FirebaseAuth.instance.currentUser!.uid).then((value) {
       setState(() {
         isLoading = false;
@@ -23,11 +27,11 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
     super.initState();
   }
 
-  bool isLoading = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         extendBody: true,
+        // Show loading indicator or selected page
         body: isLoading
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -35,14 +39,14 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
             : CustomBottomBarController.pages[CustomBottomBarController.selectedIndex].page,
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
-            color: primaryColor,
+            color: primaryColor, // Background color for bottom navigation
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20.0),
               topRight: Radius.circular(20.0),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withOpacity(0.1), // Shadow effect
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
@@ -50,9 +54,11 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
+            // Generate navigation items dynamically
             children: CustomBottomBarController.pages
                 .mapIndexed((index, element) => InkWell(
                       onTap: () {
+                        // Update selected index on tap
                         setState(() {
                           CustomBottomBarController.selectedIndex = index;
                         });
@@ -62,6 +68,7 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            // Display icon
                             Icon(
                               element.icon.icon,
                               color: CustomBottomBarController.selectedIndex == index
@@ -69,6 +76,7 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
                                   : whiteColor,
                               size: 28,
                             ),
+                            // Display title
                             Text(
                               element.title,
                               style: TextStyle(

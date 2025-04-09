@@ -9,6 +9,7 @@ import 'package:helloworld/services/firestore_service.dart';
 import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/textstyles.dart';
 
+// Screen to display the business menu
 class BusinessMenuScreen extends StatefulWidget {
   const BusinessMenuScreen({super.key, required this.userModel});
   final UserModel userModel;
@@ -18,19 +19,21 @@ class BusinessMenuScreen extends StatefulWidget {
 }
 
 class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
-  List<ProductModel> products = [];
-  bool isLoading = true;
-  final searchController = TextEditingController();
+  List<ProductModel> products = []; // List of products
+  bool isLoading = true; // Loading state
+  final searchController = TextEditingController(); // Search input controller
 
   @override
   void initState() {
     super.initState();
-    _fetchProducts();
+    _fetchProducts(); // Fetch products on initialization
   }
 
+  // Fetch products from Firestore
   Future<void> _fetchProducts() async {
     final val = await FirestoreService.instance.getProducts(widget.userModel.uid);
     if (val is String) {
+      // Show error message if fetching fails
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(val),
@@ -40,36 +43,37 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
         isLoading = false;
       });
     } else {
-      products = val;
+      products = val; // Assign fetched products
       setState(() {
         isLoading = false;
       });
     }
-
-    // setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final ratings = widget.userModel.ratings ?? [];
+    final ratings = widget.userModel.ratings ?? []; // User ratings
     final totalRatings = ratings.fold(0, (previousValue, element) => previousValue.toInt() + element.toInt());
-    final averageRating = totalRatings / ratings.length;
+    final averageRating = totalRatings / ratings.length; // Calculate average rating
+
     return Scaffold(
-      appBar: AppBar(backgroundColor: whiteColor),
-      backgroundColor: whiteColor,
+      appBar: AppBar(backgroundColor: whiteColor), // App bar with white background
+      backgroundColor: whiteColor, // Screen background color
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Colors.white,
+                color: Colors.white, // Show loading spinner
               ),
             )
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  // User profile and ratings
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // User profile image
                       Container(
                         width: 80,
                         height: 80,
@@ -89,6 +93,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // User name
                             Text(
                               widget.userModel.name,
                               style: titleTextStyle,
@@ -97,6 +102,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+                                  // Display average rating
                                   RatingBar.builder(
                                     initialRating: averageRating,
                                     direction: Axis.horizontal,
@@ -122,8 +128,9 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Divider(),
+                  const Divider(), // Divider line
                   const SizedBox(height: 16),
+                  // List of products
                   Expanded(
                     child: ListView.separated(
                       itemCount: products.length,
@@ -131,13 +138,17 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                         final product = products[index];
                         bool ifProductAlreadyInCart = CartService.instance.cartModel.items
                             .any((element) => element.product!.id == product.id);
+
+                        // Skip products with no stock
                         if (product.stock == 0) {
                           return const SizedBox.shrink();
                         }
+
                         return InkWell(
                           onTap: ifProductAlreadyInCart
                               ? null
                               : () {
+                                  // Add product to cart
                                   final val = CartService.instance.addItemInCart(
                                       productModel: product, price: product.priceAfterDiscount);
                                   setState(() {});
@@ -151,6 +162,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Product image
                                 Container(
                                   height: 80,
                                   width: 80,
@@ -173,12 +185,14 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                                      // Product name and description
                                       Text(product.productName,
                                           style: bodyLargeTextStyle.copyWith(
                                             fontWeight: FontWeight.bold,
                                           )),
                                       Text(product.productDescription, style: bodySmallTextStyle),
                                       const SizedBox(height: 6),
+                                      // Product price
                                       Row(
                                         children: [
                                           Text("${product.priceAfterDiscount}",
@@ -197,6 +211,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                           ),
                                         ],
                                       ),
+                                      // Cart actions
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
@@ -205,6 +220,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.end,
                                               children: [
+                                                // Decrement or remove item from cart
                                                 SmallIconButton(
                                                   onPressed: () async {
                                                     CartService.instance.decrementItemInCart(
@@ -221,6 +237,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                                       : Icons.remove,
                                                 ),
                                                 const SizedBox(width: 10),
+                                                // Display item quantity
                                                 Text(
                                                   CartService.instance.cartModel.items
                                                       .firstWhere(
@@ -232,6 +249,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                                   ),
                                                 ),
                                                 const SizedBox(width: 10),
+                                                // Increment item in cart
                                                 SmallIconButton(
                                                   onPressed: () async {
                                                     final val = CartService.instance.incrementItemInCart(
@@ -245,14 +263,6 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                             )
                                           else
                                             const SizedBox()
-                                          // SmallIconButton(
-                                          //   onPressed: () async {
-                                          //     final val = CartService.instance.addItemInCart(
-                                          //         productModel: product, price: product.priceAfterDiscount);
-                                          //     setState(() {});
-                                          //   },
-                                          //   icon: Icons.add,
-                                          // ),
                                         ],
                                       ),
                                     ],
@@ -275,14 +285,15 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  // Open cart button
                   Container(
-                    // height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       color: const Color(0xFFAECE77),
                     ),
                     child: InkWell(
                         onTap: () async {
+                          // Navigate to cart screen
                           await Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const CartScreen(),
@@ -302,6 +313,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                   ),
                                 ),
                               ),
+                              // Display total price
                               Text(
                                 '\$${CartService.instance.totalPrice()}',
                                 style: bodyMediumTextStyle.copyWith(
@@ -325,10 +337,12 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
   }
 }
 
+// Small button widget with an icon
 class SmallIconButton extends StatelessWidget {
   const SmallIconButton({super.key, required this.icon, required this.onPressed});
   final IconData icon;
   final Function() onPressed;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(

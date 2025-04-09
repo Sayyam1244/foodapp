@@ -17,23 +17,30 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
+  // Order types for filtering
   List<String> orderType = ["Incoming orders", "Incoming Completed"];
 
+  // Selected order type
   String selectedType = 'Incoming orders';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: whiteColor,
       body: StreamBuilder(
+          // Stream to fetch user orders for the business
           stream: FirestoreService.instance.streamUserOrdersForBusiness(),
           builder: (context, snapshot) {
             if (snapshot.hasData == false) {
+              // Show loading indicator if data is not available
               return const Center(
                 child: CircularProgressIndicator(
                   color: Colors.white,
                 ),
               );
             }
+
+            // Separate orders into pending and completed
             final orders = snapshot.data as List<CartModel>;
             List<CartModel> pendingOrders = [];
             List<CartModel> completedOrders = [];
@@ -48,6 +55,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
             return Column(
               children: [
+                // Add padding for the top of the screen
                 SizedBox(height: (MediaQuery.of(context).padding.top + 20)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -55,10 +63,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
+                        // Render order type filters
                         ...orderType
                             .map(
                               (e) => InkWell(
                                 onTap: () {
+                                  // Update selected order type
                                   setState(() {
                                     selectedType = e;
                                   });
@@ -92,14 +102,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                // Display the list of orders
                 Expanded(
                   child: ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     itemBuilder: ((context, index) {
+                      // Determine which list to display based on selected type
                       final item =
                           selectedType == orderType[0] ? pendingOrders[index] : completedOrders[index];
                       return InkWell(
                         onTap: () {
+                          // Navigate to order detail screen
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => OrderDetailScreen(order: item, isBusinessSide: true),
@@ -118,6 +131,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    // Display order ID and total price
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
@@ -128,8 +142,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         ),
                                       ],
                                     ),
+                                    // Display order creation date
                                     Text(item.createdDate.formattedDate, style: bodyMediumTextStyle),
                                     const SizedBox(height: 4),
+                                    // Display order status
                                     Text(
                                       item.status!.toUpperCase().replaceAll("_", ' '),
                                       style: bodyMediumTextStyle.copyWith(
@@ -137,6 +153,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       ),
                                     ),
                                     const Spacer(),
+                                    // Display rating if available
                                     if (item.rating != null)
                                       Row(
                                         children: [
@@ -176,9 +193,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         ),
                       );
                     }),
+                    // Add spacing between list items
                     separatorBuilder: (BuildContext context, int index) {
                       return const SizedBox(height: 10);
                     },
+                    // Determine the number of items to display
                     itemCount: (selectedType == orderType[0] ? pendingOrders : completedOrders).length,
                   ),
                 )
