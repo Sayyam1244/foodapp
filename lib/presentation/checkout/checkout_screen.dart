@@ -3,9 +3,11 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:helloworld/main.dart';
 import 'package:helloworld/model/user_model.dart';
 import 'package:helloworld/services/cart_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
+import 'package:helloworld/utils/colors.dart';
 
 // Checkout screen widget
 class CheckoutScreen extends StatefulWidget {
@@ -217,7 +219,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: const Color(0xFF517F03),
+                          color: cardColor,
                         ),
                         child: InkWell(
                           onTap: () async {
@@ -241,7 +243,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               user.points ?? 0,
                               user.gmSaved ?? 0,
                             )
-                                .then((value) {
+                                .then((value) async {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(value == true ? 'Order Placed Successfully' : value),
@@ -258,7 +262,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             padding: EdgeInsets.symmetric(vertical: 14),
                             child: Center(
                               child: Text(
-                                'Place Order',
+                                'Confirm',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

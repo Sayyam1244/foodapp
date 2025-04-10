@@ -69,12 +69,8 @@ class _AddItemState extends State<AddItem> {
                         radius: 50,
                         backgroundColor: Colors.grey[200], // Placeholder background color
                         backgroundImage: image != null ? FileImage(image!) : null, // Display selected image
-                        child: image == null
-                            ? Icon(
-                                Icons.camera_alt,
-                                color: Colors.grey[600], // Placeholder icon
-                              )
-                            : null,
+                        child:
+                            image == null ? const Icon(Icons.camera_alt, color: greyColor, size: 40) : null,
                       ),
                     ),
                   ),
@@ -83,7 +79,7 @@ class _AddItemState extends State<AddItem> {
                   CustomTextField(
                     labelText: 'Product Name:',
                     controller: productNameController,
-                    hintText: 'Enter product name',
+                    hintText: '',
                     validator: AppValidator.emptyCheck, // Validate non-empty input
                   ),
                   const SizedBox(height: 20),
@@ -91,7 +87,7 @@ class _AddItemState extends State<AddItem> {
                   CustomTextField(
                     labelText: 'Product Description:',
                     controller: productDescriptionController,
-                    hintText: 'Enter product description',
+                    hintText: '',
                     validator: AppValidator.emptyCheck, // Validate non-empty input
                   ),
                   const SizedBox(height: 20),
@@ -99,7 +95,7 @@ class _AddItemState extends State<AddItem> {
                   CustomTextField(
                     labelText: 'Price Before Discount:',
                     controller: priceBeforeDiscountController,
-                    hintText: 'Enter price before discount',
+                    hintText: '',
                     validator: (value) {
                       if (AppValidator.numberCheck(value) != null) {
                         return AppValidator.numberCheck(value); // Validate numeric input
@@ -117,7 +113,7 @@ class _AddItemState extends State<AddItem> {
                   CustomTextField(
                     labelText: 'Price After Discount:',
                     controller: priceAfterDiscountController,
-                    hintText: 'Enter price after discount',
+                    hintText: '',
                     validator: (value) {
                       if (AppValidator.numberCheck(value) != null) {
                         return AppValidator.numberCheck(value); // Validate numeric input
@@ -138,7 +134,7 @@ class _AddItemState extends State<AddItem> {
                   CustomTextField(
                     labelText: 'Weight (g):',
                     controller: weightController,
-                    hintText: 'Enter weight in grams',
+                    hintText: '',
                     validator: AppValidator.numberCheck, // Validate numeric input
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Allow digits only
                     keyboardType: TextInputType.number, // Numeric keyboard
@@ -148,7 +144,7 @@ class _AddItemState extends State<AddItem> {
                   CustomTextField(
                     labelText: 'Stock:',
                     controller: stockController,
-                    hintText: 'Enter stock quantity',
+                    hintText: '',
                     validator: AppValidator.numberCheck, // Validate numeric input
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Allow digits only
                     keyboardType: TextInputType.number, // Numeric keyboard

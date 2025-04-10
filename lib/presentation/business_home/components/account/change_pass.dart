@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:helloworld/presentation/common/custom_dialogue.dart';
 import 'package:helloworld/presentation/common/custom_textfield.dart';
 import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/services/auth_service.dart';
@@ -76,18 +77,12 @@ class _ChangePassScreenState extends State<ChangePassScreen> {
                         showDialog(
                           context: context,
                           builder: (context) {
-                            return AlertDialog(
-                              title: const Text("Failed to change password"),
-                              content: Text(val.toString()), // Display error message
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context); // Close dialog
-                                  },
-                                  child: const Text("OK"),
-                                ),
-                              ],
-                            );
+                            return CustomDialogue(
+                                title: ("Failed to change password"),
+                                content: (val.toString()), // Display error message
+                                action: () {
+                                  Navigator.pop(context); // Close dialog
+                                });
                           },
                         );
                       }

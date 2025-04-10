@@ -78,7 +78,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   padding: const EdgeInsets.symmetric(horizontal: 24),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4),
-                                    color: primaryColor,
+                                    color: cardColor,
                                     border: Border.all(
                                       width: 2,
                                       color: selectedType == e ? Colors.black : Colors.transparent,
@@ -183,14 +183,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                             submitRating(v, item.id!, item.businessUser!.uid);
                                           });
                                         },
-                                        child: const Text(
-                                          'Rate your order',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.green,
-                                          ),
-                                        ),
+                                        child: Text('Rate your order',
+                                            style: bodyMediumTextStyle.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            )),
                                       ),
                                   ],
                                 ),
@@ -234,63 +230,102 @@ submitRating(double rating, String orderId, businessId) async {
 showRatingPopup(context, Function(double rating) callback) {
   double newRating = 3; // Default rating value
   return showDialog(
-      context: context,
-      builder: (context) => Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Rate your order', // Dialog title
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text('How was your experience?'), // Dialog subtitle
-                  const SizedBox(height: 14),
-                  // Rating bar for user input
-                  RatingBar.builder(
-                    initialRating: newRating,
-                    minRating: 1,
-                    direction: Axis.horizontal,
-                    allowHalfRating: false,
-                    itemCount: 5,
-                    itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    itemBuilder: (context, _) => const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    ),
-                    onRatingUpdate: (rating) {
-                      newRating = rating; // Update rating value
-                    },
-                  ),
-                  const SizedBox(height: 14),
-                  // Submit button
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close dialog
-                        callback(newRating); // Pass rating to callback
-                      },
-                      child: const Text(
-                        'Submit',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+    context: context,
+    builder: (context) => Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Close button
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
               ),
             ),
-          ));
+            // Icon at the top
+            CircleAvatar(
+              radius: 40,
+              backgroundColor: primaryColor.withOpacity(0.1),
+              child: const Icon(
+                Icons.star,
+                color: primaryColor,
+                size: 50,
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Title
+            const Text(
+              'Rate your order',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            // Description
+            const Text(
+              'How was your experience?',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            // Rating bar for user input
+            RatingBar.builder(
+              initialRating: newRating,
+              minRating: 1,
+              direction: Axis.horizontal,
+              allowHalfRating: false,
+              itemCount: 5,
+              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => const Icon(
+                Icons.star,
+                color: Colors.amber,
+              ),
+              onRatingUpdate: (rating) {
+                newRating = rating; // Update rating value
+              },
+            ),
+            const SizedBox(height: 20),
+            // Submit button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close dialog
+                  callback(newRating); // Pass rating to callback
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: const Text(
+                  "Submit",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }

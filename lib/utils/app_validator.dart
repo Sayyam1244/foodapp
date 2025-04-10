@@ -2,7 +2,7 @@ class AppValidator {
   // Validates if the input is not null or empty. Returns an error message if invalid.
   static String? emptyCheck(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter a value';
+      return 'Field required';
     }
     return null;
   }

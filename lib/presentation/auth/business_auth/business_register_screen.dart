@@ -5,6 +5,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:helloworld/presentation/common/custom_dialogue.dart';
 import 'package:helloworld/presentation/common/custom_textfield.dart';
 import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/presentation/business_home/business_home.dart';
@@ -90,21 +91,35 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                   CustomTextField(
                     labelText: 'Enter Business Name:',
                     controller: businessNameController,
-                    hintText: 'Business Name',
+                    hintText: '',
                     validator: AppValidator.emptyCheck, // Validate non-empty input
                   ),
                   const SizedBox(height: 20),
+                  Text('Select Category:',
+                      style: bodyLargeTextStyle.copyWith(
+                        color: greyColor, // Label text color
+                      )),
+                  const SizedBox(height: 10),
                   // Category dropdown
                   DropdownButtonFormField2<String>(
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide.none,
+                    dropdownStyleData: DropdownStyleData(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                        color: Colors.white, // Background color
                       ),
                     ),
-                    hint: const Text('Select Category'),
+
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.only(right: 10, top: 18, bottom: 18),
+                      filled: true,
+                      fillColor: Colors.grey.shade100, // Background color
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                        borderSide: BorderSide.none, // No border
+                      ),
+                    ),
+
+                    hint: const Text('Select'),
                     value: categoryValue, // Selected category
                     items: <String>[
                       'Restaurants',
@@ -130,7 +145,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                   CustomTextField(
                     labelText: 'Enter Location:',
                     controller: locationController,
-                    hintText: 'Neighborhood, Street',
+                    hintText: '',
                     validator: AppValidator.emptyCheck, // Validate non-empty input
                   ),
                   const SizedBox(height: 20),
@@ -138,7 +153,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                   CustomTextField(
                     labelText: 'Enter Email:',
                     controller: emailController,
-                    hintText: 'Email',
+                    hintText: '',
                     validator: AppValidator.emailCheck, // Validate email format
                   ),
                   const SizedBox(height: 20),
@@ -146,7 +161,7 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                   CustomTextField(
                     labelText: 'Enter Password:',
                     controller: passwordController,
-                    hintText: '********',
+                    hintText: '',
                     validator: AppValidator.passwordCheck, // Validate password rules
                     obscureText: true, // Hide password input
                   ),
@@ -172,18 +187,12 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                           showDialog(
                             context: context,
                             builder: (context) {
-                              return AlertDialog(
-                                title: const Text("Error"),
-                                content: const Text("Please select an image"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text("OK"),
-                                  ),
-                                ],
-                              );
+                              return CustomDialogue(
+                                  title: ("Error"),
+                                  content: ("Please select an image"),
+                                  action: () {
+                                    Navigator.pop(context);
+                                  });
                             },
                           );
                           return;
@@ -213,17 +222,12 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                           showDialog(
                             context: context,
                             builder: (context) {
-                              return AlertDialog(
-                                title: const Text("Error"),
-                                content: Text(val.toString()),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text("OK"),
-                                  ),
-                                ],
+                              return CustomDialogue(
+                                title: ("Error"),
+                                content: (val.toString()),
+                                action: () {
+                                  Navigator.pop(context);
+                                },
                               );
                             },
                           );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:helloworld/presentation/common/custom_dialogue.dart';
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/utils/app_validator.dart';
 import 'package:helloworld/utils/colors.dart';
@@ -47,19 +48,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Instruction text
+                const SizedBox(height: 50), // Spacing
+
                 Text(
                   "Enter your email to reset password:",
                   style: bodyLargeTextStyle.copyWith(color: primaryColor),
                 ),
                 const SizedBox(height: 20), // Spacing
+
                 // Email input field
                 CustomTextField(
-                  labelText: 'Email',
                   controller: emailController,
-                  hintText: 'example@example.com',
+                  hintText: '',
                   validator: AppValidator.emailCheck, // Email validation
                 ),
-                const SizedBox(height: 30), // Spacing
+                const SizedBox(height: 50), // Spacing
                 // Button to send reset link
                 Center(
                   child: PrimaryButton(
@@ -77,17 +80,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       showDialog(
                         context: context,
                         builder: (context) {
-                          return AlertDialog(
-                            title: const Text("Reset Link Sent"),
-                            content: const Text("A password reset link has been sent to your email."),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Close dialog
-                                },
-                                child: const Text("OK"),
-                              ),
-                            ],
+                          return CustomDialogue(
+                            title: ("Reset Link Sent"),
+                            content: ("A password reset link has been sent to your email."),
+                            action: () {
+                              Navigator.pop(context); // Close dialog
+                            },
                           );
                         },
                       );

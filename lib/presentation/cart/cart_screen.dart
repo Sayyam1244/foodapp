@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:helloworld/presentation/checkout/checkout_screen.dart';
 import 'package:helloworld/services/cart_service.dart';
+import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/textstyles.dart';
 
 // Main CartScreen widget
@@ -144,7 +145,7 @@ class _CartScreenState extends State<CartScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: const Color(0xFF517F03),
+                    color: cardColor,
                   ),
                   child: InkWell(
                     onTap: () async {

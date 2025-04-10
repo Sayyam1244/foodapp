@@ -7,4 +7,6 @@ const whiteColor = Color(0xFFFFFFFF);
 const cardColor = Color(0xFF87A369);
 
 // Primary theme color constant
-const primaryColor = Color.fromARGB(255, 89, 129, 69);
+const primaryColor = Color(0xff2D531A);
+
+const greyColor = Color(0xFF403D3D);

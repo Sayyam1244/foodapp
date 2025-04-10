@@ -288,8 +288,8 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                   // Open cart button
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: const Color(0xFFAECE77),
+                      borderRadius: BorderRadius.circular(6),
+                      color: cardColor,
                     ),
                     child: InkWell(
                         onTap: () async {
@@ -359,7 +359,7 @@ class SmallIconButton extends StatelessWidget {
             ),
           ],
           borderRadius: BorderRadius.circular(12),
-          color: const Color(0xFFAECE77),
+          color: cardColor,
         ),
         child: Icon(
           icon,

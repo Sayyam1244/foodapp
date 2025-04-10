@@ -39,7 +39,7 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
             : CustomBottomBarController.pages[CustomBottomBarController.selectedIndex].page,
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
-            color: primaryColor, // Background color for bottom navigation
+            color: cardColor, // Background color for bottom navigation
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20.0),
               topRight: Radius.circular(20.0),

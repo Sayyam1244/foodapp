@@ -9,6 +9,7 @@ import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/presentation/business_home/components/menu/add_item.dart';
 import 'package:helloworld/presentation/business_home/components/menu/edit_item.dart';
 import 'package:helloworld/presentation/checkout/checkout_screen.dart';
+import 'package:helloworld/presentation/common/custom_dialogue.dart';
 import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/services/firestore_service.dart';
 import 'package:helloworld/utils/colors.dart';
@@ -49,19 +50,23 @@ class _MenuScreenState extends State<MenuScreen> {
                   return Text('Error: ${snapshot.error}');
                 } else if (!snapshot.hasData || (snapshot.data?.docs.isEmpty ?? true)) {
                   // Show message if no products are available
-                  return const Expanded(
+                  return Expanded(
                     child: Column(
                       children: [
-                        SizedBox(height: 50),
-                        Text(
-                          'No products available',
-                          style: TextStyle(
-                            color: Color(
-                              0xFFFFF4E2,
-                            ),
-                            fontSize: 20,
+                        const SizedBox(height: 50),
+                        Center(
+                            child: Padding(
+                          padding: const EdgeInsets.only(top: 50),
+                          child: Column(
+                            children: [
+                              const Icon(Icons.error, size: 50, color: greyColor),
+                              const SizedBox(height: 12),
+                              Text('No Products Added!',
+                                  style: bodyMediumTextStyle.copyWith(
+                                      fontWeight: FontWeight.w500, color: greyColor)),
+                            ],
                           ),
-                        ),
+                        ))
                       ],
                     ),
                   );
@@ -165,28 +170,16 @@ class _MenuScreenState extends State<MenuScreen> {
                                         SmallIconButton(
                                             onPressed: () {
                                               showDialog(
-                                                  context: context,
-                                                  builder: (context) => AlertDialog(
-                                                        title: const Text('Delete Product'),
-                                                        content: const Text(
-                                                            'Are you sure you want to delete this product?'),
-                                                        actions: [
-                                                          // Cancel button
-                                                          TextButton(
-                                                              onPressed: () {
-                                                                Navigator.pop(context);
-                                                              },
-                                                              child: const Text('Cancel')),
-                                                          // Confirm delete button
-                                                          TextButton(
-                                                              onPressed: () async {
-                                                                await FirestoreService.instance
-                                                                    .deleteProduct(product.id);
-                                                                Navigator.pop(context);
-                                                              },
-                                                              child: const Text('Delete')),
-                                                        ],
-                                                      ));
+                                                context: context,
+                                                builder: (context) => CustomDialogue(
+                                                  title: ('Delete Product'),
+                                                  content: ('Are you sure you want to delete this product?'),
+                                                  action: () async {
+                                                    await FirestoreService.instance.deleteProduct(product.id);
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                              );
                                             },
                                             icon: Icons.delete),
                                       ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
 
 // A reusable primary button widget
 class PrimaryButton extends StatelessWidget {
@@ -27,10 +28,10 @@ class PrimaryButton extends StatelessWidget {
       child: Center(
         child: Text(
           buttonText, // Display the button text
-          style: const TextStyle(
-            fontSize: 18, // Font size of the text
-            fontWeight: FontWeight.bold, // Bold text
-            fontFamily: 'Roboto', // Font family
+          style: bodyLargeTextStyle.copyWith(
+            color: primaryColor, // Text color
+            fontSize: 16, // Font size
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

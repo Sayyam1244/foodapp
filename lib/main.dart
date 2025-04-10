@@ -4,6 +4,8 @@ import 'package:flutter/material.dart'; // Flutter UI framework
 import 'package:helloworld/firebase_options.dart'; // Firebase configuration options
 import 'package:helloworld/presentation/business_home/business_home.dart'; // Business home screen
 import 'package:helloworld/services/notifications_services.dart'; // Notification services
+import 'package:helloworld/utils/colors.dart';
+import 'package:helloworld/utils/textstyles.dart';
 import 'presentation/welcome_screen.dart'; // Welcome screen
 
 void main() async {
@@ -23,7 +25,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey, // Set navigator key
-      theme: ThemeData.from(
+      theme: ThemeData.light().copyWith(
+        dialogTheme: DialogTheme(
+          surfaceTintColor: Colors.white, // Set dialog background color
+          titleTextStyle: titleTextStyle.copyWith(
+            color: greyColor, // Set dialog title text color
+          ),
+          actionsPadding: EdgeInsets.zero,
+
+          contentTextStyle: bodyMediumTextStyle,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4)), // Rounded corners for dialogs
+          ),
+          backgroundColor: Colors.white, // Set dialog background color
+        ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFAECE77), // Define theme color
         ),

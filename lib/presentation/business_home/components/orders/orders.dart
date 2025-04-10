@@ -79,7 +79,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   padding: const EdgeInsets.symmetric(horizontal: 24),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4),
-                                    color: primaryColor,
+                                    color: cardColor,
                                     border: Border.all(
                                       width: 2,
                                       color: selectedType == e ? Colors.black : Colors.transparent,
@@ -148,7 +148,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     // Display order status
                                     Text(
                                       item.status!.toUpperCase().replaceAll("_", ' '),
-                                      style: bodyMediumTextStyle.copyWith(
+                                      style: bodySmallTextStyle.copyWith(
                                         color: Colors.black,
                                       ),
                                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/textstyles.dart';
 
 // A custom reusable text field widget
@@ -36,7 +37,10 @@ class CustomTextField extends StatelessWidget {
       children: [
         if (labelText != null) ...[
           // Displays label text if provided
-          Text(labelText!, style: bodyLargeTextStyle),
+          Text(labelText!,
+              style: bodyLargeTextStyle.copyWith(
+                color: greyColor, // Label text color
+              )),
           const SizedBox(height: 10), // Adds spacing below the label
         ],
         TextFormField(
@@ -47,6 +51,7 @@ class CustomTextField extends StatelessWidget {
           onChanged: onChanged, // Triggers on text change
           keyboardType: keyboardType, // Sets keyboard type
           decoration: InputDecoration(
+            errorMaxLines: 3,
             filled: true, // Enables background fill
             fillColor: Colors.grey.shade100, // Background color
             border: OutlineInputBorder(

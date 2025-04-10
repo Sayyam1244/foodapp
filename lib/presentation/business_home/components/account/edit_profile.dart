@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:helloworld/presentation/common/custom_textfield.dart';
 import 'package:helloworld/presentation/common/primary_button.dart';
@@ -51,7 +52,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         backgroundColor: Colors.transparent,
         title: Text(
           "Edit Profile",
-          style: headlineTextStyle.copyWith(color: primaryColor),
+          style: titleTextStyle.copyWith(color: primaryColor),
         ),
       ),
       body: SafeArea(
@@ -73,7 +74,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         });
                       },
                       child: CircleAvatar(
-                        radius: 75,
+                        radius: 50,
                         backgroundColor: Colors.grey.shade200,
                         backgroundImage: image != null
                             ? FileImage(image!)
@@ -82,7 +83,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     as ImageProvider<Object>?
                                 : null,
                         child: image == null && FirestoreService.instance.currentUser?.image == null
-                            ? const Icon(Icons.camera_alt, size: 50, color: primaryColor)
+                            ? const Icon(Icons.camera_alt, size: 40, color: greyColor)
                             : null,
                       ),
                     ),
@@ -94,20 +95,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ? "Business Name:"
                         : "Name:",
                     controller: businessNameController,
-                    hintText: "Enter your name",
+                    hintText: "",
                     validator: AppValidator.emptyCheck,
                   ),
                   const SizedBox(height: 20),
                   // Business-specific fields
                   if (FirestoreService.instance.currentUser?.role == 'business') ...[
-                    DropdownButtonFormField<String>(
+                    DropdownButtonFormField2<String>(
+                      dropdownStyleData: DropdownStyleData(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                          color: Colors.white, // Background color
+                        ),
+                      ),
                       value: categoryValue,
                       validator: AppValidator.emptyCheck,
-                      decoration: const InputDecoration(border: InputBorder.none),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.only(right: 10, top: 18, bottom: 18),
+                        filled: true,
+                        fillColor: Colors.grey.shade100, // Background color
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                          borderSide: BorderSide.none, // No border
+                        ),
+                      ),
                       items: ['Restaurants', 'Cafes', 'Groceries', 'Bakeries']
                           .map((value) => DropdownMenuItem(
                                 value: value,
-                                child: Text(value, style: bodyLargeTextStyle),
+                                child: Text(value),
                               ))
                           .toList(),
                       onChanged: (newValue) {
@@ -120,7 +135,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     CustomTextField(
                       labelText: "Location (Neighborhood, Street):",
                       controller: locationController,
-                      hintText: "Enter location",
+                      hintText: "",
                       validator: AppValidator.emptyCheck,
                     ),
                   ],
@@ -129,7 +144,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     CustomTextField(
                       labelText: "Phone Number:",
                       controller: phoneNumberController,
-                      hintText: "Enter your phone number",
+                      hintText: "",
                       validator: AppValidator.phoneCheck,
                     ),
                   ],

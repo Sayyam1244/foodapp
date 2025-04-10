@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart'; // Import for TapGestureRecognizer
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:helloworld/presentation/common/custom_dialogue.dart';
 import 'package:helloworld/presentation/common/custom_textfield.dart';
 import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/presentation/customer_home/customer_home.dart';
@@ -22,8 +23,8 @@ class CustomerLoginScreen extends StatefulWidget {
 
 class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
   // Controllers for email and password input fields
-  final emailController = TextEditingController(text: 'customer@gmail.com');
-  final passwordController = TextEditingController(text: '12345678A');
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>(); // Form key for validation
 
   @override
@@ -45,25 +46,25 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                 Center(
                   child: Text(
                     'Customer Login',
-                    style: headlineTextStyle.copyWith(
-                      color: primaryColor,
-                    ),
+                    style: headlineTextStyle.copyWith(color: primaryColor),
                   ),
                 ),
                 const SizedBox(height: 20),
                 // Email input field
                 CustomTextField(
+                  prefixIcon: const Icon(Icons.email_outlined),
                   labelText: 'Enter Email:',
                   controller: emailController,
-                  hintText: 'Email',
+                  hintText: '',
                   validator: AppValidator.emailCheck, // Email validation
                 ),
                 const SizedBox(height: 20),
                 // Password input field
                 CustomTextField(
+                  prefixIcon: const Icon(Icons.lock_outline),
                   labelText: 'Enter Password:',
                   controller: passwordController,
-                  hintText: '********',
+                  hintText: '',
                   validator: AppValidator.passwordCheck, // Password validation
                   obscureText: true, // Hide password
                 ),
@@ -83,13 +84,14 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                         },
                         child: Text(
                           'Forgot Password?',
-                          style: bodyLargeTextStyle.copyWith(
+                          style: bodyMediumTextStyle.copyWith(
                             decoration: TextDecoration.underline,
                             color: primaryColor,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 80),
                       // Login button
                       PrimaryButton(
                         buttonText: 'Login',
@@ -117,37 +119,33 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                             showDialog(
                               context: context,
                               builder: (context) {
-                                return AlertDialog(
-                                  title: const Text("Failed to log in"),
-                                  content: Text(val.toString()), // Error message
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
+                                return CustomDialogue(
+                                  title: ("Failed to log in"),
+                                  content: (val.toString()), // Error message
+                                  action: () {
+                                    Navigator.pop(context);
+                                  },
                                 );
                               },
                             );
                           }
                         },
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 16),
                       // Sign-up link
                       RichText(
                         text: TextSpan(
                           children: [
                             const TextSpan(
                               text: "Don't have an account? ",
-                              style: bodyLargeTextStyle,
+                              style: bodyMediumTextStyle,
                             ),
                             TextSpan(
                               text: "Sign up",
-                              style: bodyLargeTextStyle.copyWith(
+                              style: bodyMediumTextStyle.copyWith(
                                 color: primaryColor,
                                 decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.w500,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart'; // Import for TapGestureRecognizer
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:helloworld/presentation/common/custom_dialogue.dart';
 import 'package:helloworld/presentation/common/custom_textfield.dart';
 import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/presentation/business_home/business_home.dart';
@@ -22,8 +23,8 @@ class BusinessLoginScreen extends StatefulWidget {
 
 class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
   // Controllers for email and password input fields
-  final emailController = TextEditingController(text: 'alaziz@gmail.com');
-  final passwordController = TextEditingController(text: '12345678A');
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>(); // Form key for validation
 
   @override
@@ -45,25 +46,25 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                 Center(
                   child: Text(
                     'Business Login',
-                    style: headlineTextStyle.copyWith(
-                      color: primaryColor,
-                    ),
+                    style: headlineTextStyle.copyWith(color: primaryColor),
                   ),
                 ),
                 const SizedBox(height: 20), // Spacing
                 // Email input field
                 CustomTextField(
+                  prefixIcon: const Icon(Icons.email_outlined),
                   labelText: 'Enter Email:',
                   controller: emailController,
-                  hintText: 'Email',
+                  hintText: '',
                   validator: AppValidator.emailCheck, // Email validation
                 ),
                 const SizedBox(height: 20), // Spacing
                 // Password input field
                 CustomTextField(
+                  prefixIcon: const Icon(Icons.lock_outline),
                   labelText: 'Enter Password:',
                   controller: passwordController,
-                  hintText: '********',
+                  hintText: '',
                   validator: AppValidator.passwordCheck, // Password validation
                   obscureText: true, // Hide password input
                 ),
@@ -83,13 +84,14 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                         },
                         child: Text(
                           'Forgot Password?',
-                          style: bodyLargeTextStyle.copyWith(
+                          style: bodyMediumTextStyle.copyWith(
                             decoration: TextDecoration.underline,
                             color: primaryColor,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10), // Spacing
+                      const SizedBox(height: 80), // Spacing
                       // Login button
                       PrimaryButton(
                         buttonText: 'Login',
@@ -119,37 +121,30 @@ class _BusinessLoginScreenState extends State<BusinessLoginScreen> {
                             showDialog(
                               context: context,
                               builder: (context) {
-                                return AlertDialog(
-                                  title: const Text("Failed to log in"),
-                                  content: Text(val.toString()), // Error message
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
+                                return CustomDialogue(
+                                  title: ("Failed to log in"),
+                                  content: (val.toString()), // Error message
+                                  action: () {
+                                    Navigator.pop(context);
+                                  },
                                 );
                               },
                             );
                           }
                         },
                       ),
-                      const SizedBox(height: 10), // Spacing
+                      const SizedBox(height: 16), // Spacing
                       // Sign-up link
                       RichText(
                         text: TextSpan(
                           children: [
-                            const TextSpan(
-                              text: "Don't have an account? ",
-                              style: bodyLargeTextStyle,
-                            ),
+                            const TextSpan(text: "Don't have an account? ", style: bodyMediumTextStyle),
                             TextSpan(
                               text: "Sign up",
-                              style: bodyLargeTextStyle.copyWith(
+                              style: bodyMediumTextStyle.copyWith(
                                 color: primaryColor,
                                 decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.w500,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {

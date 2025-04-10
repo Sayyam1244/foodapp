@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:helloworld/presentation/common/custom_dialogue.dart';
 import 'package:helloworld/presentation/common/custom_textfield.dart';
 import 'package:helloworld/presentation/common/primary_button.dart';
 import 'package:helloworld/presentation/customer_home/customer_home.dart';
@@ -52,7 +53,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                   // Title
                   Center(
                     child: Text(
-                      'Customer Register',
+                      'Customer Sign up',
                       style: headlineTextStyle.copyWith(
                         color: primaryColor,
                       ),
@@ -63,7 +64,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                   CustomTextField(
                     labelText: 'Enter Name:',
                     controller: customerNameController,
-                    hintText: 'Name',
+                    hintText: '',
                     validator: AppValidator.emptyCheck,
                   ),
                   const SizedBox(height: 20),
@@ -71,7 +72,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                   CustomTextField(
                     labelText: 'Enter Email:',
                     controller: emailController,
-                    hintText: 'Email',
+                    hintText: '',
                     validator: AppValidator.emailCheck,
                   ),
                   const SizedBox(height: 20),
@@ -79,7 +80,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                   CustomTextField(
                     labelText: 'Enter Phone Number:',
                     controller: phoneNumberController,
-                    hintText: 'Phone Number',
+                    hintText: '',
                     validator: AppValidator.phoneCheck,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly, // Allow digits only
@@ -90,7 +91,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                   CustomTextField(
                     labelText: 'Enter Password:',
                     controller: passwordController,
-                    hintText: '********',
+                    hintText: '',
                     validator: AppValidator.passwordCheck,
                     obscureText: true, // Hide password input
                   ),
@@ -106,7 +107,7 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                   // Register button
                   Center(
                     child: PrimaryButton(
-                      buttonText: 'Register',
+                      buttonText: 'Sign up',
                       onTap: () async {
                         // Validate form
                         if (!formKey.currentState!.validate()) {
@@ -134,17 +135,12 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                           showDialog(
                             context: context,
                             builder: (context) {
-                              return AlertDialog(
-                                title: const Text("Failed to register"),
-                                content: Text(val.toString()),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text("OK"),
-                                  ),
-                                ],
+                              return CustomDialogue(
+                                title: ("Failed to register"),
+                                content: (val.toString()),
+                                action: () {
+                                  Navigator.pop(context);
+                                },
                               );
                             },
                           );

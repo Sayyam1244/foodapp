@@ -139,10 +139,35 @@ class _HomeScreenState extends State<HomeScreen> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   // Show error message
-                  return Text('Error: ${snapshot.error}');
+                  // return Text('Error: ${snapshot.error}');
+                  return Center(
+                      child: Padding(
+                    padding: const EdgeInsets.only(top: 50),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.error, size: 50, color: greyColor),
+                        const SizedBox(height: 12),
+                        Text('Error: ${snapshot.error}',
+                            style:
+                                bodyMediumTextStyle.copyWith(fontWeight: FontWeight.w500, color: greyColor)),
+                      ],
+                    ),
+                  ));
                 } else if (!snapshot.hasData || (snapshot.data?.isEmpty ?? true)) {
                   // Show message if no data is available
-                  return const Text('No products available');
+                  return Center(
+                      child: Padding(
+                    padding: const EdgeInsets.only(top: 50),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.error, size: 50, color: greyColor),
+                        const SizedBox(height: 12),
+                        Text('No products available',
+                            style:
+                                bodyMediumTextStyle.copyWith(fontWeight: FontWeight.w500, color: greyColor)),
+                      ],
+                    ),
+                  ));
                 } else {
                   final unFilteredBusiness = snapshot.data ?? [];
                   List<UserModel> business = [];
@@ -187,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Colors.grey[200],
                             ),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 // Display business image
                                 Container(
@@ -208,8 +233,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const SizedBox(height: 22),
                                       // Display business name
                                       Text(
                                         item.name,
@@ -228,16 +254,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 if (ratings.isNotEmpty)
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: Row(
+                                  SizedBox(
+                                    height: 90,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
                                       children: [
-                                        // Display average rating
-                                        const Icon(Icons.star_rounded, color: Colors.orange, size: 16),
-                                        const SizedBox(width: 5),
-                                        Text(
-                                          "${averageRating.toStringAsFixed(1)} (${ratings.length})",
-                                          style: bodySmallTextStyle.copyWith(fontWeight: FontWeight.bold),
+                                        Row(
+                                          children: [
+                                            // Display average rating
+                                            Icon(Icons.star_rounded, color: Colors.yellow.shade700, size: 16),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              "${averageRating.toStringAsFixed(1)} (${ratings.length})",
+                                              style: bodySmallTextStyle.copyWith(fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
