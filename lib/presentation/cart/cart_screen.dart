@@ -77,7 +77,7 @@ class _CartScreenState extends State<CartScreen> {
                                     Text(cartItem.product?.productDescription ?? '',
                                         style: bodySmallTextStyle),
                                     Text(
-                                      "\$${cartItem.price.toStringAsFixed(2)}",
+                                      "SAR ${cartItem.price.toStringAsFixed(2)}",
                                       style: bodyMediumTextStyle.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -172,7 +172,7 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           // Total price
                           Text(
-                            '\$${CartService.instance.totalPrice().toStringAsFixed(2)}',
+                            'SAR ${CartService.instance.totalPrice().toStringAsFixed(2)}',
                             style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,

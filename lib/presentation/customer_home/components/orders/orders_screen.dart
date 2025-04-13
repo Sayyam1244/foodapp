@@ -53,6 +53,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 pickedUpOrders.add(order);
               }
             }
+            log('active orders: ${activeOrders.length}');
+            log('picked up orders: ${pickedUpOrders.length}');
 
             return Column(
               children: [
@@ -161,7 +163,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                           style: bodyLargeTextStyle.copyWith(fontWeight: FontWeight.bold),
                                         ),
                                         Text(
-                                          "\$${item.total!}", // Order total
+                                          "SAR ${item.total!}", // Order total
                                           style: bodySmallTextStyle.copyWith(fontWeight: FontWeight.bold),
                                         ),
                                       ],

@@ -263,6 +263,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                                             )
                                           else
                                             const SizedBox()
+                                          // const Text('Add')
                                         ],
                                       ),
                                     ],
@@ -315,7 +316,7 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                               ),
                               // Display total price
                               Text(
-                                '\$${CartService.instance.totalPrice()}',
+                                'SAR ${CartService.instance.totalPrice()}',
                                 style: bodyMediumTextStyle.copyWith(
                                   color: Colors.white,
                                 ),

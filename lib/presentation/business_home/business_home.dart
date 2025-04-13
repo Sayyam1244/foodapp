@@ -53,39 +53,41 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
             ],
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            // mainAxisAlignment: MainAxisAlignment.spaceAround,
             // Generate navigation items dynamically
             children: CustomBottomBarController.pages
-                .mapIndexed((index, element) => InkWell(
-                      onTap: () {
-                        // Update selected index on tap
-                        setState(() {
-                          CustomBottomBarController.selectedIndex = index;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Display icon
-                            Icon(
-                              element.icon.icon,
-                              color: CustomBottomBarController.selectedIndex == index
-                                  ? Colors.black54
-                                  : whiteColor,
-                              size: 28,
-                            ),
-                            // Display title
-                            Text(
-                              element.title,
-                              style: TextStyle(
+                .mapIndexed((index, element) => Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          // Update selected index on tap
+                          setState(() {
+                            CustomBottomBarController.selectedIndex = index;
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Display icon
+                              Icon(
+                                element.icon.icon,
                                 color: CustomBottomBarController.selectedIndex == index
                                     ? Colors.black54
                                     : whiteColor,
+                                size: 28,
                               ),
-                            ),
-                          ],
+                              // Display title
+                              Text(
+                                element.title,
+                                style: TextStyle(
+                                  color: CustomBottomBarController.selectedIndex == index
+                                      ? Colors.black54
+                                      : whiteColor,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ))

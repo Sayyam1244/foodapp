@@ -256,6 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (ratings.isNotEmpty)
                                   SizedBox(
                                     height: 90,
+                                    width: 60,
                                     child: Column(
                                       mainAxisSize: MainAxisSize.max,
                                       children: [
@@ -272,7 +273,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  )
+                                else
+                                  const SizedBox(width: 60)
                               ],
                             ),
                           ),

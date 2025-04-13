@@ -12,7 +12,7 @@ class CartModel {
   final List<CartItemModel> items;
   final DateTime createdDate;
   final String? discount;
-  final double? rating;
+  final num? rating;
 
   CartModel({
     this.userModel,

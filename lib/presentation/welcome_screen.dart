@@ -34,7 +34,7 @@ class WelcomeScreen extends StatelessWidget {
 
             // "Who are you" Text
             const Text(
-              "Who are you", // Display title text
+              "Who are you?", // Display title text
               style: titleTextStyle,
             ),
 
@@ -48,7 +48,9 @@ class WelcomeScreen extends StatelessWidget {
                 children: [
                   // Customer Button
                   PrimaryButton(
+                      height: 80,
                       buttonText: 'Customer', // Button text
+                      textSize: 20,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -62,7 +64,9 @@ class WelcomeScreen extends StatelessWidget {
 
                   // Business Button
                   PrimaryButton(
+                      height: 80,
                       buttonText: 'Business', // Button text
+                      textSize: 20,
                       onTap: () {
                         Navigator.push(
                           context,

@@ -160,7 +160,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '\$${CartService.instance.totalPrice()}',
+                                  'SAR ${CartService.instance.totalPrice()}',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
@@ -180,7 +180,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '\$${calculateDiscount(user.points ?? 0)}',
+                                  'SAR ${calculateDiscount(user.points ?? 0)}',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
@@ -203,7 +203,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '\$${(CartService.instance.totalPrice() - calculateDiscount(user.points ?? 0)).toStringAsFixed(2)}',
+                                  'SAR ${(CartService.instance.totalPrice() - calculateDiscount(user.points ?? 0)).toStringAsFixed(2)}',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,

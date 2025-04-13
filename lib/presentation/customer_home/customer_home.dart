@@ -62,36 +62,37 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           ],
         ),
         child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: CustomBottomBarController.pages
-                .mapIndexed((index, element) => InkWell(
-                      onTap: () {
-                        // Update selected index on tap
-                        setState(() {
-                          CustomBottomBarController.selectedIndex = index;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              element.icon.icon,
-                              color: CustomBottomBarController.selectedIndex == index
-                                  ? Colors.black54 // Highlight selected icon
-                                  : whiteColor,
-                              size: 28,
-                            ),
-                            Text(
-                              element.title,
-                              style: TextStyle(
+                .mapIndexed((index, element) => Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          // Update selected index on tap
+                          setState(() {
+                            CustomBottomBarController.selectedIndex = index;
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                element.icon.icon,
                                 color: CustomBottomBarController.selectedIndex == index
-                                    ? Colors.black54 // Highlight selected text
+                                    ? Colors.black54 // Highlight selected icon
                                     : whiteColor,
+                                size: 28,
                               ),
-                            ),
-                          ],
+                              Text(
+                                element.title,
+                                style: TextStyle(
+                                  color: CustomBottomBarController.selectedIndex == index
+                                      ? Colors.black54 // Highlight selected text
+                                      : whiteColor,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ))

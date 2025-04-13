@@ -96,7 +96,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       ),
                       Text(
                         ((userInOrder?.phoneNumber == null || (userInOrder?.phoneNumber?.isEmpty ?? true))
-                                ? 'No phone number'
+                                ? ''
                                 : userInOrder?.phoneNumber)!
                             .toUpperCase(),
                         style: bodySmallTextStyle,
@@ -255,7 +255,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         const SizedBox(width: 12),
                         // Product price
                         Text(
-                          "\$${widget.order.items[index].price}",
+                          "SAR ${widget.order.items[index].price}",
                           style: const TextStyle(
                             fontSize: 18,
                             color: primaryColor,
@@ -332,7 +332,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             ),
                           ),
                           Text(
-                            "\$${double.parse(widget.order.total!) + double.parse(widget.order.discount ?? '0')}",
+                            "SAR ${double.parse(widget.order.total!) + double.parse(widget.order.discount ?? '0')}",
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -355,7 +355,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             ),
                           ),
                           Text(
-                            "\$${double.parse(widget.order.discount ?? '0')}",
+                            "SAR ${double.parse(widget.order.discount ?? '0')}",
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -378,7 +378,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             ),
                           ),
                           Text(
-                            "\$${widget.order.total}",
+                            "SAR ${widget.order.total}",
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,

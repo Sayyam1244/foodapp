@@ -137,7 +137,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       children: [
                                         Text("Order ID: ${item.orderId ?? ''}", style: titleTextStyle),
                                         Text(
-                                          "\$${item.total!}",
+                                          "SAR ${item.total!}",
                                           style: titleTextStyle.copyWith(fontSize: 14),
                                         ),
                                       ],

@@ -13,7 +13,7 @@ const headlineTextStyle = TextStyle(
 const titleTextStyle = TextStyle(
   fontSize: 18,
   color: primaryColor,
-  fontWeight: FontWeight.w500,
+  fontWeight: FontWeight.w600,
   fontFamily: 'Roboto',
 );
 

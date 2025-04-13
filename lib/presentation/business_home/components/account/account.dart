@@ -145,7 +145,7 @@ class _MyAcccountState extends State<MyAcccount> {
                       ),
                       const SizedBox(height: 20),
                       // Saved stats section
-                      Text("You Helped Saved!",
+                      Text("You Helped Save!",
                           style: bodyLargeTextStyle.copyWith(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 5),
                       StreamBuilder(
@@ -210,6 +210,10 @@ class _MyAcccountState extends State<MyAcccount> {
                     ],
                   ),
                 ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Divider(thickness: 1.8),
+              ),
               const SizedBox(height: 50),
               // Edit profile option
               AcccountSettingTile(
