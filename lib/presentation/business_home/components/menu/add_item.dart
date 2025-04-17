@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -178,6 +179,8 @@ class _AddItemState extends State<AddItem> {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
                               content: Text("Product Added Successfully"),
                               backgroundColor: Colors.black,
                             ),
@@ -215,5 +218,6 @@ class _AddItemState extends State<AddItem> {
     setState(() {
       image = null;
     });
+    Navigator.pop(context);
   }
 }

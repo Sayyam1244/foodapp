@@ -68,6 +68,8 @@ class _ChangePassScreenState extends State<ChangePassScreen> {
                         // Show success message
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
                             content: Text("Password changed successfully"),
                           ),
                         );

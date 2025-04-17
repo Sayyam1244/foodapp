@@ -38,6 +38,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // NotificationServies().showFlutterNotification(const RemoteMessage(
+    //         notification: RemoteNotification(title: 'Hello', body: 'World')) // Show notification for testing
+    //     ); // Show notification for testing
     return Scaffold(
       extendBody: true,
       body: isLoading

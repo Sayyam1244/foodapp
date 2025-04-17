@@ -106,7 +106,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 // List of orders based on selected type
                 Expanded(
                   child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 100),
                     itemBuilder: ((context, index) {
                       final item = selectedType == orderType[0] ? activeOrders[index] : pickedUpOrders[index];
                       return InkWell(
@@ -121,7 +121,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           );
                         },
                         child: Container(
-                          height: (item.status == orderType[1] && item.rating == null) ? 120 : 90,
+                          height: (item.status == orderType[1] && item.rating == null) ? 130 : 100,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             color: Colors.grey.shade200,
@@ -147,7 +147,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                           return const Icon(Icons.fastfood);
                                         },
                                       )
-                                    : const Icon(Icons.fastfood),
+                                    : const Icon(Icons.store_outlined),
                               ),
                               const SizedBox(width: 10),
                               // Display order details
@@ -176,19 +176,29 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       item.createdDate.formattedDate, // Order creation date
                                       style: bodySmallTextStyle,
                                     ),
+                                    Text(
+                                      item.status!.toUpperCase().replaceAll("_", ' '), // Order status
+                                      style: bodySmallTextStyle.copyWith(
+                                          fontWeight: FontWeight.bold, color: Colors.black),
+                                    ),
                                     const Spacer(),
                                     // Show rating option if order is completed but not rated
                                     if (item.status == orderType[1] && item.rating == null)
-                                      InkWell(
-                                        onTap: () {
-                                          showRatingPopup(context, (v) {
-                                            submitRating(v, item.id!, item.businessUser!.uid);
-                                          });
-                                        },
-                                        child: Text('Rate your order',
-                                            style: bodyMediumTextStyle.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            )),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: InkWell(
+                                          onTap: () {
+                                            showRatingPopup(context, (v) {
+                                              submitRating(v, item.id!, item.businessUser!.uid);
+                                            });
+                                          },
+                                          child: Text('Rate your order',
+                                              style: bodyMediumTextStyle.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                decoration: TextDecoration.underline,
+                                                color: greyColor,
+                                              )),
+                                        ),
                                       ),
                                   ],
                                 ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -29,9 +30,9 @@ class _MyAcccountState extends State<MyAcccount> {
               // Add spacing for top padding
               SizedBox(height: MediaQuery.of(context).padding.top + 30),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  // Display user profile image or default icon
+                  const SizedBox(width: 24), // Display user profile image or default icon
                   Container(
                     height: 60,
                     width: 60,
@@ -45,7 +46,12 @@ class _MyAcccountState extends State<MyAcccount> {
                             FirestoreService.instance.currentUser!.image!,
                             fit: BoxFit.cover,
                           )
-                        : const Icon(Icons.person, color: greyColor, size: 36),
+                        : Icon(
+                            (FirestoreService.instance.currentUser?.role == 'business')
+                                ? Icons.storefront
+                                : Icons.person,
+                            color: greyColor,
+                            size: 36),
                   ),
                   const SizedBox(width: 10),
                   Column(
@@ -210,6 +216,7 @@ class _MyAcccountState extends State<MyAcccount> {
                     ],
                   ),
                 ),
+              const SizedBox(height: 20),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24),
                 child: Divider(thickness: 1.8),
@@ -250,7 +257,8 @@ class _MyAcccountState extends State<MyAcccount> {
                       action: () async {
                         await FirestoreService.instance
                             .deleteAccount(FirestoreService.instance.currentUser!.uid);
-                        await AuthService.signOut();
+                        await FirebaseAuth.instance.currentUser!.delete();
+                        // await AuthService.signOut();
                         Navigator.pushAndRemoveUntil(context,
                             MaterialPageRoute(builder: (context) => const WelcomeScreen()), (route) => false);
                       },

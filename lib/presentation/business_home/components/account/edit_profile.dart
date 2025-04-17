@@ -65,29 +65,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Profile image picker
-                  Center(
-                    child: InkWell(
-                      onTap: () async {
-                        final pickedImage = await FilePickerService.pickFile();
-                        setState(() {
-                          image = pickedImage; // Update selected image
-                        });
-                      },
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.grey.shade200,
-                        backgroundImage: image != null
-                            ? FileImage(image!)
-                            : FirestoreService.instance.currentUser?.image != null
-                                ? NetworkImage(FirestoreService.instance.currentUser!.image!)
-                                    as ImageProvider<Object>?
-                                : null,
-                        child: image == null && FirestoreService.instance.currentUser?.image == null
-                            ? const Icon(Icons.camera_alt, size: 40, color: greyColor)
-                            : null,
+                  if (FirestoreService.instance.currentUser?.role == 'business')
+                    Center(
+                      child: InkWell(
+                        onTap: () async {
+                          final pickedImage = await FilePickerService.pickFile();
+                          setState(() {
+                            image = pickedImage; // Update selected image
+                          });
+                        },
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.grey.shade200,
+                          backgroundImage: image != null
+                              ? FileImage(image!)
+                              : FirestoreService.instance.currentUser?.image != null
+                                  ? NetworkImage(FirestoreService.instance.currentUser!.image!)
+                                      as ImageProvider<Object>?
+                                  : null,
+                          child: image == null && FirestoreService.instance.currentUser?.image == null
+                              ? const Icon(Icons.camera_alt, size: 40, color: greyColor)
+                              : null,
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 20),
                   // Name input field
                   CustomTextField(
@@ -101,6 +102,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   const SizedBox(height: 20),
                   // Business-specific fields
                   if (FirestoreService.instance.currentUser?.role == 'business') ...[
+                    Text("Select Category:",
+                        style: bodyLargeTextStyle.copyWith(
+                          color: greyColor, // Label text color
+                        )),
+                    const SizedBox(height: 10),
                     DropdownButtonFormField2<String>(
                       dropdownStyleData: DropdownStyleData(
                         decoration: BoxDecoration(
@@ -173,7 +179,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         } else {
                           // Show success message and navigate back
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Profile updated successfully")),
+                            const SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                                content: Text("Profile updated successfully")),
                           );
                           Navigator.pop(context);
                         }

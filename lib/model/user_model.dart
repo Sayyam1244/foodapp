@@ -8,7 +8,7 @@ class UserModel {
   final String role;
   final String? image;
   final bool isDeleted;
-  final int? points;
+  final num? points;
   List<num>? ratings;
   final num? gmSaved;
 

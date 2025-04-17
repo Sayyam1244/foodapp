@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:helloworld/main.dart';
 import 'package:helloworld/model/user_model.dart';
+import 'package:helloworld/presentation/menu/menu_screen.dart';
 import 'package:helloworld/services/cart_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
+import 'package:helloworld/services/stripe_service.dart';
 import 'package:helloworld/utils/colors.dart';
 
 // Checkout screen widget
@@ -22,9 +24,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool isLoading = false; // Loading state
 
   // Calculate discount based on points
-  double calculateDiscount(int points) {
+  double calculateDiscount(num points) {
     int enteredPoints = int.tryParse(pointController.text) ?? 0;
-    int maxPoints = points;
+    num maxPoints = points;
     double pointsToDollars = enteredPoints / 1000;
 
     return pointsToDollars > CartService.instance.totalPrice()
@@ -100,6 +102,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       if (int.tryParse(pointController.text) == null) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
+                                            behavior: SnackBarBehavior.floating,
+                                            margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
                                             content: Text('Please enter a valid number'),
                                           ),
                                         );
@@ -108,6 +112,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       if (int.tryParse(pointController.text)! > user.points!) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
+                                            behavior: SnackBarBehavior.floating,
+                                            margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
                                             content: Text('You do not have enough points'),
                                           ),
                                         );
@@ -116,6 +122,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       if (int.tryParse(pointController.text)! < 1000) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
+                                            behavior: SnackBarBehavior.floating,
+                                            margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
                                             content: Text('Minimum points to redeem is 1000'),
                                           ),
                                         );
@@ -235,27 +243,35 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             setState(() {
                               isLoading = true;
                             });
-
-                            await FirestoreService.instance
-                                .placeOrder(
-                              CartService.instance.cartModel,
-                              int.parse(pointController.text.isEmpty ? '0' : pointController.text),
-                              user.points ?? 0,
-                              user.gmSaved ?? 0,
-                            )
-                                .then((value) async {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(value == true ? 'Order Placed Successfully' : value),
-                                ),
-                              );
-                              CartService.instance.clearCart();
-                              pointController.clear();
-                              setState(() {
-                                isLoading = false;
+                            double totalPrice = 0;
+                            for (var element in CartService.instance.cartModel.items) {
+                              totalPrice += element.price * element.quantity;
+                            }
+                            await StripeService.instance.payment(totalPrice.toString(), onSuccess: (v) async {
+                              await FirestoreService.instance
+                                  .placeOrder(
+                                CartService.instance.cartModel,
+                                int.parse(pointController.text.isEmpty ? '0' : pointController.text),
+                                user.points ?? 0,
+                                user.gmSaved ?? 0,
+                              )
+                                  .then((value) async {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    behavior: SnackBarBehavior.floating,
+                                    margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                                    content: Text(value == true ? 'Order Placed Successfully' : value),
+                                  ),
+                                );
+                                CartService.instance.clearCart();
+                                pointController.clear();
                               });
+                            }, onCancelled: () {});
+                            setState(() {
+                              isLoading = false;
                             });
                           },
                           child: const Padding(
@@ -282,28 +298,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 }
 
-// Small button with an icon
-class SmallIconButton extends StatelessWidget {
-  const SmallIconButton({super.key, required this.icon, required this.onPressed});
-  final IconData icon;
-  final Function() onPressed;
+// // Small button with an icon
+// class SmallIconButton extends StatelessWidget {
+//   const SmallIconButton({super.key, required this.icon, required this.onPressed});
+//   final IconData icon;
+//   final Function() onPressed;
 
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.grey.shade300,
-        ),
-        child: Icon(
-          icon,
-          color: Colors.black87,
-          size: 18,
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return InkWell(
+//       onTap: onPressed,
+//       child: Container(
+//         padding: const EdgeInsets.all(6),
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(8),
+//           color: Colors.grey.shade300,
+//         ),
+//         child: Icon(
+//           icon,
+//           color: Colors.black87,
+//           size: 18,
+//         ),
+//       ),
+//     );
+//   }
+// }

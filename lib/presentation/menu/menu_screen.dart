@@ -36,6 +36,8 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
       // Show error message if fetching fails
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
           content: Text(val),
         ),
       );
@@ -144,133 +146,129 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
                           return const SizedBox.shrink();
                         }
 
-                        return InkWell(
-                          onTap: ifProductAlreadyInCart
-                              ? null
-                              : () {
-                                  // Add product to cart
-                                  final val = CartService.instance.addItemInCart(
-                                      productModel: product, price: product.priceAfterDiscount);
-                                  setState(() {});
-                                },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: Colors.grey.shade200,
-                            ),
-                            padding: const EdgeInsets.all(10),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Product image
-                                Container(
-                                  height: 80,
-                                  width: 80,
-                                  clipBehavior: Clip.hardEdge,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: product.imageUrl != null
-                                      ? Image.network(
-                                          product.imageUrl!,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) =>
-                                              const Icon(Icons.error),
-                                        )
-                                      : const Icon(Icons.fastfood),
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.grey.shade200,
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Product image
+                              Container(
+                                height: 80,
+                                width: 80,
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // Product name and description
-                                      Text(product.productName,
-                                          style: bodyLargeTextStyle.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          )),
-                                      Text(product.productDescription, style: bodySmallTextStyle),
-                                      const SizedBox(height: 6),
-                                      // Product price
-                                      Row(
-                                        children: [
-                                          Text("${product.priceAfterDiscount}",
-                                              style: bodyMediumTextStyle.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                              )),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            "${product.priceBeforeDiscount}",
-                                            style: bodySmallTextStyle.copyWith(
+                                child: product.imageUrl != null
+                                    ? Image.network(
+                                        product.imageUrl!,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                                      )
+                                    : const Icon(Icons.fastfood),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Product name and description
+                                    Text(product.productName,
+                                        style: bodyLargeTextStyle.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        )),
+                                    Text(product.productDescription, style: bodySmallTextStyle),
+                                    const SizedBox(height: 6),
+                                    // Product price
+                                    Row(
+                                      children: [
+                                        Text("${product.priceAfterDiscount}",
+                                            style: bodyMediumTextStyle.copyWith(
                                               fontWeight: FontWeight.bold,
-                                              decoration: TextDecoration.lineThrough,
-                                              decorationColor: Colors.red,
-                                              decorationThickness: 2,
-                                            ),
+                                            )),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          "${product.priceBeforeDiscount}",
+                                          style: bodySmallTextStyle.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            decoration: TextDecoration.lineThrough,
+                                            decorationColor: Colors.red,
+                                            decorationThickness: 2,
                                           ),
-                                        ],
-                                      ),
-                                      // Cart actions
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const SizedBox(),
-                                          if (ifProductAlreadyInCart)
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                                // Decrement or remove item from cart
-                                                SmallIconButton(
-                                                  onPressed: () async {
-                                                    CartService.instance.decrementItemInCart(
-                                                      productId: product.id,
-                                                    );
-                                                    setState(() {});
-                                                  },
-                                                  icon: CartService.instance.cartModel.items
-                                                              .firstWhere((element) =>
-                                                                  element.product!.id == product.id)
-                                                              .quantity ==
-                                                          1
-                                                      ? Icons.delete
-                                                      : Icons.remove,
+                                        ),
+                                      ],
+                                    ),
+                                    // Cart actions
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const SizedBox(),
+                                        if (ifProductAlreadyInCart)
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              // Decrement or remove item from cart
+                                              SmallIconButton(
+                                                bgColor: Colors.red.shade300,
+                                                onPressed: () async {
+                                                  CartService.instance.decrementItemInCart(
+                                                    productId: product.id,
+                                                  );
+                                                  setState(() {});
+                                                },
+                                                icon: CartService.instance.cartModel.items
+                                                            .firstWhere((element) =>
+                                                                element.product!.id == product.id)
+                                                            .quantity ==
+                                                        1
+                                                    ? Icons.delete
+                                                    : Icons.remove,
+                                              ),
+                                              const SizedBox(width: 10),
+                                              // Display item quantity
+                                              Text(
+                                                CartService.instance.cartModel.items
+                                                    .firstWhere(
+                                                        (element) => element.product!.id == product.id)
+                                                    .quantity
+                                                    .toString(),
+                                                style: const TextStyle(
+                                                  fontSize: 20,
                                                 ),
-                                                const SizedBox(width: 10),
-                                                // Display item quantity
-                                                Text(
-                                                  CartService.instance.cartModel.items
-                                                      .firstWhere(
-                                                          (element) => element.product!.id == product.id)
-                                                      .quantity
-                                                      .toString(),
-                                                  style: const TextStyle(
-                                                    fontSize: 20,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                // Increment item in cart
-                                                SmallIconButton(
-                                                  onPressed: () async {
-                                                    final val = CartService.instance.incrementItemInCart(
-                                                      productId: product.id,
-                                                    );
-                                                    setState(() {});
-                                                  },
-                                                  icon: Icons.add,
-                                                ),
-                                              ],
-                                            )
-                                          else
-                                            const SizedBox()
-                                          // const Text('Add')
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              // Increment item in cart
+                                              SmallIconButton(
+                                                onPressed: () async {
+                                                  final val = CartService.instance.incrementItemInCart(
+                                                    productId: product.id,
+                                                  );
+                                                  setState(() {});
+                                                },
+                                                icon: Icons.add,
+                                              ),
+                                            ],
+                                          )
+                                        else
+                                          SmallIconButton(
+                                            onPressed: () async {
+                                              final val = CartService.instance.addItemInCart(
+                                                  productModel: product, price: product.priceAfterDiscount);
+                                              setState(() {});
+                                            },
+                                            icon: Icons.add,
+                                          ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -340,9 +338,10 @@ class _BusinessMenuScreenState extends State<BusinessMenuScreen> {
 
 // Small button widget with an icon
 class SmallIconButton extends StatelessWidget {
-  const SmallIconButton({super.key, required this.icon, required this.onPressed});
+  const SmallIconButton({super.key, required this.icon, required this.onPressed, this.bgColor});
   final IconData icon;
   final Function() onPressed;
+  final Color? bgColor;
 
   @override
   Widget build(BuildContext context) {
@@ -360,7 +359,7 @@ class SmallIconButton extends StatelessWidget {
             ),
           ],
           borderRadius: BorderRadius.circular(12),
-          color: cardColor,
+          color: bgColor ?? cardColor,
         ),
         child: Icon(
           icon,

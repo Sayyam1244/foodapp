@@ -11,6 +11,7 @@ import 'package:helloworld/presentation/business_home/components/menu/edit_item.
 import 'package:helloworld/presentation/checkout/checkout_screen.dart';
 import 'package:helloworld/presentation/common/custom_dialogue.dart';
 import 'package:helloworld/presentation/common/primary_button.dart';
+import 'package:helloworld/presentation/menu/menu_screen.dart';
 import 'package:helloworld/services/firestore_service.dart';
 import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/textstyles.dart';
@@ -97,7 +98,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 width: 80,
                                 clipBehavior: Clip.hardEdge,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade200,
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: product.imageUrl != null
@@ -168,6 +169,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                         const SizedBox(width: 10), // Spacer between buttons
                                         // Delete button
                                         SmallIconButton(
+                                            bgColor: Colors.red.shade300,
                                             onPressed: () {
                                               showDialog(
                                                 context: context,

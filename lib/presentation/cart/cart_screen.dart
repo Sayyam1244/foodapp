@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:helloworld/presentation/checkout/checkout_screen.dart';
+import 'package:helloworld/presentation/menu/menu_screen.dart';
 import 'package:helloworld/services/cart_service.dart';
 import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/textstyles.dart';
@@ -91,6 +92,7 @@ class _CartScreenState extends State<CartScreen> {
                                           children: [
                                             // Decrement or delete item
                                             SmallIconButton(
+                                              bgColor: Colors.red.shade300,
                                               onPressed: () async {
                                                 CartService.instance.decrementItemInCart(
                                                   productId: cartItem.productId,
@@ -118,6 +120,9 @@ class _CartScreenState extends State<CartScreen> {
                                                 if (val != null) {
                                                   ScaffoldMessenger.of(context).showSnackBar(
                                                     SnackBar(
+                                                      behavior: SnackBarBehavior.floating,
+                                                      margin: const EdgeInsets.only(
+                                                          bottom: 10, left: 10, right: 10),
                                                       content: Text(val),
                                                     ),
                                                   );
@@ -191,27 +196,27 @@ class _CartScreenState extends State<CartScreen> {
 }
 
 // Small button widget for increment/decrement
-class SmallIconButton extends StatelessWidget {
-  const SmallIconButton({super.key, required this.icon, required this.onPressed});
-  final IconData icon;
-  final Function() onPressed;
+// class SmallIconButton extends StatelessWidget {
+//   const SmallIconButton({super.key, required this.icon, required this.onPressed});
+//   final IconData icon;
+//   final Function() onPressed;
 
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.grey.shade300,
-        ),
-        child: Icon(
-          icon,
-          color: Colors.black87,
-          size: 18,
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return InkWell(
+//       onTap: onPressed,
+//       child: Container(
+//         padding: const EdgeInsets.all(6),
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(8),
+//           color: Colors.grey.shade300,
+//         ),
+//         child: Icon(
+//           icon,
+//           color: Colors.black87,
+//           size: 18,
+//         ),
+//       ),
+//     );
+//   }
+// }

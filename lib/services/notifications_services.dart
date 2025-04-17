@@ -45,7 +45,7 @@ class NotificationServies {
 
     // Get FCM token
     final fcmToken = await FirebaseMessaging.instance.getToken();
-
+    log('FCM Token: $fcmToken');
     // Create notification channel
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()

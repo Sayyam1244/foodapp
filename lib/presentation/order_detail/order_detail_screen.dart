@@ -61,12 +61,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           children: [
             // User information section
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // User profile image
                 Container(
-                  height: 40,
-                  width: 40,
+                  height: 50,
+                  width: 50,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(10),
@@ -82,76 +82,56 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             );
                           },
                         )
-                      : const Icon(Icons.store_mall_directory_outlined),
+                      : Icon(userInOrder?.role == 'business'
+                          ? Icons.store_mall_directory_outlined
+                          : Icons.person),
                 ),
                 const SizedBox(width: 10),
                 // User name and phone number
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                Column(
+                  children: [
+                    Text(
+                      (userInOrder?.name ?? '').toUpperCase(),
+                      style: bodyLargeTextStyle,
+                    ),
+                    if (userInOrder?.phoneNumber != null || (userInOrder?.phoneNumber?.isNotEmpty ?? false))
                       Text(
-                        (userInOrder?.name ?? '').toUpperCase(),
-                        style: bodyLargeTextStyle,
-                      ),
-                      Text(
-                        ((userInOrder?.phoneNumber == null || (userInOrder?.phoneNumber?.isEmpty ?? true))
-                                ? ''
-                                : userInOrder?.phoneNumber)!
-                            .toUpperCase(),
+                        userInOrder!.phoneNumber!.toUpperCase(),
                         style: bodySmallTextStyle,
                       ),
-                      const SizedBox(height: 14),
-                      // Order ID display
-                      Padding(
-                        padding: const EdgeInsets.only(top: 14, right: 24),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Column(
-                              children: [
-                                const Text(
-                                  "Order ID",
-                                  style: titleTextStyle,
-                                ),
-                                const SizedBox(height: 5),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(
-                                    color: primaryColor,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(widget.order.orderId ?? '',
-                                      style: bodyLargeTextStyle.copyWith(
-                                        color: whiteColor,
-                                      )),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
               ],
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
+            Column(
+              children: [
+                const Text(
+                  "Order ID",
+                  style: titleTextStyle,
+                ),
+                const SizedBox(height: 5),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child:
+                      Text(widget.order.orderId ?? '', style: bodyLargeTextStyle.copyWith(color: whiteColor)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
 
             // Order status section for business users
-            if (FirestoreService.instance.currentUser?.role == 'business')
-              const Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  ('Order Status'),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: primaryColor,
-                  ),
-                ),
+            if (FirestoreService.instance.currentUser?.role == 'business') ...[
+              const Center(
+                child: Text(('Order Status'), style: titleTextStyle),
               ),
+            ],
+
             if (FirestoreService.instance.currentUser?.role == 'business')
               StreamBuilder(
                   stream: FirebaseFirestore.instance.collection('orders').doc(widget.order.id).snapshots(),
@@ -167,6 +147,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
                     // Status checkboxes
                     return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [

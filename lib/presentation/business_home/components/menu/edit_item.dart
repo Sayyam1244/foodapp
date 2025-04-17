@@ -189,8 +189,10 @@ class _EditItemState extends State<EditItem> {
                         );
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
                             content: Text(val), // Show success or error message
-                            backgroundColor: Colors.black,
+                            // backgroundColor: Colors.black,
                           ),
                         );
                         Navigator.pop(context); // Navigate back after saving

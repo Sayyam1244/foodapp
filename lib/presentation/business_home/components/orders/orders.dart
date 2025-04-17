@@ -149,8 +149,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     Text(
                                       item.status!.toUpperCase().replaceAll("_", ' '),
                                       style: bodySmallTextStyle.copyWith(
-                                        color: Colors.black,
-                                      ),
+                                          color: Colors.black, fontWeight: FontWeight.bold),
                                     ),
                                     const Spacer(),
                                     // Display rating if available

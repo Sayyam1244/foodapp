@@ -45,6 +45,13 @@ class FirestoreService {
         if (currentUser?.isDeleted == true) {
           Navigator.pushAndRemoveUntil(navigatorKey.currentContext!,
               MaterialPageRoute(builder: (context) => const WelcomeScreen()), (route) => false);
+          ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+            const SnackBar(
+              behavior: SnackBarBehavior.floating,
+              margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+              content: Text('Your account has been deleted.'),
+            ),
+          );
         }
         return currentUser;
       } else {
@@ -77,12 +84,15 @@ class FirestoreService {
       required int stock,
       File? image}) async {
     try {
-      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      final storageRef = FirebaseStorage.instance.ref('products/$fileName.png');
-      await storageRef.putFile(image!);
-      final imageUrl = await storageRef.getDownloadURL();
-      final docRef = FirebaseFirestore.instance.collection('products').doc();
+      String? imageUrl;
+      if (image != null) {
+        final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+        final storageRef = FirebaseStorage.instance.ref('products/$fileName.png');
+        await storageRef.putFile(image);
+        imageUrl = await storageRef.getDownloadURL();
+      }
 
+      final docRef = FirebaseFirestore.instance.collection('products').doc();
       docRef.set({
         'docId': docRef.id,
         'productName': productName,
@@ -249,7 +259,7 @@ class FirestoreService {
       final userRef = FirebaseFirestore.instance.collection('users').doc(currentUser!.uid);
 
       await userRef.update({
-        'points': previousPoints - pointsUsed,
+        'points': previousPoints - pointsUsed + (totalPrice * 100),
         'gmSaved': gmSaved + orderTotalGms,
       });
       return true;

@@ -182,21 +182,21 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                         if (!formKey.currentState!.validate()) {
                           return; // Stop if form is invalid
                         }
-                        if (image == null) {
-                          // Show error if no image is selected
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return CustomDialogue(
-                                  title: ("Error"),
-                                  content: ("Please select an image"),
-                                  action: () {
-                                    Navigator.pop(context);
-                                  });
-                            },
-                          );
-                          return;
-                        }
+                        // if (image == null) {
+                        //   // Show error if no image is selected
+                        //   showDialog(
+                        //     context: context,
+                        //     builder: (context) {
+                        //       return CustomDialogue(
+                        //           title: ("Error"),
+                        //           content: ("Please select an image"),
+                        //           action: () {
+                        //             Navigator.pop(context);
+                        //           });
+                        //     },
+                        //   );
+                        //   return;
+                        // }
                         // Attempt to register the user
                         final val = await AuthService.signUpWithEmailPassword(
                           email: emailController.text,
