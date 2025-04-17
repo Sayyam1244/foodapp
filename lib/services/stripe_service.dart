@@ -1,5 +1,3 @@
-// sk_test_51R6Z3nBGD7AXTYNzs16tMD4Fn5I9LrsJ1gPZhmnKjGI5IJulccagHhIxAbWVdJOR52JchQAiOh3GDZ6rVhAHeHbo00lhBRRKim
-// pk_test_51R6Z3nBGD7AXTYNznwAcY7cYzxlqtOG2ioqeZPn5KeJhNjPmXYjD5luqnzne1OSjTqLfhkXnrqd12VLdsx6wN3nZ0014A6z9Yg
 import 'dart:convert';
 import 'dart:developer';
 
@@ -9,10 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_stripe/flutter_stripe.dart';
 
 class StripeService {
-  static String secretKey =
-      'sk_test_51R6Z3nBGD7AXTYNzs16tMD4Fn5I9LrsJ1gPZhmnKjGI5IJulccagHhIxAbWVdJOR52JchQAiOh3GDZ6rVhAHeHbo00lhBRRKim';
-  static String publishableKey =
-      'pk_test_51R6Z3nBGD7AXTYNznwAcY7cYzxlqtOG2ioqeZPn5KeJhNjPmXYjD5luqnzne1OSjTqLfhkXnrqd12VLdsx6wN3nZ0014A6z9Yg';
+  static String secretKey = '';
+  static String publishableKey = '';
   StripeService._();
 
   static final StripeService _instance = StripeService._();
