@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:helloworld/model/product_model.dart';
 import 'package:helloworld/model/user_model.dart';
 import 'package:helloworld/presentation/common/custom_textfield.dart';
@@ -184,7 +186,38 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (selectedCat.isNotEmpty) {
                     business = business.where((element) => element.category == selectedCat).toList();
                   }
+                  // do distance calculation
 
+// Do distance calculation
+                  final userLatlng = LatLng(
+                    FirestoreService.instance.currentUser?.latitude ?? 0,
+                    FirestoreService.instance.currentUser?.longitude ?? 0,
+                  );
+
+                  List<MapEntry<UserModel, double>> businessWithDistances = [];
+
+                  for (var bs in business) {
+                    if (bs.latitude != null && bs.longitude != null) {
+                      final businessLatlng = LatLng(bs.latitude ?? 0, bs.longitude ?? 0);
+                      final distance = Geolocator.distanceBetween(
+                        userLatlng.latitude,
+                        userLatlng.longitude,
+                        businessLatlng.latitude,
+                        businessLatlng.longitude,
+                      );
+                      businessWithDistances.add(MapEntry(bs, distance));
+                    } else {
+                      businessWithDistances.add(MapEntry(bs, 0));
+                    }
+                  }
+
+// Sort businesses by distance
+                  businessWithDistances.sort((a, b) => a.value.compareTo(b.value));
+
+// Extract sorted businesses and distances
+                  List<UserModel> sortedBusinessByDistance = businessWithDistances.map((e) => e.key).toList();
+                  List<double> distances = businessWithDistances.map((e) => e.value).toList();
+                  business = sortedBusinessByDistance;
                   // Display filtered businesses in a list
                   return Expanded(
                     child: ListView.separated(
@@ -249,6 +282,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         maxLines: 2,
                                         textAlign: TextAlign.center,
                                         style: bodyMediumTextStyle,
+                                      ),
+                                      Text(
+                                        "${(distances[index] / 1000).toStringAsFixed(2)} km away",
+                                        style: bodySmallTextStyle,
                                       ),
                                     ],
                                   ),

@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:helloworld/model/cart_model.dart';
 import 'package:helloworld/model/product_model.dart';
+import 'package:helloworld/presentation/common/custom_dialogue.dart'; // Import for CustomDialogue
 import 'package:helloworld/services/auth_service.dart';
 import 'package:helloworld/services/firestore_service.dart';
 import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/textstyles.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // Screen to display order details
 class OrderDetailScreen extends StatefulWidget {
@@ -23,9 +25,23 @@ class OrderDetailScreen extends StatefulWidget {
 }
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
-  // Function to change the order status
-  changeStatus(status) async {
-    await FirebaseFirestore.instance.collection('orders').doc(widget.order.id).update({"status": status});
+  // Function to change the order status with confirmation dialog
+  changeStatus(String status) async {
+    // Show confirmation dialog
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CustomDialogue(
+          title: "Update Order Status",
+          content: "Are you sure you want to update this order status?",
+          action: () {
+            // Update order status in Firestore
+            FirebaseFirestore.instance.collection('orders').doc(widget.order.id).update({"status": status});
+            Navigator.pop(context); // Close the dialog
+          },
+        );
+      },
+    );
   }
 
   final List<ProductModel> products = [];
@@ -103,7 +119,32 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
 
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.all(10),
+              child: InkWell(
+                onTap: () {
+                  final googleMapUrl =
+                      'https://www.google.com/maps/search/?api=1&query=${userInOrder?.latitude},${userInOrder?.longitude}';
+
+                  log(googleMapUrl);
+                  launchUrl(Uri.parse(googleMapUrl));
+                },
+                child: Row(
+                  children: [
+                    const Icon(Icons.map_outlined),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(userInOrder?.location ?? '')),
+                    const Icon(Icons.arrow_right),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             Column(
               children: [

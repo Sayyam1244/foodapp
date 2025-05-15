@@ -38,28 +38,29 @@ class FirestoreService {
 
   // Get user data from Firestore
   Future<UserModel?> getUser(String uid) async {
-    try {
-      DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      if (doc.exists) {
-        currentUser = UserModel.fromMap(doc.data() as Map<String, dynamic>);
-        if (currentUser?.isDeleted == true) {
-          Navigator.pushAndRemoveUntil(navigatorKey.currentContext!,
-              MaterialPageRoute(builder: (context) => const WelcomeScreen()), (route) => false);
-          ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-            const SnackBar(
-              behavior: SnackBarBehavior.floating,
-              margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
-              content: Text('Your account has been deleted.'),
-            ),
-          );
-        }
-        return currentUser;
-      } else {
-        return null;
+    // try {
+    DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    if (doc.exists) {
+      log(doc.data().toString());
+      currentUser = UserModel.fromMap({...doc.data() as Map<String, dynamic>, 'uid': uid});
+      if (currentUser?.isDeleted == true) {
+        Navigator.pushAndRemoveUntil(navigatorKey.currentContext!,
+            MaterialPageRoute(builder: (context) => const WelcomeScreen()), (route) => false);
+        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+            content: Text('Your account has been deleted.'),
+          ),
+        );
       }
-    } catch (e) {
-      throw Exception('Error getting user: $e');
+      return currentUser;
+    } else {
+      return null;
     }
+    // } catch (e) {
+    //   throw Exception('Error getting user: $e');
+    // }
   }
 
   // Mark user account as deleted

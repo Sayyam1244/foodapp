@@ -56,7 +56,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator()); // Show loader if no data
                 }
-                final user = UserModel.fromMap(snapshot.data!.data()!); // Parse user data
+                final user = UserModel.fromMap({
+                  ...snapshot.data!.data()!,
+                  "uid": FirestoreService.instance.currentUser?.uid
+                }); // Parse user data
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),

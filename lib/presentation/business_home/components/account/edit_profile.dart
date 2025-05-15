@@ -8,6 +8,7 @@ import 'package:helloworld/services/file_picker_service.dart';
 import 'package:helloworld/utils/app_validator.dart';
 import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/textstyles.dart';
+import 'package:place_picker_google/place_picker_google.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -20,11 +21,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   File? image; // Holds the selected profile image
   final businessNameController = TextEditingController(); // Controller for name input
   String? categoryValue; // Selected category value
-  final locationController = TextEditingController(); // Controller for location input
+  // final locationController = TextEditingController(); // Controller for location input
   final emailController = TextEditingController(); // Controller for email input
   final phoneNumberController = TextEditingController(); // Controller for phone number input
   final formKey = GlobalKey<FormState>(); // Key for form validation
-
+  double? selectedLatitude;
+  double? selectedLongitude;
+  String? selectedAddress;
   @override
   void initState() {
     super.initState();
@@ -37,11 +40,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (user != null) {
       businessNameController.text = user.name;
       categoryValue = user.category;
-      locationController.text = user.location ?? '';
+      // locationController.text = user.location ?? '';
       emailController.text = user.email;
       phoneNumberController.text = user.phoneNumber ?? '';
+      selectedLatitude = user.latitude;
+      selectedLongitude = user.longitude;
+      selectedAddress = user.location;
       setState(() {}); // Update UI
     }
+  }
+
+  // Function to open place picker
+  Future<void> _openPlacePicker() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlacePicker(
+          enableNearbyPlaces: false,
+          apiKey: "AIzaSyCNOwAsoA8vCB-bzW_0Sk_sIay_a8NBeIo",
+          onPlacePicked: (result) {
+            setState(() {
+              selectedLatitude = result.latLng?.latitude;
+              selectedLongitude = result.latLng?.longitude;
+              selectedAddress = result.formattedAddress;
+            });
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -138,11 +165,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    CustomTextField(
-                      labelText: "Location (Neighborhood, Street):",
-                      controller: locationController,
-                      hintText: "",
-                      validator: AppValidator.emptyCheck,
+                    // CustomTextField(
+                    //   labelText: "Location (Neighborhood, Street):",
+                    //   controller: locationController,
+                    //   hintText: "",
+                    //   validator: AppValidator.emptyCheck,
+                    // ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(10),
+                        color: selectedAddress != null ? Colors.grey : Colors.white,
+                      ),
+                      child: InkWell(
+                        onTap: _openPlacePicker,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              color: selectedAddress != null ? Colors.white : Colors.grey,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                selectedAddress ?? 'Select Location',
+                                style: bodyMediumTextStyle.copyWith(
+                                    color: selectedAddress != null ? Colors.white : Colors.grey),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                   // Customer-specific fields
@@ -166,7 +220,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         final user = FirestoreService.instance.currentUser!.copyWith(
                           name: businessNameController.text,
                           category: categoryValue,
-                          location: locationController.text,
+                          location: selectedAddress,
+                          latitude: selectedLatitude,
+                          longitude: selectedLongitude,
                           phoneNumber: phoneNumberController.text,
                         );
 

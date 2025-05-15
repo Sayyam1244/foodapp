@@ -14,6 +14,8 @@ import 'package:helloworld/services/file_picker_service.dart';
 import 'package:helloworld/utils/app_validator.dart';
 import 'package:helloworld/utils/colors.dart';
 import 'package:helloworld/utils/textstyles.dart';
+import 'package:place_picker_google/place_picker_google.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BusinessRegisterScreen extends StatefulWidget {
   const BusinessRegisterScreen({Key? key}) : super(key: key);
@@ -25,11 +27,15 @@ class BusinessRegisterScreen extends StatefulWidget {
 class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
   File? image; // Holds the selected image file
   final businessNameController = TextEditingController(); // Controller for business name input
-  final locationController = TextEditingController(); // Controller for location input
   final emailController = TextEditingController(); // Controller for email input
   final passwordController = TextEditingController(); // Controller for password input
   String? categoryValue; // Selected category value
   final formKey = GlobalKey<FormState>(); // Form key for validation
+
+  // State variables to store selected location
+  double? selectedLatitude;
+  double? selectedLongitude;
+  String? selectedAddress;
 
   // Password rules to display
   final passRulesList = [
@@ -37,6 +43,27 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
     "• Password must contain at least one number",
     "• Password must be longer than 8 characters",
   ];
+
+  // Function to open place picker
+  Future<void> _openPlacePicker() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlacePicker(
+          enableNearbyPlaces: false,
+          apiKey: "AIzaSyCNOwAsoA8vCB-bzW_0Sk_sIay_a8NBeIo",
+          onPlacePicked: (result) {
+            setState(() {
+              selectedLatitude = result.latLng?.latitude;
+              selectedLongitude = result.latLng?.longitude;
+              selectedAddress = result.formattedAddress;
+            });
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,12 +168,33 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                         value == null ? 'Please select a category' : null, // Validate selection
                   ),
                   const SizedBox(height: 20),
-                  // Location input
-                  CustomTextField(
-                    labelText: 'Enter Location:',
-                    controller: locationController,
-                    hintText: '',
-                    validator: AppValidator.emptyCheck, // Validate non-empty input
+                  // Location selection button
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(10),
+                      color: selectedAddress != null ? Colors.grey : Colors.white,
+                    ),
+                    child: InkWell(
+                      onTap: _openPlacePicker,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            color: selectedAddress != null ? Colors.white : Colors.grey,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              selectedAddress ?? 'Select Location',
+                              style: bodyMediumTextStyle.copyWith(
+                                  color: selectedAddress != null ? Colors.white : Colors.grey),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   // Email input
@@ -182,33 +230,44 @@ class _BusinessRegisterScreenState extends State<BusinessRegisterScreen> {
                         if (!formKey.currentState!.validate()) {
                           return; // Stop if form is invalid
                         }
-                        // if (image == null) {
-                        //   // Show error if no image is selected
-                        //   showDialog(
-                        //     context: context,
-                        //     builder: (context) {
-                        //       return CustomDialogue(
-                        //           title: ("Error"),
-                        //           content: ("Please select an image"),
-                        //           action: () {
-                        //             Navigator.pop(context);
-                        //           });
-                        //     },
-                        //   );
-                        //   return;
-                        // }
+                        // Validate location selection
+                        if (selectedLatitude == null || selectedLongitude == null) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return CustomDialogue(
+                                title: "Location Required",
+                                content: "Please select a location.",
+                                action: () {
+                                  Navigator.pop(context);
+                                },
+                              );
+                            },
+                          );
+                          return;
+                        }
                         // Attempt to register the user
                         final val = await AuthService.signUpWithEmailPassword(
                           email: emailController.text,
                           password: passwordController.text,
                           name: businessNameController.text,
                           category: categoryValue,
-                          location: locationController.text,
+                          location: selectedAddress,
                           image: image,
                           role: 'business',
                         );
                         log(val.toString());
                         if (val is User) {
+                          // Save additional location data to Firestore
+                          await FirebaseFirestore.instance.collection('users').doc(val.uid).set({
+                            'name': businessNameController.text,
+                            'email': emailController.text,
+                            'category': categoryValue,
+                            'role': 'business',
+                            'latitude': selectedLatitude,
+                            'longitude': selectedLongitude,
+                            'location': selectedAddress,
+                          });
                           // Navigate to home screen on success
                           Navigator.pushAndRemoveUntil(
                             context,

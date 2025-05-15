@@ -11,6 +11,8 @@ class UserModel {
   final num? points;
   List<num>? ratings;
   final num? gmSaved;
+  final double? latitude;
+  final double? longitude;
 
   UserModel({
     required this.isDeleted,
@@ -25,11 +27,13 @@ class UserModel {
     this.points,
     this.ratings,
     this.gmSaved,
+    this.latitude,
+    this.longitude,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> data) {
     return UserModel(
-      isDeleted: data['isDeleted'],
+      isDeleted: data['isDeleted'] ?? false,
       uid: data['uid'],
       name: data['name'],
       email: data['email'],
@@ -41,6 +45,8 @@ class UserModel {
       points: data['points'],
       ratings: data['ratings'] != null ? List<num>.from(data['ratings']) : null,
       gmSaved: data['gmSaved'],
+      latitude: data['latitude'],
+      longitude: data['longitude'],
     );
   }
 
@@ -58,6 +64,8 @@ class UserModel {
       'points': points,
       'ratings': ratings,
       'gmSaved': gmSaved,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
@@ -74,6 +82,8 @@ class UserModel {
     String? image,
     int? points,
     num? gmSaved,
+    double? latitude,
+    double? longitude,
   }) {
     return UserModel(
       isDeleted: isDeleted ?? this.isDeleted,
@@ -87,6 +97,8 @@ class UserModel {
       image: image ?? this.image,
       points: points ?? this.points,
       gmSaved: gmSaved ?? this.gmSaved,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
 }
